@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+
+<nav class="navbar navbar-default" role="navigation"  th:fragment="navbar" >
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/">Hello</a>
+        </div>
+        <ul class="nav navbar-nav navbar-right" th:if="${session.user != null}" >
+            <li><a><span class="glyphicon glyphicon-comment"></span></a></li>
+            <li><a href="/userpage"><span th:text=" ${session.user.getName()}"></span></a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right" th:unless="${session.user != null }">
+            <li><a href="/register"><span class="glyphicon glyphicon-user"></span> 注册</a></li>
+            <li><a href="/login"><span class="glyphicon glyphicon-log-in"></span> 登录</a></li>
+        </ul>
+    </div>
+</nav>
+
+</body>
+
+<div th:fragment="footer" class="container">
+    <!--<img src="img/footer_morphix.png" id="footer-logo" alt="Morphix Logo" width="72" height="35">-->
+    Copyright © kid1999 2001–2019. All rights reserved. Made with
+    <img src="/static/img/footer_love.png" alt="Love" width="13" height="11">
+    in kid1999. <a href="https://github.com/kid1999" style="color: #818a8f !important;" title="This is a SSM Project."> Learn more.</a>
+</div>
+
+</html>

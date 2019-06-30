@@ -1,0 +1,7 @@
+body{
+    background-image: url(/static/img/login.jpg);
+}
+
+.vertical-offset-100{
+    padding-top:100px;
+}
