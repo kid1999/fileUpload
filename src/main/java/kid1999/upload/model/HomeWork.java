@@ -6,5 +6,9 @@ import lombok.Data;
 public class HomeWork {
   private int id;
   private String title;
-  private String desc;
+  private String infomation;
+  private long createtime;
+  private long endtime;
+  private String type;
+  private String addr;
 }

@@ -2,6 +2,7 @@ package kid1999.upload.controller;
 
 import kid1999.upload.mapper.userMapper;
 import kid1999.upload.model.User;
+import kid1999.upload.service.userService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,11 +11,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 
 @Controller
-public class index {
+public class Index {
 
   @Autowired
   private userMapper userMapper;
-
 
   @GetMapping("/")
   public String index(){

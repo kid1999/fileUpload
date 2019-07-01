@@ -11,15 +11,4 @@ public class Student {
   private String classname;
   private int zyid;
   private Time time;
-
-  @Override
-  public String toString() {
-    return "Student{" +
-            "id=" + id +
-            ", name='" + name + '\'' +
-            ", classname='" + classname + '\'' +
-            ", zyid=" + zyid +
-            ", time=" + time +
-            '}';
-  }
 }

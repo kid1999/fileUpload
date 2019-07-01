@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>用户页面</title>
+    <title>提交作业</title>
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
     <script src="/static/js/jquery-3.3.1.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
@@ -67,12 +67,6 @@
 </div>
 
 
-<div>
-    <p th:if="${user} != null" th:text="${user.name}"></p>
-    <a href="/createWork">创建文件收集计划</a>
-    <a href="/showWork">查看文件收集计划</a>
-    <span>留言区</span>
-</div>
 
 </body>
 

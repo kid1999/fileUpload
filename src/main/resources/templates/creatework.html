@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>创建项目</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <script src="/static/js/jquery-3.3.1.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div th:insert="~{base :: navbar}"/>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-6 col-lg-offset-3">
+            <h1>创建项目</h1>
+        </div>
+    </div>
+
+    <form action="/createWork" method="post" class="form-inline">
+        <div class="row">
+            <div class="col-lg-offset-2">
+                <div class="form-group">
+                    <label>项目名称</label>
+                    <input type="text" class="form-control" placeholder="文件柜名" name="title">
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-offset-2">
+                <label>填写描述信息:</label>
+                <textarea class="form-control" rows="2" name="desc"></textarea>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-offset-2">
+                <label>文件命名格式: </label>
+                <div class="radio">
+                    <label>
+                        <input name="type" value="1" type="radio" >姓名-项目名
+                    </label>
+                </div>
+                <div class="radio">
+                    <label>
+                        <input name="type" value="2" type="radio" >学号-项目名
+                    </label>
+                </div>
+                <div class="radio">
+                    <label>
+                        <input name="type" value="3" type="radio" >学号-姓名-项目名
+                    </label>
+                </div>
+                <div class="radio">
+                    <label>
+                        <input name="type" value="4" type="radio" >班级-姓名-项目名
+                    </label>
+                </div>
+                <div class="radio">
+                    <label>
+                        <input name="type" value="5" type="radio" checked>班级-姓名-学号-项目名
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-offset-2">
+                <div class="form-group">
+                    <label>选择截止日期：</label>
+                    <!--指定 date标记-->
+                    <div class='input-group date'>
+                        <input type='datetime-local' class="form-control" name="endtime"/>
+                        <span class="input-group-addon">
+                             <span class="glyphicon glyphicon-calendar"/>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row col-lg-offset-2">
+            <input type="submit" class="btn btn-default" value="提交">
+        </div>
+
+    </form>
+</div>
+</body>
+<footer th:insert="~{base :: footer}" class="navbar-fixed-bottom"/>
+
+</html>
