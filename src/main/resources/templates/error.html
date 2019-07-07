@@ -8,7 +8,7 @@
 <body>
 <div th:insert="~{base :: navbar}"/>
 <h2 style="color: dodgerblue">404</h2>
-<h3 style="color: coral">You need some help!</h3>
+<h3 style="color: coral" th:if="${info} != null" th:text="${info}">You need some help!</h3>
 
 <footer th:insert="~{base :: footer}" class="navbar-fixed-bottom"/>
 </body>

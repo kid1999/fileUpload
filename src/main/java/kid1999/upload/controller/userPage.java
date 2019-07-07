@@ -1,13 +1,12 @@
 package kid1999.upload.controller;
 
 import kid1999.upload.mapper.homeworkMapper;
-import kid1999.upload.mapper.userMapper;
 import kid1999.upload.mapper.userworkMapper;
 import kid1999.upload.model.HomeWork;
 import kid1999.upload.model.User;
 import kid1999.upload.service.homeworkService;
+import kid1999.upload.service.userService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,9 +22,6 @@ import java.util.Date;
 public class userPage {
 
   @Autowired
-  private userMapper userMapper;
-
-  @Autowired
   private homeworkMapper homeworkMapper;
 
   @Autowired
@@ -34,8 +30,8 @@ public class userPage {
   @Autowired
   private homeworkService homeworkService;
 
-  @Value("filePath")
-  private String filePath;
+  @Autowired
+  private userService userService;
 
   @GetMapping("/userpage")
   String userpage(){
@@ -46,6 +42,7 @@ public class userPage {
   String createWork(){
     return "/createWork";
   }
+
 
   @PostMapping("/createWork")
   String createWork(HttpServletRequest request,
@@ -62,12 +59,11 @@ public class userPage {
 
     // 获取 session 中的user
     User user = (User)request.getSession().getAttribute("user");
-    System.out.println(filePath);
     HomeWork homeWork = new HomeWork();
     homeWork.setTitle(title);
     homeWork.setInfomation(desc);
     homeWork.setType(type);
-    homeWork.setAddr(filePath);  // 设置文件路径
+    homeWork.setAddr(userService.makePath(user.getId(),title));  // 设置文件路径
     homeWork.setCreatetime(new Date().getTime());
     //  转换时间
     try {
