@@ -9,6 +9,7 @@ public class Student {
   private int id;
   private String name;
   private String classname;
-  private int zyid;
-  private Time time;
+  private int workid;
+  private long time;
+  private String remarks;
 }

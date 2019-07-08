@@ -1,10 +1,9 @@
 package kid1999.upload.controller;
 
-import kid1999.upload.mapper.homeworkMapper;
-import kid1999.upload.mapper.userworkMapper;
 import kid1999.upload.model.HomeWork;
 import kid1999.upload.model.User;
 import kid1999.upload.service.homeworkService;
+import kid1999.upload.service.studentService;
 import kid1999.upload.service.userService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -22,22 +21,26 @@ import java.util.Date;
 public class userPage {
 
   @Autowired
-  private homeworkMapper homeworkMapper;
-
-  @Autowired
-  private userworkMapper userworkMapper;
-
-  @Autowired
   private homeworkService homeworkService;
 
   @Autowired
   private userService userService;
 
+  @Autowired
+  private studentService studentService;
+
+  // user 展示页
   @GetMapping("/userpage")
-  String userpage(){
+  String userpage(HttpServletRequest request,
+                  Model model){
+    User user = (User) request.getSession().getAttribute("user");
+    model.addAttribute("DoneProject",homeworkService.findDoneProjects(user.getId()));
+    model.addAttribute("DoingProject",homeworkService.findDoingProjects(user.getId()));
+    model.addAttribute("students",studentService.getRemarksByUserid(user.getId()));
     return "userpage";
   }
 
+  // 创建项目
   @GetMapping("/createWork")
   String createWork(){
     return "/createWork";
@@ -52,11 +55,24 @@ public class userPage {
                     @RequestParam(value = "type") String type,
                     @RequestParam(value = "endtime") String endtime
                     ){
-    if(homeworkMapper.findHK(title) != null){
+    if(homeworkService.findHK(title) != null){
       model.addAttribute("info","该项目被已创建！");
       return "error";
     }
 
+    //  转换时间
+    Date now = new Date();
+    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+    Date date = new Date();
+    try {
+      date = format.parse(endtime);
+      if(date.after(now)){
+        model.addAttribute("info","时间设置错误！");
+        return "error";
+      }
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
     // 获取 session 中的user
     User user = (User)request.getSession().getAttribute("user");
     HomeWork homeWork = new HomeWork();
@@ -64,18 +80,11 @@ public class userPage {
     homeWork.setInfomation(desc);
     homeWork.setType(type);
     homeWork.setAddr(userService.makePath(user.getId(),title));  // 设置文件路径
-    homeWork.setCreatetime(new Date().getTime());
-    //  转换时间
-    try {
-      SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
-      Date date = format.parse(endtime);
-      homeWork.setEndtime(date.getTime());
-      homeWork = homeworkService.addAndfind(homeWork);    // 新建work并返回
-      userworkMapper.add(homeWork.getId(),user.getId());   // 新建user-work
-    } catch (ParseException e) {
-      e.printStackTrace();
-    }
-    return "collection";
+    homeWork.setCreatetime(now.getTime());
+    homeWork.setEndtime(date.getTime());
+    homeWork = homeworkService.addAndfind(homeWork);    // 新建work并返回
+    homeworkService.add(homeWork.getId(),user.getId());   // 新建user-work
+    return "userpage";
   }
 
 

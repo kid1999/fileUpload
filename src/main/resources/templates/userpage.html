@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!--suppress ALL-->
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
@@ -17,7 +18,7 @@
 <div class="container">
     <div class="row">
         <!--主题-->
-        <div class="col-lg-10">
+        <div class="col-lg-9">
             <div class="headfontsize" id="one">
                 <h1 class="headh1content" th:text="${session.user.getName()} + ',你要新建一个项目吗?'">
                     hello,你要新建一个项目吗?
@@ -29,49 +30,90 @@
             </div>
 
             <div id="two">
-                <div class="list-group">
-                    <a href="#" class="list-group-item active">
-                        <h4 class="list-group-item-heading">正在进行中的项目...</h4>
-                        <p class="list-group-item-text">...</p>
-                    </a>
-                    <a href="#" class="list-group-item">Dapibus ac facilisis in</a>
-                    <a href="#" class="list-group-item">Morbi leo risus</a>
-                    <a href="#" class="list-group-item">Porta ac consectetur ac</a>
-                    <a href="#" class="list-group-item">Vestibulum at eros</a>
+                <div class="panel panel-success">
+                    <div class="panel-heading">正在进行中的项目</div>
+                    <table class="table">
+                        <!--标题-->
+                        <thead>
+                        <tr>
+                            <th>title</th>
+                            <th>创建时间</th>
+                            <th>结束时间</th>
+                            <th>已收</th>
+                        </tr>
+                        </thead>
+                        <!-- 内容 -->
+                        <tbody>
+                        <tr th:each="project : ${DoingProject}">
+                            <th scope="row">
+                                <a th:href="@{'/deatils?' + 'userid=' + ${session.user.getId()} + '&worktitle=' + ${project.title} }" th:text="${project.title}"></a>
+                            </th>
+                            <td th:text="${project.createtime}">Mark</td>
+                            <td th:text="${project.endtime}">Otto</td>
+                            <td>
+                                <span class="badge" th:text="${project.count}">3</span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
             <div id="three">
-                <div class="list-group">
-                    <button class="list-group-item active">已完结的项目</button>
-                    <button type="button" class="list-group-item">Dapibus ac facilisis in</button>
-                    <button type="button" class="list-group-item">Morbi leo risus</button>
-                    <button type="button" class="list-group-item">Porta ac consectetur ac</button>
-                    <button type="button" class="list-group-item">Vestibulum at eros</button>
+                <div class="panel panel-default">
+                    <div class="panel-heading">已结束的项目</div>
+                    <table class="table">
+                        <!--标题-->
+                        <thead>
+                        <tr>
+                            <th>title</th>
+                            <th>创建时间</th>
+                            <th>结束时间</th>
+                            <th>已收</th>
+                        </tr>
+                        </thead>
+                        <!-- 内容 -->
+                        <tbody>
+                            <tr th:each="project : ${DoneProject}">
+                                <th scope="row">
+                                    <a th:href="@{'/deatils?' + 'userid=' + ${session.user.getId()} + '&worktitle=' + ${project.title} }" th:text="${project.title}"></a>
+                                </th>
+                                <td th:text="${project.createtime}">Mark</td>
+                                <td th:text="${project.endtime}">Otto</td>
+                                <td>
+                                    <span class="badge" th:text="${project.count}">3</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-
-
         </div>
         <!--侧边栏-->
-        <div class="col-lg-2">
+        <div class="col-lg-3">
             <div class="list-group">
                 <a href="#" class="list-group-item active">
-                    右侧边栏
+                    <h4 class="list-group-item-heading">最近留言</h4>
                 </a>
-                <a href="#" class="list-group-item">Dapibus ac facilisis in</a>
-                <a href="#" class="list-group-item">Morbi leo risus</a>
+                <div>
+                    <tr>
+                        <a href="#" class="list-group-item">
+                            <h4 class="list-group-item-heading" >评论</h4>
+                            <p class="list-group-item-text">name</p>
+                        </a>
+                    </tr>
+
+                    <tr th:each="student : ${students}">
+                        <a href="#" class="list-group-item">
+                            <h4 class="list-group-item-heading" th:text="${student.remarks}">评论</h4>
+                            <p class="list-group-item-text" th:text="${student.name}">name</p>
+                        </a>
+                    </tr>
+                </div>
+
             </div>
         </div>
     </div>
-</div>
-
-
-<div>
-    <p th:if="${user} != null" th:text="${user.name}"></p>
-    <a href="/createWork">创建文件收集计划</a>
-    <a href="/showWork">查看文件收集计划</a>
-    <span>留言区</span>
 </div>
 
 </body>

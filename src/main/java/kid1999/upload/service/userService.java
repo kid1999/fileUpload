@@ -17,12 +17,6 @@ public class userService {
   @Value("${projectPath}")
   private String projectPath;
 
-  // 新建用户并返回用户的信息
-  public User addAndfindUser(User user){
-    userMapper.login(user);
-    return userMapper.findUser(user.getName());
-  }
-
 
   //	生成一个文件路径保存一个项目的文件
   public String makePath(int userid,String workname){
@@ -34,4 +28,18 @@ public class userService {
   }
 
 
+
+  public User findUser(String name) {
+    return userMapper.findUser(name);
+  }
+
+
+  public void addUser(User user) {
+    userMapper.addUser(user);
+  }
+
+
+  public User login(User user) {
+    return userMapper.login(user);
+  }
 }

@@ -1,6 +1,5 @@
 package kid1999.upload.controller;
 
-import kid1999.upload.mapper.userMapper;
 import kid1999.upload.model.User;
 import kid1999.upload.service.userService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 public class Index {
 
   @Autowired
-  private userMapper userMapper;
+  private userService userService;
 
   @GetMapping("/")
   public String index(){
@@ -39,10 +38,10 @@ public class Index {
     User user = new User();
     user.setName(name);
     user.setPassword(password);
-    if ((user = userMapper.login(user)) != null){
+    if ((user = userService.login(user)) != null){
       model.addAttribute("user",user);
       request.getSession().setAttribute("user",user);
-      return "userpage";
+      return "redirect:userpage";
     }else{
       model.addAttribute("info","账号密码错误，请重新登录！");
       return "login";
@@ -60,14 +59,14 @@ public class Index {
       model.addAttribute("info","密码重复！");
       return "register";
     }
-    if(userMapper.findUser(name) != null){
+    if(userService.findUser(name) != null){
       model.addAttribute("info","用户名已存在！");
       return "register";
     }
     User user = new User();
     user.setName(name);
     user.setPassword(password1);
-    userMapper.addUser(user);
+    userService.addUser(user);
     model.addAttribute("info","恭喜: " + user + " 注册成功！，请登录");
     return "login";
   }
@@ -76,13 +75,19 @@ public class Index {
   @RequestMapping("/registerAjax")
   public @ResponseBody String registerAjax(@RequestBody User user){
     System.out.println(user);
-    if(userMapper.findUser(user.getName())!= null){
+    if(userService.findUser(user.getName())!= null){
       System.out.println("no");
       return "{\"info\":\"用户名重复\"}";
     }else{
       System.out.println("yes");
       return "{\"info\":\"用户名可用\"}";
     }
+  }
+
+  @GetMapping("/logout")
+  public String logout(HttpServletRequest request){
+    request.getSession().removeAttribute("user");
+    return "redirect:/";
   }
 
 }

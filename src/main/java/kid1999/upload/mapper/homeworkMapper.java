@@ -6,6 +6,8 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
+import java.util.List;
+
 @Mapper
 public interface homeworkMapper {
 
@@ -14,4 +16,9 @@ public interface homeworkMapper {
 
   @Insert("insert into homework(title, infomation, createtime, endtime, type, addr) values (#{title},#{infomation} ,#{createtime} ,#{endtime} ,#{type} ,#{addr} )")
   void addHomeWork(HomeWork homeWork);
+
+  @Select("select * from homework where id in (select workid from userswork where userid = #{userid} ) ")
+	List<HomeWork> findByUserId(Integer userid);
 }
+
+
