@@ -58,6 +58,10 @@ public class homeworkService{
     project.setCreatetime(format.format(create));
     project.setEndtime(format.format(end));
     project.setCount(studentMapper.countByWorkId(homeWork.getId()));
+    project.setInfomation(homeWork.getInfomation());
+    project.setType(homeWork.getType());
+    project.setFilepath(homeWork.getAddr());
+    project.setId(homeWork.getId());
     return project;
   }
 
@@ -90,5 +94,11 @@ public class homeworkService{
   // 关联 work 和 user
   public void add(int workid, int userid) {
     userworkMapper.add(workid,userid);
+  }
+
+  public Projects getProByTitle(String worktitle, int userid) {
+    HomeWork homeWork = studentMapper.getWorkByTitle(worktitle,userid);
+    if(homeWork != null) return makeProject(homeWork);
+    else return null;
   }
 }

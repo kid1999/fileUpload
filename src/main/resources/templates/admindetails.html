@@ -23,7 +23,10 @@
                 <h1 class="headh1content" th:text="${worktitle}">
                     hello,你要de项目
                 </h1>
-                <p th:text="'已到: ' + ${count}"></p>
+                <p class="btn-app-stroe">
+                    <a class="btn btn-success btn-group-xs"th:href="@{'/upload?' + 'userid=' + ${session.user.getId()} + '&worktitle=' + ${worktitle} }">查看文件</a>
+                </p>
+                <p th:text="'已收: ' + ${count}"></p>
             </div>
 
             <div id="two">
@@ -59,7 +62,7 @@
                 <a href="#" class="list-group-item active">
                     温馨提示:
                 </a>
-                <a href="#" class="list-group-item">1.请按规则命名!!!</a>
+                <a class="list-group-item">1.请按规则命名!!!</a>
             </div>
         </div>
     </div>

@@ -10,6 +10,6 @@ public class Student {
   private String name;
   private String classname;
   private int workid;
-  private long time;
+  private long uptime;
   private String remarks;
 }

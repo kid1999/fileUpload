@@ -97,16 +97,16 @@
                 </a>
                 <div>
                     <tr>
-                        <a href="#" class="list-group-item">
+                        <a class="list-group-item">
                             <h4 class="list-group-item-heading" >评论</h4>
                             <p class="list-group-item-text">name</p>
                         </a>
                     </tr>
 
                     <tr th:each="student : ${students}">
-                        <a href="#" class="list-group-item">
+                        <a class="list-group-item">
                             <h4 class="list-group-item-heading" th:text="${student.remarks}">评论</h4>
-                            <p class="list-group-item-text" th:text="${student.name}">name</p>
+                            <p class="list-group-item-text" th:text="${student.classname} + ' ' +  ${student.name}">name</p>
                         </a>
                     </tr>
                 </div>
