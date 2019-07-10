@@ -6,25 +6,37 @@
 <nav class="navbar navbar-default" role="navigation"  th:fragment="navbar" >
     <div class="container-fluid">
         <div class="navbar-header">
-            <a class="navbar-brand" href="/">Hello</a>
+            <a class="navbar-brand" href="/">kid's website</a>
         </div>
-        <ul class="nav navbar-nav navbar-right" th:if="${session.user != null}" >
-            <li class="dropdown">
-                <!--<span class="caret"></span>-->
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                    <img src="/static/img/head.jpg" alt="head" class="img-circle" style="width: 25px">
-                </a>
-                <ul class="dropdown-menu">
-                    <li><a href="#" th:text="'用户: ' + ${session.user.getName()}"></a></li>
-                    <li><a href="/userpage">项目目录</a></li>
-                    <li><a href="/logout">注销</a></li>
-                </ul>
-            </li>
-        </ul>
-        <ul class="nav navbar-nav navbar-right" th:unless="${session.user != null }">
-            <li><a href="/register"><span class="glyphicon glyphicon-user"></span> 注册</a></li>
-            <li><a href="/login"><span class="glyphicon glyphicon-log-in"></span> 登录</a></li>
-        </ul>
+
+        <div id="navbar" class="navbar-collapse collapse">
+            <form class="navbar-form navbar-left" method="post" action="/search">
+                <div class="form-group">
+                    <input type="text" name="filename" placeholder="输入文件名,查询提交记录" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-success">搜索</button>
+            </form>
+
+
+            <ul class="nav navbar-nav navbar-right" th:if="${session.user != null}" >
+                <li class="dropdown">
+                    <!--<span class="caret"></span>-->
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                        <img src="/static/img/head.jpg" alt="head" class="img-circle" style="width: 25px">
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#" th:text="'用户: ' + ${session.user.getName()}"></a></li>
+                        <li><a href="/userpage">项目目录</a></li>
+                        <li><a href="/logout">注销</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right" th:unless="${session.user != null }">
+                <li><a href="/register"><span class="glyphicon glyphicon-user"></span> 注册</a></li>
+                <li><a href="/login"><span class="glyphicon glyphicon-log-in"></span> 登录</a></li>
+            </ul>
+        </div>
+
     </div>
 </nav>
 
@@ -33,7 +45,6 @@
 </body>
 
 <div th:fragment="footer" class="container">
-    <!--<img src="img/footer_morphix.png" id="footer-logo" alt="Morphix Logo" width="72" height="35">-->
     Copyright © kid1999 2001–2019. All rights reserved. Made with
     <img src="/static/img/footer_love.png" alt="Love" width="13" height="11">
     in kid1999. <a href="https://github.com/kid1999" style="color: #818a8f !important;" title="This is a SSM Project."> Learn more.</a>

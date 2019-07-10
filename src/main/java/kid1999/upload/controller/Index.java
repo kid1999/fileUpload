@@ -15,21 +15,25 @@ public class Index {
   @Autowired
   private userService userService;
 
+  // 首页
   @GetMapping("/")
   public String index(){
     return "index";
   }
 
+  // 登录
   @GetMapping("/login")
   String login(){
     return "login";
   }
 
+  // 注册
   @GetMapping("/register")
   String register(){
     return "register";
   }
 
+  // 登录验证
   @PostMapping("/login")
   String login(Model model,
                HttpServletRequest request,

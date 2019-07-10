@@ -28,11 +28,14 @@ public interface studentMapper {
 	@Select("select * from student where name = #{sname} and workid = #{workid}")
 	Student getStudentBySname(int workid, String sname);
 
-	@Insert("insert into student(name, classname, remarks, uptime, workid) values (" +
-			        "#{name} ,#{classname} ,#{remarks} ,#{uptime} ,#{workid} )")
+	@Insert("insert into student(name, classname, remarks, uptime, workid,filename) values (" +
+			        "#{name} ,#{classname} ,#{remarks} ,#{uptime} ,#{workid},#{filename} )")
 	void addStudent(Student newStudent);
 
-	@Update("update student set name =#{name},classname=#{classname},remarks=#{remarks}," +
+	@Update("update student set name =#{name},classname=#{classname},remarks=#{remarks},filename=#{filename} ," +
 			        "uptime = #{uptime} ,workid=#{workid} where id=#{id} ")
 	void updateStudent(Student student);
+
+	@Select("select * from student where filename like CONCAT('%',#{filename},'%') ")
+	List<Student> findStuByfilename(String filename);
 }

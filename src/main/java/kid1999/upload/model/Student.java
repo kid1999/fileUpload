@@ -12,4 +12,5 @@ public class Student {
   private int workid;
   private long uptime;
   private String remarks;
+  private String filename;
 }

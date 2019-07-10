@@ -36,4 +36,9 @@ public class studentService {
 	public void updateStudent(Student student) {
 		studentMapper.updateStudent(student);
 	}
+
+	// 匹配filname 的student记录
+	public List<Student> findStuByfilename(String filename) {
+		return studentMapper.findStuByfilename(filename);
+	}
 }

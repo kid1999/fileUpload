@@ -2,7 +2,9 @@
 <!--suppress ALL-->
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8" lang="zh">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>提交你的文件</title>
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
     <link type="text/css" rel="stylesheet" href="/static/css/fileinput.min.css"/>
@@ -52,13 +54,14 @@
         <!--侧边栏-->
         <div class="col-lg-2">
             <div class="list-group">
-                <a href="#" class="list-group-item active">
+                <p href="#" class="list-group-item active">
                     温馨提示:
-                </a>
-                <a href="#" class="list-group-item">1.请按规则命名!!!</a>
-                <a class="list-group-item"><span>如: 学号-班级-姓名-要求字段/自定义</span></a>
-                <a class="list-group-item">2.文件要求<=<span>20Mb</span></a>
-                <a class="list-group-item">3.请按照以上两条,否则后果自负</a>
+                </p>
+                <p href="#" class="list-group-item text-danger">1.请按规则命名!!!</p>
+                <p class="list-group-item text-danger"><span>如: 学号-班级-姓名-要求字段/自定义</span></p>
+                <p class="list-group-item text-muted">2.文件要求<=<span>20Mb</span></p>
+                <p class="list-group-item text-info">3.提交记录在左上角查询,重复提交视为覆盖之前的记录</p>
+                <p class="list-group-item text-success">4.请参考以上三条!!!</p>
             </div>
         </div>
     </div>

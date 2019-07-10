@@ -7,4 +7,6 @@ public class Students {
 	private String name;
 	private String classname;
 	private String time;
+	private String filename;
+	private String remarks;
 }

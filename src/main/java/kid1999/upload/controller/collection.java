@@ -23,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Controller
 public class collection {
@@ -40,13 +41,13 @@ public class collection {
                        @RequestParam(value = "worktitle") String worktitle,
                        @RequestParam(value = "userid") int userid,
                        Model model){
-
     Object session =  request.getSession().getAttribute("user");
     if(session == null) return "redirect:index";
     User user = (User) session;
     if(user.getId() == userid){
       List<Student> students = studentService.getStudentsByTitle(worktitle,userid);
       List<Students> studentDto = new ArrayList<>();
+      List<Students> remarks = new ArrayList<>();
       for (Student student:students) {
         Students stu = new Students();
         stu.setName(student.getName());
@@ -54,10 +55,16 @@ public class collection {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         stu.setTime(format.format(student.getUptime()));
         studentDto.add(stu);
+        String remark = student.getRemarks();
+        if(remark != null && !remark.equals("")){
+          stu.setRemarks(remark);
+          remarks.add(stu);
+        }
       }
       model.addAttribute("studentDto",studentDto);
       model.addAttribute("count",students.size());
       model.addAttribute("worktitle",worktitle);
+      model.addAttribute("remarks",remarks);
       return "admindetails";
     }else{    // 这是访问用户
       model.addAttribute("info","访问权限错误!");
@@ -84,8 +91,16 @@ public class collection {
                                  @RequestParam("type") String type,
                                  @RequestParam("remarks") String remarks,
                                  @RequestParam("filepath") String filepath,
-                                 HttpServletRequest request,
-                                 Model model) {
+                                 Model model,
+                                 HttpServletRequest request) {
+
+  	// 获取来访页面url
+	  String referer = request.getHeader("referer");
+	  if(referer != null){
+	  	model.addAttribute("referer",referer);
+	  }else{
+		  model.addAttribute("referer",request.getHeader("host"));
+	  }
     // 文件不存在
     if (file.isEmpty()) {
       model.addAttribute("info", "Please select a file to upload");
@@ -93,13 +108,21 @@ public class collection {
     }
 
     // 文件信息处理
-    String filename = file.getOriginalFilename();
+    String Fname = file.getOriginalFilename();
+
+    // 正则匹配
+    if(!Pattern.matches("^.*-.*-.*-.*$",Fname)){
+      model.addAttribute("info","请检查你的文件名是否符合要求!!");
+      return "error";
+    }
+
     // 学号-班级-姓名-要求字段/自定义
-    String[] sp = filename.split("-");
+    String[] sp = Fname.split("-");
     String studentno = sp[0];
     String classname = sp[1];
     String sname = sp[2];
     String fname = sp[3];
+    String filename = "error";
 
     //  姓名-项目名   学号-项目名   学号-姓名-项目名   班级-姓名-项目名   班级-姓名-学号-项目名
     // 处理保存的文件名
@@ -118,6 +141,7 @@ public class collection {
     newStudent.setRemarks(remarks);
     newStudent.setUptime(new Date().getTime());
     newStudent.setWorkid(workid);
+    newStudent.setFilename(Fname);
 
     // 先查看是否重复
     Student student = studentService.getStudentBySname(workid,sname);
@@ -125,48 +149,30 @@ public class collection {
     // 文件已提交过了
     if(student != null){
       newStudent.setId(student.getId());    // 把id带走
-      return repeat(filepath,filename,file,newStudent,request);
+      wirtefile(file,filepath,student.getFilename(),filename);    // 写入文件
+	    studentService.updateStudent(newStudent);
+	    return "repeat";
     }
 
-    writefile(filepath,filename,file);  // 文件写入
+    wirtefile(file,filepath,filename,filename);
     studentService.addStudent(newStudent);  // 入库
-    return "redirect:success";
-  }
-
-  // 重复
-  @GetMapping("/repeat")
-  String repeat(String filepath,
-                String filename,
-                MultipartFile file,
-                Student student,
-                HttpServletRequest request
-                ){
-    if(request.getParameter("isrepeat") == null){
-      return "repeat";
-    }
-    else {
-      writefile(filepath,filename,file);
-      studentService.updateStudent(student);
-      return "success";
-    }
-  }
-
-  // 成功
-  @GetMapping("/success")
-  String success(){
     return "success";
   }
 
-  // 写入文件
-  void writefile(String filepath,String filename,MultipartFile file){
+  // 利用新旧名字  保证数据完整
+  void wirtefile(MultipartFile file,String filepath,String prefilename,String newfilename){
+    // 文件写入
     try {
       byte[] bytes = file.getBytes();
-      Path path = Paths.get(filepath + filename);
-      Files.write(path, bytes);
+      Path prepath = Paths.get(filepath , prefilename);
+      Path newpath = Paths.get(filepath,newfilename);
+      if(Files.exists(prepath)){   // 先删除旧数据再写入
+        Files.delete(prepath);
+      }
+      Files.write(newpath, bytes);
     } catch (IOException e) {
       e.printStackTrace();
     }
   }
-
 
 }

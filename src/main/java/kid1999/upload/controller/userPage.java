@@ -1,6 +1,8 @@
 package kid1999.upload.controller;
 
+import kid1999.upload.dto.Students;
 import kid1999.upload.model.HomeWork;
+import kid1999.upload.model.Student;
 import kid1999.upload.model.User;
 import kid1999.upload.service.homeworkService;
 import kid1999.upload.service.studentService;
@@ -15,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Controller
 public class userPage {
@@ -66,7 +70,7 @@ public class userPage {
     Date date = new Date();
     try {
       date = format.parse(endtime);
-      if(date.after(now)){
+      if(date.before(now)){
         model.addAttribute("info","时间设置错误！");
         return "error";
       }
@@ -84,12 +88,31 @@ public class userPage {
     homeWork.setEndtime(date.getTime());
     homeWork = homeworkService.addAndfind(homeWork);    // 新建work并返回
     homeworkService.add(homeWork.getId(),user.getId());   // 新建user-work
-    return "userpage";
+    return "redirect:userpage";
   }
 
 
   @GetMapping("/showWork")
   String showWork(){
     return "";
+  }
+
+  @PostMapping("/search")
+  String search(@RequestParam("filename") String filename,
+                Model model){
+    List<Student> students = studentService.findStuByfilename(filename);
+    List<Students> studentDto = new ArrayList<>();
+    for (Student student:students) {
+      Students stu = new Students();
+      stu.setName(student.getName());
+      stu.setClassname(student.getClassname());
+      SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+      stu.setTime(format.format(student.getUptime()));
+      stu.setFilename(student.getFilename());
+      studentDto.add(stu);
+    }
+    model.addAttribute("students",studentDto);
+    model.addAttribute("count",students.size());
+    return "searchresult";
   }
 }
