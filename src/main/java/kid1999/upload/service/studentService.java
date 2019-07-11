@@ -41,4 +41,8 @@ public class studentService {
 	public List<Student> findStuByfilename(String filename) {
 		return studentMapper.findStuByfilename(filename);
 	}
+
+	public List<Student> getPathById(int id) {
+		return studentMapper.getPathById(id);
+	}
 }

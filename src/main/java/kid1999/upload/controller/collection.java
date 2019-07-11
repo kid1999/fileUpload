@@ -50,7 +50,9 @@ public class collection {
       List<Students> remarks = new ArrayList<>();
       for (Student student:students) {
         Students stu = new Students();
+        stu.setId(student.getId());
         stu.setName(student.getName());
+        stu.setFilename(student.getFilename());
         stu.setClassname(student.getClassname());
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         stu.setTime(format.format(student.getUptime()));
@@ -65,6 +67,7 @@ public class collection {
       model.addAttribute("count",students.size());
       model.addAttribute("worktitle",worktitle);
       model.addAttribute("remarks",remarks);
+      if(studentDto.size() != 0) model.addAttribute("studentid",studentDto.get(0).getId());
       return "admindetails";
     }else{    // 这是访问用户
       model.addAttribute("info","访问权限错误!");
@@ -141,7 +144,7 @@ public class collection {
     newStudent.setRemarks(remarks);
     newStudent.setUptime(new Date().getTime());
     newStudent.setWorkid(workid);
-    newStudent.setFilename(Fname);
+    newStudent.setFilename(filename);
 
     // 先查看是否重复
     Student student = studentService.getStudentBySname(workid,sname);

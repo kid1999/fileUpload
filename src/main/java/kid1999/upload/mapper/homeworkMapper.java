@@ -19,6 +19,9 @@ public interface homeworkMapper {
 
   @Select("select * from homework where id in (select workid from userswork where userid = #{userid} ) ")
 	List<HomeWork> findByUserId(Integer userid);
+
+  @Select("select addr from homework where id = (select workid from student where student.id = #{uid})")
+	String findaddrBySid(int uid);
 }
 
 

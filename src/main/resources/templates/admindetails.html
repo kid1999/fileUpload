@@ -7,8 +7,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>统计详情页</title>
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/bootstrap-select.min.css">
     <script src="/static/js/jquery-3.3.1.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/bootstrap-select.min.js"></script>
+    <script src="/static/js/locales/defaults-zh_CN.min.js"></script>
 </head>
 <body>
 
@@ -25,15 +28,28 @@
                 <h1 class="headh1content" th:text="${worktitle}">
                     hello,你要de项目
                 </h1>
-                <p class="btn-app-stroe">
-                    <a class="btn btn-success btn-group-xs"th:href="@{'/upload?' + 'userid=' + ${session.user.getId()} + '&worktitle=' + ${worktitle} }">查看文件</a>
-                </p>
                 <p th:text="'已收: ' + ${count}"></p>
             </div>
 
-            <div id="two">
+            <!--下载控件-->
+            <div id="two" class="container">
+                <form action="/download" method="post" th:if="${studentDto} != null">
+                    <div class="btn-group" role="group" aria-label="...">
+                        <a type="button" class="btn btn-default btn-success" th:href="@{'/upload?' + 'userid=' + ${session.user.getId()} + '&worktitle=' + ${worktitle}}">项目地址</a>
+                        <select class="selectpicker btn-group" multiple data-actions-box="true" name="filenames">
+                            <div th:each="student,stuState : ${studentDto}">
+                                <option th:text="${student.name}" th:value="${student.filename}"/>
+                            </div>
+                        </select>
+                        <input type="hidden" name="studentid" th:value="${studentid}">
+                        <input type="submit" class="btn btn-group btn-primary" value="下载">
+                    </div>
+                </form>
+            </div>
+
+            <div id="three">
                 <div class="panel panel-default">
-                    <div class="panel-heading">已上传</div>
+                    <div class="panel-heading">已收到</div>
                     <table class="table">
                         <!--标题-->
                         <thead>
@@ -65,18 +81,20 @@
                     留言列表:
                 </a>
                 <div>
-                    <tr th:if="${count} != 0" th:each="remark : ${remarks}">
+
+                    <tr th:if="${count} == 0">
+                        <a class="list-group-item">
+                            <h5 class="list-group-item-heading" >暂无留言!</h5>
+                        </a>
+                    </tr>
+
+                    <tr th:unless="${count} == 0" th:each="remark : ${remarks}">
                         <a class="list-group-item">
                             <h5 class="list-group-item-heading" th:text="${remark.remarks}">评论</h5>
                             <p class="list-group-item-text" th:text="${remark.classname} + ' ' +  ${remark.name}">name</p>
                         </a>
                     </tr>
 
-                    <tr th:unless="${count} != 0">
-                        <a class="list-group-item">
-                            <h5 class="list-group-item-heading" >暂无留言!</h5>
-                        </a>
-                    </tr>
                 </div>
             </div>
         </div>

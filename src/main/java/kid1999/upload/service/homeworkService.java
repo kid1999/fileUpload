@@ -101,4 +101,8 @@ public class homeworkService{
     if(homeWork != null) return makeProject(homeWork);
     else return null;
   }
+
+	public String findaddrBySid(int uid) {
+    return homeworkMapper.findaddrBySid(uid);
+	}
 }

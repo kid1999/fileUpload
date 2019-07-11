@@ -38,4 +38,7 @@ public interface studentMapper {
 
 	@Select("select * from student where filename like CONCAT('%',#{filename},'%') ")
 	List<Student> findStuByfilename(String filename);
+
+	@Select("select * from student where workid = (select workid from student where id=#{id})")
+	List<Student> getPathById(int id);
 }
