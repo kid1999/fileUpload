@@ -5,7 +5,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>出现错误</title>
+    <title>404</title>
+    <link href="/static/css/404.css">
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
     <script src="/static/js/jquery-3.3.1.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
@@ -20,8 +21,22 @@
 <body>
 <div th:insert="~{base :: navbar}"/>
 
+
+
+
 <div class="container">
-    <h1 class="text-danger text-center">Bad news, 你的访问请求遭到了拒绝！</h1>
+    <div id="page-wrapper">
+        <div class="page-blank-wrap">
+            <div class="site-error">
+                <h1 class="headline"><img src="/static/img/404.png" alt="404"></h1>
+                <div class="error-content">
+                    <h4>海面雾气太大</h4><h4>受天气影响，该页无法正常显示</h4>
+                    <h5> 你可以 <a href="/">返回首页</a> 。</h5>
+                </div>
+                <img src="/static/img/error-bg.png" style="padding:20px 0 120px;">
+            </div>
+        </div>
+    </div>
     <!-- Modal -->
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
@@ -31,8 +46,8 @@
                     <h4 class="modal-title" id="myModalLabel">温馨提示:</h4>
                 </div>
                 <div class="modal-body">
-                    错误信息如下：
-                    <p class="text-danger" th:text="${info}"></p>
+                    <p class="text-danger" th:if="${info}!=null" th:text="${info}"></p>
+                    <p class="text-danger" th:unless="${info}!=null">哦,发生未知错误了!!!</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>

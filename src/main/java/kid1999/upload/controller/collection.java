@@ -42,7 +42,9 @@ public class collection {
                        @RequestParam(value = "userid") int userid,
                        Model model){
     Object session =  request.getSession().getAttribute("user");
-    if(session == null) return "redirect:index";
+    if(session == null){
+      return "redirect:index";
+    }
     User user = (User) session;
     if(user.getId() == userid){
       List<Student> students = studentService.getStudentsByTitle(worktitle,userid);
@@ -67,8 +69,10 @@ public class collection {
       model.addAttribute("count",students.size());
       model.addAttribute("worktitle",worktitle);
       model.addAttribute("remarks",remarks);
-      if(studentDto.size() != 0) model.addAttribute("studentid",studentDto.get(0).getId());
-      return "admindetails";
+      if(studentDto.size() != 0){
+        model.addAttribute("studentid",studentDto.get(0).getId());
+      }
+      return "homeworkList";
     }else{    // 这是访问用户
       model.addAttribute("info","访问权限错误!");
       return "error";
@@ -106,7 +110,7 @@ public class collection {
 	  }
     // 文件不存在
     if (file.isEmpty()) {
-      model.addAttribute("info", "Please select a file to upload");
+      model.addAttribute("info", "请选择文件上传！");
       return "error";
     }
 
@@ -135,6 +139,8 @@ public class collection {
       case "3" : filename = studentno + "-" + sname + "-" + fname;break;
       case "4" : filename = classname + "-" + sname + "-" + fname;break;
       case "5" : filename = classname + "-" + sname + "-" + studentno + "-" + fname;break;
+      case "6" : filename = sname;break;
+      case "7" : filename = sname;break;
     }
 
     // 构造student
@@ -142,7 +148,7 @@ public class collection {
     newStudent.setName(sname);
     newStudent.setClassname(classname);
     newStudent.setRemarks(remarks);
-    newStudent.setUptime(new Date().getTime());
+    newStudent.setUptime(System.currentTimeMillis());
     newStudent.setWorkid(workid);
     newStudent.setFilename(filename);
 

@@ -1,0 +1,88 @@
+
+# 端口号:
+server:
+  port: 9999
+  servlet:
+    context-path: /
+
+
+
+
+#文件保存路径
+projectPath: F:\Git\fileupload_java\fileUpload\target\temp
+
+#临时文件路劲
+TMPFILEPATH: F:\Git\fileupload_java\fileUpload\target\temp\tmp
+
+cookieMaxAge: 3600
+
+
+
+
+spring:
+  # mysql 配置：
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://10.16.11.211:3306/website?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT
+    username: root
+    password: root
+
+    #Hikari 连接池配置
+    hikari:
+      minimum-idle: 5   #最小空闲连接数量
+      idle-timeout: 180000  # 空闲连接存活最大时间，默认600000（10分钟）
+      maximum-pool-size: 10  # 连接池最大连接数，默认是10
+      auto-commit: true    # 控制从池返回 的连接的默认自动提交行为,默认值：true
+      pool-name: MyHikariCP  # 连接池名字
+      max-lifetime: 1800000   #控制池中连接的最长生命周期，值0表示无限生命周期，默认1800000即30分钟
+      connection-timeout: 30000  #数据库连接超时时间,默认30秒，即30000
+      connection-test-query: SELECT 1
+
+
+  # redis 配置：
+  redis:
+    # Redis数据库索引（默认为0）
+    database: 0
+    # Redis服务器地址
+    host: 10.16.11.211
+    # Redis服务器连接端口
+    port: 6379
+    # Redis服务器连接密码（默认为空）
+    password:
+    #连接池最大连接数（使用负值表示没有限制）
+    # 连接池最大阻塞等待时间（使用负值表示没有限制）
+    # 连接池中的最大空闲连接
+    # 连接池中的最小空闲连接
+    jedis:
+      pool:
+        max-active: 8
+        max-wait: -1
+        max-idle: 8
+        min-idle: 0
+    # 连接超时时间（毫秒）
+    timeout: 5000
+
+
+  #文件上传配置
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+  #静态资源配置
+  mvc:
+    static-path-pattern: /static/**
+  resources:
+    static-locations[0]: classpath:/static
+    static-locations[1]: classpath:/templates
+
+  # 模板设置
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: LEGACYHTML5
+    encoding: UTF-8
+    content: text/html
+    cache: false
+
+

@@ -47,7 +47,7 @@ public class userPage {
   // 创建项目
   @GetMapping("/createWork")
   String createWork(){
-    return "/createWork";
+    return "creatework";
   }
 
 
@@ -60,7 +60,8 @@ public class userPage {
                     @RequestParam(value = "endtime") String endtime
                     ){
     if(homeworkService.findHK(title) != null){
-      model.addAttribute("info","该项目被已创建！");
+      model.addAttribute("info","该项目已被创建！");
+      model.addAttribute("referer",request.getRequestURI());
       return "error";
     }
 
@@ -77,6 +78,7 @@ public class userPage {
     } catch (ParseException e) {
       e.printStackTrace();
     }
+
     // 获取 session 中的user
     User user = (User)request.getSession().getAttribute("user");
     HomeWork homeWork = new HomeWork();
