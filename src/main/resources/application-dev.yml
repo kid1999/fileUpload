@@ -16,6 +16,8 @@ TMPFILEPATH: F:\Git\fileupload_java\fileUpload\target\temp\tmp
 
 cookieMaxAge: 3600
 
+sessionMaxAge: 3600
+
 
 
 

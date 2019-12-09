@@ -1,7 +1,6 @@
 package kid1999.upload.config;
 
-import kid1999.upload.mapper.userMapper;
-import kid1999.upload.service.userService;
+import kid1999.upload.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -18,19 +17,21 @@ public class MyUserInterceptor implements HandlerInterceptor {
 	@Autowired
 	private RedisTemplate redisTemplate;
 
-	@Autowired
-	private userMapper userMapper;
-
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 		Cookie[] cookies = request.getCookies();
 		// 通过 cookie 认证
-		for (Cookie cookie : cookies) {
-			String name = cookie.getName();
-			if (redisTemplate.hasKey(name) && redisTemplate.opsForValue().get(name).equals(cookie.getValue())){
-				request.getSession().setAttribute("user",userMapper.findUser(name));
-				return true;
+		if(cookies != null){
+			for (Cookie cookie : cookies) {
+				String name = cookie.getName();
+				String uuid = cookie.getValue();
+				if (redisTemplate.hasKey(uuid)){
+					User user = (User) redisTemplate.opsForValue().get(uuid);
+					if(user.getName().equals(name)){
+						return true;
+					}
+				}
 			}
 		}
 		// 通过 session 认证

@@ -1,7 +1,5 @@
 package kid1999.upload.controller;
 
-import com.sun.deploy.net.HttpResponse;
-import kid1999.upload.mapper.userMapper;
 import kid1999.upload.model.User;
 import kid1999.upload.service.userService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,12 +7,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Controller
 public class Index {
@@ -28,14 +28,23 @@ public class Index {
   @Value("${cookieMaxAge}")
   private int cookieMaxAge;
 
+  @Value("${sessionMaxAge}")
+  private Long sessionMaxAge;
+
   // 首页
   @GetMapping("/")
   public String index(HttpServletRequest request){
     Cookie[] cookies = request.getCookies();
-    for (Cookie cookie : cookies) {
-      String name = cookie.getName();
-      if (redisTemplate.hasKey(name) && redisTemplate.opsForValue().get(name).equals(cookie.getValue())){
-        request.getSession().setAttribute("user",userService.findUser(name));
+    if(cookies != null){
+      for (Cookie cookie : cookies) {
+        String name = cookie.getName();
+        String uuid = cookie.getValue();
+        if (redisTemplate.hasKey(uuid)){
+          User user = (User) redisTemplate.opsForValue().get(uuid);
+          if(user.getName().equals(name)){
+            request.getSession().setAttribute("user",user);
+         }
+        }
       }
     }
     return "index";
@@ -62,13 +71,13 @@ public class Index {
                @RequestParam(value = "password") String password){
     User user = new User();
     user.setName(name);
-    user.setPassword(password);
+    String md5PassWord = DigestUtils.md5DigestAsHex(password.getBytes());
+    user.setPassword(md5PassWord);
     if ((user = userService.login(user)) != null){
-      model.addAttribute("user",user);
+      String uuid = UUID.randomUUID().toString();
+      redisTemplate.opsForValue().set(uuid,user,sessionMaxAge, TimeUnit.SECONDS);
       request.getSession().setAttribute("user",user);
-      UUID uuid = UUID.randomUUID();
-      redisTemplate.opsForValue().set(name,uuid.toString());
-      Cookie cookie = new Cookie(name,uuid.toString());
+      Cookie cookie = new Cookie(name,uuid);
       cookie.setMaxAge(cookieMaxAge);
       response.addCookie(cookie);
       return "redirect:userpage";
@@ -81,8 +90,8 @@ public class Index {
   @PostMapping("/register")
   String register(Model model,
                   @RequestParam(value = "name") String name,
-                  @RequestParam(value = "name") String password1,
-                  @RequestParam(value = "name") String password2
+                  @RequestParam(value = "password1") String password1,
+                  @RequestParam(value = "password2") String password2
                   ){
 
     if(!password1.equals(password2)){
@@ -95,9 +104,10 @@ public class Index {
     }
     User user = new User();
     user.setName(name);
-    user.setPassword(password1);
+    String md5PassWord = DigestUtils.md5DigestAsHex(password1.getBytes());
+    user.setPassword(md5PassWord);
     userService.addUser(user);
-    model.addAttribute("info","恭喜: " + user + " 注册成功！，请登录");
+    model.addAttribute("info","恭喜: " + user.getName() + " 注册成功！，请登录");
     return "login";
   }
 
@@ -115,8 +125,19 @@ public class Index {
   }
 
   @GetMapping("/logout")
-  public String logout(HttpServletRequest request){
-    request.getSession().removeAttribute("user");
+  public String logout(HttpServletRequest request,HttpServletResponse response){
+    User user = (User) request.getSession().getAttribute("user");
+    String name = user.getName();
+    request.getSession().removeAttribute("user");//清空session信息
+    request.getSession().invalidate();//清除 session 中的所有信息
+    //退出登录的时候清空cookie信息,cookie需要通过HttpServletRequest，HttpServletResponse获取
+    Cookie[] cookies = request.getCookies();
+    for(Cookie c:cookies){
+      if(name.equals(c.getName())){
+        c.setMaxAge(0);
+        response.addCookie(c);
+      }
+    }
     return "redirect:/";
   }
 
