@@ -1,5 +1,6 @@
 package kid1999.upload.controller;
 
+import kid1999.upload.dto.Result;
 import kid1999.upload.model.User;
 import kid1999.upload.service.userService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +9,10 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.DigestUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -64,11 +68,13 @@ public class Index {
 
   // 登录验证
   @PostMapping("/login")
-  String login(Model model,
+  @ResponseBody
+  Result login(Model model,
                HttpServletRequest request,
                HttpServletResponse response,
                @RequestParam(value = "name") String name,
                @RequestParam(value = "password") String password){
+    Result result = new Result();
     User user = new User();
     user.setName(name);
     String md5PassWord = DigestUtils.md5DigestAsHex(password.getBytes());
@@ -80,27 +86,36 @@ public class Index {
       Cookie cookie = new Cookie(name,uuid);
       cookie.setMaxAge(cookieMaxAge);
       response.addCookie(cookie);
-      return "redirect:userpage";
+      result.setCode(200);
+      result.setInfo("登录成功！");
+      return result;
     }else{
       model.addAttribute("info","账号密码错误，请重新登录！");
-      return "login";
+      result.setCode(400);
+      result.setInfo("账号密码错误，请重新登录！");
+      return result;
     }
   }
 
   @PostMapping("/register")
-  String register(Model model,
+  @ResponseBody
+  Result register(Model model,
                   @RequestParam(value = "name") String name,
                   @RequestParam(value = "password1") String password1,
                   @RequestParam(value = "password2") String password2
                   ){
 
     if(!password1.equals(password2)){
-      model.addAttribute("info","密码重复！");
-      return "register";
+	    Result result = new Result();
+	    result.setCode(400);
+	    result.setInfo("密码重复!");
+        return result;
     }
     if(userService.findUser(name) != null){
-      model.addAttribute("info","用户名已存在！");
-      return "register";
+	    Result result = new Result();
+	    result.setCode(400);
+	    result.setInfo("用户名已存在!");
+	    return result;
     }
     User user = new User();
     user.setName(name);
@@ -108,21 +123,12 @@ public class Index {
     user.setPassword(md5PassWord);
     userService.addUser(user);
     model.addAttribute("info","恭喜: " + user.getName() + " 注册成功！，请登录");
-    return "login";
+    Result result = new Result();
+    result.setCode(200);
+	result.setInfo("注册成功!");
+	return result;
   }
 
-
-  @RequestMapping("/registerAjax")
-  public @ResponseBody String registerAjax(@RequestBody User user){
-    System.out.println(user);
-    if(userService.findUser(user.getName())!= null){
-      System.out.println("no");
-      return "{\"info\":\"用户名重复\"}";
-    }else{
-      System.out.println("yes");
-      return "{\"info\":\"用户名可用\"}";
-    }
-  }
 
   @GetMapping("/logout")
   public String logout(HttpServletRequest request,HttpServletResponse response){

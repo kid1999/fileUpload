@@ -40,7 +40,7 @@ public class MyUserInterceptor implements HandlerInterceptor {
 		}else{
 			request.setAttribute("info","用户未登录/访问权限不够！！");
 			request.getRequestDispatcher("/").forward(request,response);
-			return false  ;
+			return false ;
 		}
 	}
 }
