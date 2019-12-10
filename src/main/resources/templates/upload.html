@@ -150,7 +150,7 @@
                     success:function (data) {
                         console.info(data);
                         if (data.code === 200) {
-                            // self.location.href = "/";
+                            alert(data['info']);
                         } else {
                             alert(data.info);
                         }

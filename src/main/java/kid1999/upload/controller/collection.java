@@ -152,6 +152,8 @@ public class collection {
 			newStudent.setId(student.getId());    // 把id带走
 			wirtefile(file,filepath,student.getFilename(),filename);    // 写入文件
 			studentService.updateStudent(newStudent);
+			result.setCode(200);
+			result.setInfo("你已经提交过了，上传成功！");
 			return result;
 		}
 

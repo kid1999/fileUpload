@@ -10,7 +10,7 @@
     </parent>
     <groupId>kid1999</groupId>
     <artifactId>upload</artifactId>
-    <version>0.1</version>
+    <version>0.2</version>
     <name>upload</name>
     <description>A file upload website.</description>
 

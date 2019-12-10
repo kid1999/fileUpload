@@ -1,6 +1,7 @@
 package kid1999.upload.controller;
 
 import kid1999.upload.dto.Students;
+import kid1999.upload.mapper.homeworkMapper;
 import kid1999.upload.model.HomeWork;
 import kid1999.upload.model.Student;
 import kid1999.upload.model.User;
@@ -26,6 +27,9 @@ public class userPage {
 
   @Autowired
   private homeworkService homeworkService;
+
+  @Autowired
+  private homeworkMapper homeworkMapper;
 
   @Autowired
   private userService userService;
@@ -59,7 +63,8 @@ public class userPage {
                     @RequestParam(value = "type") String type,
                     @RequestParam(value = "endtime") String endtime
                     ){
-    if(homeworkService.findHK(title) != null){
+    User user = (User) request.getSession().getAttribute("user");
+    if(homeworkService.findHKByTitle(title) != null){
       model.addAttribute("info","该项目已被创建！");
       model.addAttribute("referer",request.getRequestURI());
       return "error";
@@ -79,8 +84,6 @@ public class userPage {
       e.printStackTrace();
     }
 
-    // 获取 session 中的user
-    User user = (User)request.getSession().getAttribute("user");
     HomeWork homeWork = new HomeWork();
     homeWork.setTitle(title);
     homeWork.setInfomation(desc);

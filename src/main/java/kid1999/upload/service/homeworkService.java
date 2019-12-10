@@ -33,12 +33,12 @@ public class homeworkService{
   // 新建work项目并返回对象
   public HomeWork addAndfind(HomeWork homeWork){
     addHomeWork(homeWork);
-    return homeworkMapper.findHK(homeWork.getTitle());
+    return homeworkMapper.findHKByTitle(homeWork.getTitle());
   }
 
   // 通过title寻找work对象
-  public HomeWork findHK(String title) {
-    return homeworkMapper.findHK(title);
+  public HomeWork findHKByTitle(String title) {
+    return homeworkMapper.findHKByTitle(title);
   }
 
   // 返回一个user 的所有work项目
@@ -68,7 +68,7 @@ public class homeworkService{
   // user 当前正在ing 的项目
   public List<Projects> findDoingProjects(Integer userid){
     List<Projects> projects = new ArrayList<>();
-    long now = new Date().getTime();
+    long now = System.currentTimeMillis();
     List<HomeWork> homeWorks = findByUserId(userid);
     for (HomeWork homeWork:homeWorks) {
       if(homeWork.getEndtime() >= now){
@@ -81,7 +81,7 @@ public class homeworkService{
   // user 当前已经结束的项目
   public List<Projects> findDoneProjects(Integer userid){
     List<Projects> projects = new ArrayList<>();
-    long now = new Date().getTime();
+    long now = System.currentTimeMillis();
     List<HomeWork> homeWorks = findByUserId(userid);
     for (HomeWork homeWork:homeWorks) {
       if(homeWork.getEndtime() < now){
