@@ -8,10 +8,12 @@
     <title>提交你的文件</title>
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
     <link type="text/css" rel="stylesheet" href="/static/css/fileinput.min.css"/>
+    <link href="/static/css/bootstrapValidator.css">
     <script src="/static/js/jquery-3.3.1.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="/static/js/fileinput.min.js"></script>
     <script type="text/javascript" src="/static/js/locales/zh.js"></script>
+    <script src="/static/js/bootstrapValidator.js"></script>
 </head>
 <body>
 
@@ -24,32 +26,48 @@
     <div class="row">
         <!--主题-->
         <div class="col-lg-10">
-            <div class="headfontsize" id="one">
-                <h1 class="headh1content">
-                    hello,请提交你的文件
-                </h1>
-                <p th:text="'创建时间: ' + ${project.createtime} + '  截止时间: '+${project.endtime}"></p>
-                <span th:text="'已收: ' + ${count}"/>
-            </div>
 
-            <div id="two">
-                <div class="jumbotron">
-                    <h2 th:text="${project.title}"></h2>
-                    <p th:text="'描述信息: '+${project.infomation}"></p>
-                    <form action="/upfile" method="post" enctype="multipart/form-data">
-                        <div class="input-group">
-                            <span class="input-group-addon" id="basic-addon3">备注:</span>
-                            <input type="text" class="form-control" placeholder="可以写下你的备注信息...." name="remarks">
+
+            <div class="row vertical-offset-100">
+                <div class="col-lg-10 col-lg-offset-1">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h2 th:text="${project.title}"></h2>
+                            <p th:text="'创建时间: ' + ${project.createtime} + '  |  截止时间: '+${project.endtime}"></p>
+                            <p th:text="'描述信息: '+${project.infomation}"></p>
+                            <span th:text="'已收: ' + ${count}"/>
                         </div>
-                        <input id ="input-id" name="file" type ="file" class ="file" data-preview-file-type ="text" language="zh" >
-                        <input type="hidden" name="workid" th:value="${project.id}">
-                        <input type="hidden" name="type" th:value="${project.type}">
-                        <input type="hidden" name="filepath" th:value="${project.filepath}">
-                        <input type="submit" value="提交" class="btn btn-lg btn-success"/>
-                    </form>
+                        <div class="panel-body">
+                            <form accept-charset="UTF-8" id="form"  enctype="multipart/form-data">
+                                <fieldset>
+                                    <div class="form-group">
+                                        <label>用户名: </label>
+                                        <input type="text" class="form-control" placeholder="写下你的姓名" name="name">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>班级: </label>
+                                        <input type="text" class="form-control" placeholder="写下你的班级" name="studentClass">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>学号: </label>
+                                        <input type="text" class="form-control" placeholder="写下你的学号" name="studentId">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>备注: </label>
+                                        <input type="text" class="form-control" placeholder="可以写下你的备注信息...." name="remarks">
+                                    </div>
+
+                                    <input id ="input-id" name="file" type ="file" class ="file" >
+                                    <input type="hidden" name="workid" th:value="${project.id}">
+                                    <input type="hidden" name="type" th:value="${project.type}">
+                                    <input type="hidden" name="filepath" th:value="${project.filepath}">
+                                    <input class="btn btn-lg btn-success btn-block" id="submit" value="提交">
+                                </fieldset>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
-
         </div>
         <!--侧边栏-->
         <div class="col-lg-2">
@@ -66,6 +84,88 @@
         </div>
     </div>
 </div>
+
+
+
+<script>
+
+    $(function () {
+        $("#form").bootstrapValidator({
+            live: 'disabled',//验证时机，enabled是内容有变化就验证（默认），disabled和submitted是提交再验证
+            excluded: [':disabled', ':hidden', ':not(:visible)'],//排除无需验证的控件，比如被禁用的或者被隐藏的
+            submitButtons: '#submit',//指定提交按钮，如果验证失败则变成disabled，但我没试成功，反而加了这句话非submit按钮也会提交到action指定页面
+            message: '通用的验证失败消息',//好像从来没出现过
+            feedbackIcons: {//根据验证结果显示的各种图标
+                valid: 'glyphicon glyphicon-ok',
+                invalid: 'glyphicon glyphicon-remove',
+                validating: 'glyphicon glyphicon-refresh'
+            },
+            fields: {
+                name: {
+                    validators: {
+                        notEmpty: {
+                            message: '姓名不能为空'
+                        },
+                        stringLength: {
+                            min: 2,
+                            max: 12,
+                            message: '姓名由2-12位字符组成'
+                        }
+                    }
+                },
+                studentClass: {
+                    validators: {
+                        notEmpty: {
+                            message: '班级不能为空'
+                        }
+                    }
+                },
+                studentId: {
+                    validators: {
+                        notEmpty: {
+                            message: '学号不能为空'
+                        }
+                    }
+                },
+                file: {
+                    validators: {
+                        notEmpty: {
+                            message: '文件不能为空'
+                        }
+                    }
+                },
+            }
+        });
+        $("#submit").click(function () {//非submit按钮点击后进行验证，如果是submit则无需此句直接验证
+            $("#form").bootstrapValidator('validate');//提交验证
+            if ($("#form").data('bootstrapValidator').isValid()) {//获取验证结果，如果成功，执行下面代码
+                $.ajax({
+                    url:'/upfile',
+                    dataType:'json',
+                    type:'POST',
+                    async: false,
+                    processData : false, // 使数据不做处理
+                    contentType : false, // 不要设置Content-Type请求头
+                    data:new FormData($("#form")[0]), // 请求参数
+                    success:function (data) {
+                        console.info(data);
+                        if (data.code === 200) {
+                            // self.location.href = "/";
+                        } else {
+                            alert(data.info);
+                        }
+                    }
+                });
+
+            }
+        });
+    });
+
+
+
+</script>
+
+
 
 </body>
 

@@ -9,10 +9,10 @@ server:
 
 
 #文件保存路径
-projectPath: F:\Git\fileupload_java\fileUpload\target\temp
+projectPath: F:\temp
 
 #临时文件路劲
-TMPFILEPATH: F:\Git\fileupload_java\fileUpload\target\temp\tmp
+TMPFILEPATH: F:\temp\tmp
 
 cookieMaxAge: 3600
 
