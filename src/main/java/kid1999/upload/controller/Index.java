@@ -74,7 +74,10 @@ public class Index {
                HttpServletResponse response,
                @RequestParam(value = "name") String name,
                @RequestParam(value = "password") String password){
-    Result result = new Result();
+
+    if(userService.findUserByName(name) == null){
+      return Result.fail(400,"用户名不存在!");
+    }
     User user = new User();
     user.setName(name);
     String md5PassWord = DigestUtils.md5DigestAsHex(password.getBytes());
@@ -86,14 +89,10 @@ public class Index {
       Cookie cookie = new Cookie(name,uuid);
       cookie.setMaxAge(cookieMaxAge);
       response.addCookie(cookie);
-      result.setCode(200);
-      result.setInfo("登录成功！");
-      return result;
+      return Result.success("登录成功！");
     }else{
       model.addAttribute("info","账号密码错误，请重新登录！");
-      result.setCode(400);
-      result.setInfo("账号密码错误，请重新登录！");
-      return result;
+      return Result.fail(400,"账号密码错误，请重新登录！");
     }
   }
 
@@ -106,16 +105,10 @@ public class Index {
                   ){
 
     if(!password1.equals(password2)){
-	    Result result = new Result();
-	    result.setCode(400);
-	    result.setInfo("密码重复!");
-        return result;
+      return Result.fail(400,"密码重复!");
     }
     if(userService.findUserByName(name) != null){
-	    Result result = new Result();
-	    result.setCode(400);
-	    result.setInfo("用户名已存在!");
-	    return result;
+      return Result.fail(400,"用户名已存在!");
     }
     User user = new User();
     user.setName(name);

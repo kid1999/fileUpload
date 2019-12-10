@@ -28,8 +28,7 @@ public class homeworkService{
 
   // 新建work项目并返回对象
   public HomeWork addHomeWork(HomeWork homeWork){
-    int id = homeworkMapper.insert(homeWork);
-    homeWork.setId(id);
+    homeworkMapper.insert(homeWork);
     return homeWork;
   }
 
@@ -90,11 +89,10 @@ public class homeworkService{
 
   // 关联 work 和 user
   public void add(int workid, int userid) {
-//    Userwork userwork = new Userwork();
-//    userwork.setWorkid(workid);
-//    userwork.setUserid(userid);
-//    return userworkMapper.insert(userwork);
-    userworkMapper.add(workid,userid);
+    Userwork userwork = new Userwork();
+    userwork.setWorkid(workid);
+    userwork.setUserid(userid);
+    userworkMapper.insert(userwork);
   }
 
   public Projects getProByTitle(String worktitle, int userid) {

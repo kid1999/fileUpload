@@ -89,6 +89,7 @@ public class userPage {
     homeWork.setCreatetime(now.getTime());
     homeWork.setEndtime(date.getTime());
     homeWork = homeworkService.addHomeWork(homeWork);    // 新建work并返回
+    System.out.println(homeWork.getId() + " "  + user.getId());
     homeworkService.add(homeWork.getId(),user.getId());   // 新建user-work
     return "redirect:userpage";
   }
