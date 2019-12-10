@@ -5,6 +5,7 @@ import kid1999.upload.mapper.homeworkMapper;
 import kid1999.upload.mapper.studentMapper;
 import kid1999.upload.mapper.userworkMapper;
 import kid1999.upload.model.HomeWork;
+import kid1999.upload.model.Userwork;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,20 +26,16 @@ public class homeworkService{
   @Autowired
   private userworkMapper userworkMapper;
 
-  // 新建 work 项目
-  public void addHomeWork(HomeWork homeWork) {
-    homeworkMapper.addHomeWork(homeWork);
-  }
-
   // 新建work项目并返回对象
-  public HomeWork addAndfind(HomeWork homeWork){
-    addHomeWork(homeWork);
-    return homeworkMapper.findHKByTitle(homeWork.getTitle());
+  public HomeWork addHomeWork(HomeWork homeWork){
+    int id = homeworkMapper.insert(homeWork);
+    homeWork.setId(id);
+    return homeWork;
   }
 
   // 通过title寻找work对象
-  public HomeWork findHKByTitle(String title) {
-    return homeworkMapper.findHKByTitle(title);
+  public HomeWork findHKByTitleAndUserID(String title,int userId) {
+    return homeworkMapper.findHKByTitleAndUserID(title,userId);
   }
 
   // 返回一个user 的所有work项目
@@ -93,16 +90,23 @@ public class homeworkService{
 
   // 关联 work 和 user
   public void add(int workid, int userid) {
+//    Userwork userwork = new Userwork();
+//    userwork.setWorkid(workid);
+//    userwork.setUserid(userid);
+//    return userworkMapper.insert(userwork);
     userworkMapper.add(workid,userid);
   }
 
   public Projects getProByTitle(String worktitle, int userid) {
     HomeWork homeWork = studentMapper.getWorkByTitle(worktitle,userid);
-    if(homeWork != null) return makeProject(homeWork);
-    else return null;
+    if(homeWork != null){
+      return makeProject(homeWork);
+    } else{
+      return null;
+    }
   }
 
-	public String findaddrBySid(int uid) {
+  public String findaddrBySid(int uid) {
     return homeworkMapper.findaddrBySid(uid);
 	}
 }

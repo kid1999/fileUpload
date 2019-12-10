@@ -29,9 +29,6 @@ public class userPage {
   private homeworkService homeworkService;
 
   @Autowired
-  private homeworkMapper homeworkMapper;
-
-  @Autowired
   private userService userService;
 
   @Autowired
@@ -64,7 +61,7 @@ public class userPage {
                     @RequestParam(value = "endtime") String endtime
                     ){
     User user = (User) request.getSession().getAttribute("user");
-    if(homeworkService.findHKByTitle(title) != null){
+    if(homeworkService.findHKByTitleAndUserID(title,user.getId()) != null){
       model.addAttribute("info","该项目已被创建！");
       model.addAttribute("referer",request.getRequestURI());
       return "error";
@@ -91,7 +88,7 @@ public class userPage {
     homeWork.setAddr(userService.makePath(user.getId(),title));  // 设置文件路径
     homeWork.setCreatetime(now.getTime());
     homeWork.setEndtime(date.getTime());
-    homeWork = homeworkService.addAndfind(homeWork);    // 新建work并返回
+    homeWork = homeworkService.addHomeWork(homeWork);    // 新建work并返回
     homeworkService.add(homeWork.getId(),user.getId());   // 新建user-work
     return "redirect:userpage";
   }

@@ -1,12 +1,15 @@
 package kid1999.upload.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import kid1999.upload.model.User;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
 @Mapper
-public interface userMapper {
+public interface userMapper extends BaseMapper<User> {
+
+//   这些sql已经被取代了 。。。。
 
   @Select("select * from user where name = #{name} ")
   User findUser(String name);

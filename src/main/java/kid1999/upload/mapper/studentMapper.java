@@ -1,17 +1,17 @@
 package kid1999.upload.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import kid1999.upload.model.HomeWork;
 import kid1999.upload.model.Student;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
 @Mapper
-public interface studentMapper {
+public interface studentMapper extends BaseMapper<Student> {
 
 	@Select("select * from student where remarks <> '' or remarks is null and  workid in (SELECT workid from userswork where userid = #{userid}) order by uptime desc limit 10 ")
 	List<Student> getRemarks(int userid);

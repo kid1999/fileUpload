@@ -149,19 +149,23 @@ public class collection {
 
 		// 文件已提交过了
 		if(student != null){
-			newStudent.setId(student.getId());    // 把id带走
-			wirtefile(file,filepath,student.getFilename(),filename);    // 写入文件
-			studentService.updateStudent(newStudent);
-			result.setCode(200);
-			result.setInfo("你已经提交过了，上传成功！");
-			return result;
+			try{
+				newStudent.setId(student.getId());    // 把id带走
+				wirtefile(file,filepath,student.getFilename(),filename);    // 写入文件
+				studentService.updateStudent(newStudent);
+				return Result.success("你已经提交过了，上传成功！");
+			}catch (Exception e){
+				return Result.fail(400,"文件上传失败！");
+			}
 		}
 
-		wirtefile(file,filepath,filename,filename);
-        studentService.addStudent(newStudent);  // 入库
-		result.setCode(200);
-		result.setInfo("上传成功！");
-		return result;
+		try{
+			wirtefile(file,filepath,filename,filename);
+			studentService.addStudent(newStudent);
+			return Result.success("文件上传成功！");
+		}catch (Exception e){
+			return Result.fail(400,"文件上传失败！");
+		}
 	}
 
 

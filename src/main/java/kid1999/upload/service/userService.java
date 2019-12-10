@@ -1,5 +1,6 @@
 package kid1999.upload.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import kid1999.upload.mapper.userMapper;
 import kid1999.upload.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class userService {
@@ -22,24 +25,30 @@ public class userService {
   public String makePath(int userid,String workname){
     String path =  projectPath + File.separator + userid + File.separator + workname;
     File filePath = new File(path);
-    if(filePath.exists()) filePath.delete();
+    if(filePath.exists()) {
+      filePath.delete();
+    }
     filePath.mkdirs();  // 新建文件夹
     return path;
   }
 
 
-
-  public User findUser(String name) {
-    return userMapper.findUser(name);
+  public User findUserByName(String name) {
+    QueryWrapper wrapper = new QueryWrapper();
+    wrapper.eq("name",name);
+    return userMapper.selectOne(wrapper);
   }
 
 
-  public void addUser(User user) {
-    userMapper.addUser(user);
+  public int addUser(User user) {
+    return userMapper.insert(user);
   }
 
 
   public User login(User user) {
-    return userMapper.login(user);
+    QueryWrapper<User> wrapper = new QueryWrapper<>();
+    wrapper.eq("name",user.getName())
+            .eq("password",user.getPassword());
+    return userMapper.selectOne(wrapper);
   }
 }

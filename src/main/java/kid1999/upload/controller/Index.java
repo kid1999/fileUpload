@@ -111,7 +111,7 @@ public class Index {
 	    result.setInfo("密码重复!");
         return result;
     }
-    if(userService.findUser(name) != null){
+    if(userService.findUserByName(name) != null){
 	    Result result = new Result();
 	    result.setCode(400);
 	    result.setInfo("用户名已存在!");
@@ -123,10 +123,7 @@ public class Index {
     user.setPassword(md5PassWord);
     userService.addUser(user);
     model.addAttribute("info","恭喜: " + user.getName() + " 注册成功！，请登录");
-    Result result = new Result();
-    result.setCode(200);
-	result.setInfo("注册成功!");
-	return result;
+	return Result.success("注册成功！");
   }
 
 

@@ -12,8 +12,8 @@ import java.util.List;
 @Mapper
 public interface homeworkMapper extends BaseMapper<HomeWork> {
 
-  @Select("select * from homework where id in (select workid from userswork where userid = #{userId}) and  title = #{title}")
-  HomeWork findHKByTitleAndUserID(int userId,String title);
+	@Select("select * from homework where title = #{title} and id in (select workid from userswork where userid = #{userId})")
+	HomeWork findHKByTitleAndUserID(String title,int userId);
 
   @Insert("insert into homework(title, infomation, createtime, endtime, type, addr) values (#{title},#{infomation} ,#{createtime} ,#{endtime} ,#{type} ,#{addr} )")
   void addHomeWork(HomeWork homeWork);
@@ -25,8 +25,8 @@ public interface homeworkMapper extends BaseMapper<HomeWork> {
 	String findaddrBySid(int uid);
 
 
-  @Select("select * from homework where title = #{title}")
-	HomeWork findHKByTitle(String title);
+  @Select("select * from homework where title = #{title} and id in (select workid from userwork where userid = #{userId})")
+	HomeWork findHKByTitle(String title,int userId);
 }
 
 
