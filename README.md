@@ -15,24 +15,25 @@
 * JDK1.8
 * Mysql
 ## 项目技术栈
-* 后端 : SpringBoot SpringMVC Mybatis
+* 后端 : SpringBoot SpringMVC MybatisPlus
 * 前端 : Bootstrap jQuery
 
 ## pom 主要依赖
 * thymeleaf
-* fastjson
+* redis
 * lombok
 
 -----
 
 ## 等待完善的地方：
-1. 前端美化（实在是有点丑）
+1. 前端交互美化
 2. 评论区的设立，对某个项目进行讨论
-3. 项目创建的要求完善
+3. ~~项目创建的要求完善~~
 4. 按规则排序显示列表
-5. 使用redis减少IO
+5. ~~使用redis减少IO~~
 6. 删除提交记录和文件
-    
+7. 加密显示接收页面
+8. 公告设置，更新信息   
     ....
 
 

@@ -1,8 +1,6 @@
 package kid1999.upload.service;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import kid1999.upload.mapper.studentMapper;
 import kid1999.upload.model.Student;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -8,8 +8,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 public class userService {
@@ -33,13 +31,14 @@ public class userService {
   }
 
 
+  // 简单查询使用 QueryWrapper
   public User findUserByName(String name) {
     QueryWrapper wrapper = new QueryWrapper();
     wrapper.eq("name",name);
     return userMapper.selectOne(wrapper);
   }
 
-
+  // 增加 使用自带的 insert
   public int addUser(User user) {
     return userMapper.insert(user);
   }
