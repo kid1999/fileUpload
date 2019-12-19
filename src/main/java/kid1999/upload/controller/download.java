@@ -1,75 +1,57 @@
 package kid1999.upload.controller;
 
-import com.sun.org.apache.xpath.internal.operations.Mod;
-import kid1999.upload.service.homeworkService;
-import org.apache.commons.io.FileUtils;
+import kid1999.upload.dto.ZipModel;
+import kid1999.upload.utils.ZipUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.zip.ZipEntry;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.ZipOutputStream;
 
 @RestController
+@Slf4j
 public class download {
 
-	@Value("${TMPFILEPATH}")
-	private String TMPFILEPATH;
-
 	@Autowired
-	private homeworkService homeworkService;
+	private ZipUtil zipUtil;
 
-	// 下载文件
 	@PostMapping("download")
-	ResponseEntity<byte[]> download(HttpServletRequest request,
-									HttpServletResponse response) throws Exception {
-		String userid = request.getParameter("studentid");
-		if(request.getParameterValues("filenames") == null){
-			response.sendRedirect(request.getHeader("REFERER"));
-			return null;
-		}else{
-			String[] filenames = request.getParameterValues("filenames");
-			int uid = Integer.parseInt(userid);
-			String addr = homeworkService.findaddrBySid(uid);
-			String tmpfile = Paths.get(TMPFILEPATH,userid).toString() + ".zip";    //缓存文件
-
-			ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(tmpfile));  // 输出文件
-			InputStream input = null;
-
-			// 将选择文件一一写入
-			for (String str : filenames) {
-				input = new FileInputStream(new File(addr,str));
-				zipOut.putNextEntry(new ZipEntry(str));
-				byte[] buff = new byte[1024];
-				while((input.read(buff)) != -1){
-					zipOut.write(buff);
+	void download2(HttpServletRequest request,
+									 HttpServletResponse response) {
+		try {
+			if (request.getParameterValues("filenames") == null) {
+				response.sendRedirect(request.getHeader("REFERER"));
+			} else {
+				List<ZipModel> zipModelList = new ArrayList<>();
+				String[] filenames = request.getParameterValues("filenames");
+				for (int i = 0; i < filenames.length; i++) {
+					String[] files = filenames[i].split(" ");
+					zipModelList.add(new ZipModel(files[0], files[1]));
 				}
-				input.close();
+				//todo:设置打包后的文件名
+				String fileName = "File.zip";
+				//todo:临时文件目录,用于存储打包的下载文件
+				String globalUploadPath = request.getSession().getServletContext().getRealPath("/");
+				String outFilePath = globalUploadPath + File.separator + fileName;
+				File file = new File(outFilePath);
+				//文件输出流 压缩流
+				ZipOutputStream toClient = new ZipOutputStream(new FileOutputStream(file));
+				//todo:调用通用方法下载fastfds文件，打包成zip文件
+				zipUtil.zipFile(zipModelList, toClient);
+				toClient.close();
+				response.setHeader("content-disposition", "attachment;fileName=" + fileName);
+				//todo:将zip文件下载下来
+				zipUtil.downloadZip(file, response);
 			}
-			zipOut.close();
-			File file = new File(tmpfile);
-			HttpHeaders headers = new HttpHeaders();
-//		String filename = new String(tmpfile.getBytes("utf-8"),"iso-8859-1");   //中文文件名
-			headers.setContentDispositionFormData("attachment", "result.zip");  //设置下载文件名
-			headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-			ResponseEntity<byte[]> res = new ResponseEntity<byte[]>(FileUtils.readFileToByteArray(file),headers, HttpStatus.CREATED);
-			Files.deleteIfExists(Paths.get(tmpfile));   // 清除缓存
-			return res;
+		} catch (Exception e) {
+			log.error(e.getMessage());
 		}
 	}
-
 }

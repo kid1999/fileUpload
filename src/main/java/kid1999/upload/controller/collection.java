@@ -7,6 +7,7 @@ import kid1999.upload.model.Student;
 import kid1999.upload.model.User;
 import kid1999.upload.service.homeworkService;
 import kid1999.upload.service.studentService;
+import kid1999.upload.utils.FastDFSClientUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,10 +18,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +30,9 @@ public class collection {
 
 	@Autowired
 	private studentService studentService;
+
+	@Autowired
+	private FastDFSClientUtils fastDFSClientUtils;
 
 
 	//　这是admin 某个项目详情页面
@@ -58,6 +58,7 @@ public class collection {
 				stu.setClassname(student.getClassname());
 				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 				stu.setTime(format.format(student.getUptime()));
+				stu.setFileurl(student.getFileurl());
 				studentDto.add(stu);
 				String remark = student.getRemarks();
 				if(remark != null && !remark.equals("")){
@@ -121,8 +122,6 @@ public class collection {
 		// 文件信息处理
 		String fname = file.getOriginalFilename();
 		String filename = "";
-		System.out.println(fname);
-
 		//  姓名-项目名   学号-项目名   学号-姓名-项目名   班级-姓名-项目名   班级-姓名-学号-项目名
 		// 处理保存的文件名
 		switch (type){
@@ -151,7 +150,8 @@ public class collection {
 		if(student != null){
 			try{
 				newStudent.setId(student.getId());    // 把id带走
-				wirtefile(file,filepath,student.getFilename(),filename);    // 写入文件
+				String fileUrl = fastDFSClientUtils.updateFile(file,student.getFileurl());		//使用fastDFS写入
+				newStudent.setFileurl(fileUrl);
 				studentService.updateStudent(newStudent);
 				return Result.success("你已经提交过了，上传成功！");
 			}catch (Exception e){
@@ -160,30 +160,12 @@ public class collection {
 		}
 
 		try{
-			wirtefile(file,filepath,filename,filename);
+			String fileUrl = fastDFSClientUtils.uploadFile(file);
+			newStudent.setFileurl(fileUrl);
 			studentService.addStudent(newStudent);
 			return Result.success("文件上传成功！");
 		}catch (Exception e){
 			return Result.fail(400,"文件上传失败！");
 		}
 	}
-
-
-	// 利用新旧名字  保证数据完整
-	void wirtefile(MultipartFile file,String filepath,String prefilename,String newfilename){
-		// 文件写入
-		try {
-			byte[] bytes = file.getBytes();
-			Path prepath = Paths.get(filepath,prefilename);
-			Path newpath = Paths.get(filepath,newfilename);
-			if(Files.exists(prepath)){   // 先删除旧数据再写入
-				Files.delete(prepath);
-			}
-			System.out.println(newpath);
-			Files.write(newpath, bytes);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
 }

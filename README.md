@@ -17,11 +17,15 @@
 ## 项目技术栈
 * 后端 : SpringBoot SpringMVC MybatisPlus
 * 前端 : Bootstrap jQuery
+* 文件存储系统 : FastDFS
+* 网络服务器 : Nginx
 
 ## pom 主要依赖
 * thymeleaf
 * redis
 * lombok
+* fastdfs
+* mybatisPlus
 
 -----
 
@@ -33,7 +37,8 @@
 5. ~~使用redis减少IO~~
 6. 删除提交记录和文件
 7. 加密显示接收页面
-8. 公告设置，更新信息   
+8. 公告设置，更新信息
+9. ~~重构文件系统为FastDFS~~
     ....
 
 

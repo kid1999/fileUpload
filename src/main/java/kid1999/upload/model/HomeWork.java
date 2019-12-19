@@ -17,5 +17,5 @@ public class HomeWork {
   private long createtime;
   private long endtime;
   private String type;
-  private String addr;
+//  private String addr;    废弃
 }

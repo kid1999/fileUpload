@@ -38,7 +38,7 @@
                         <a type="button" class="btn btn-default btn-success" th:href="@{'/upload?' + 'userid=' + ${session.user.getId()} + '&worktitle=' + ${worktitle}}">项目地址</a>
                         <select class="selectpicker btn-group" multiple data-actions-box="true" name="filenames">
                             <div th:each="student,stuState : ${studentDto}">
-                                <option th:text="${student.name}" th:value="${student.filename}"/>
+                                <option th:text="${student.name}" th:value="${student.filename} + ' ' + ${student.fileurl}"/>
                             </div>
                         </select>
                         <input type="hidden" name="studentid" th:value="${studentid}">

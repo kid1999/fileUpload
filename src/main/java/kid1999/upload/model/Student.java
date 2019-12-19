@@ -13,4 +13,5 @@ public class Student {
   private long uptime;
   private String remarks;
   private String filename;
+  private String fileurl;
 }

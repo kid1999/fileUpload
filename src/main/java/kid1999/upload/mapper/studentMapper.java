@@ -3,10 +3,8 @@ package kid1999.upload.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import kid1999.upload.model.HomeWork;
 import kid1999.upload.model.Student;
-import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -25,16 +23,6 @@ public interface studentMapper extends BaseMapper<Student> {
 	@Select("select * from homework where title = #{worktitle} and id in (select workid from userswork where userid = #{userid})")
 	HomeWork getWorkByTitle(String worktitle, int userid);
 
-	@Select("select * from student where name = #{sname} and workid = #{workid}")
-	Student getStudentBySname(int workid, String sname);
-
-	@Insert("insert into student(name, classname, remarks, uptime, workid,filename) values (" +
-			        "#{name} ,#{classname} ,#{remarks} ,#{uptime} ,#{workid},#{filename} )")
-	void addStudent(Student newStudent);
-
-	@Update("update student set name =#{name},classname=#{classname},remarks=#{remarks},filename=#{filename} ," +
-			        "uptime = #{uptime} ,workid=#{workid} where id=#{id} ")
-	void updateStudent(Student student);
 
 	@Select("select * from student where filename like CONCAT('%',#{filename},'%') ")
 	List<Student> findStuByfilename(String filename);

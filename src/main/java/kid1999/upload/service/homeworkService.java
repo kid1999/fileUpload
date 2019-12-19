@@ -56,7 +56,7 @@ public class homeworkService{
     project.setCount(studentMapper.countByWorkId(homeWork.getId()));
     project.setInfomation(homeWork.getInfomation());
     project.setType(homeWork.getType());
-    project.setFilepath(homeWork.getAddr());
+//    project.setFilepath(homeWork.getAddr());  废弃
     project.setId(homeWork.getId());
     return project;
   }

@@ -10,4 +10,5 @@ public class Students {
 	private String time;
 	private String filename;
 	private String remarks;
+	private String fileurl;
 }

@@ -84,7 +84,7 @@ public class userPage {
     homeWork.setTitle(title);
     homeWork.setInfomation(desc);
     homeWork.setType(type);
-    homeWork.setAddr(userService.makePath(user.getId(),title));  // 设置文件路径
+//    homeWork.setAddr(userService.makePath(user.getId(),title));  // 设置文件路径
     homeWork.setCreatetime(now.getTime());
     homeWork.setEndtime(date.getTime());
     homeWork = homeworkService.addHomeWork(homeWork);    // 新建work并返回

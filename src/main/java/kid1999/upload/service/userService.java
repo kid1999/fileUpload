@@ -18,7 +18,7 @@ public class userService {
   @Value("${projectPath}")
   private String projectPath;
 
-
+  /**  本地保存时使用，被 fastDFS替代
   //	生成一个文件路径保存一个项目的文件
   public String makePath(int userid,String workname){
     String path =  projectPath + File.separator + userid + File.separator + workname;
@@ -29,6 +29,7 @@ public class userService {
     filePath.mkdirs();  // 新建文件夹
     return path;
   }
+   **/
 
 
   // 简单查询使用 QueryWrapper
