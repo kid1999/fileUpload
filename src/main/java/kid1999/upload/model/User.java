@@ -1,6 +1,7 @@
 package kid1999.upload.model;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
@@ -13,5 +14,6 @@ public class User implements Serializable {
   private int id;
   private String name;
   private String password;
+  @TableField(exist = false)
   private String email;
 }

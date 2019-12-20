@@ -1,6 +1,5 @@
 package kid1999.upload.service;
 
-import cn.hutool.core.date.DateTime;
 import kid1999.upload.dto.Projects;
 import kid1999.upload.mapper.homeworkMapper;
 import kid1999.upload.mapper.studentMapper;
@@ -11,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,16 +50,13 @@ public class homeworkService{
 		List<Projects> DoneProjects = new ArrayList<>();
 		List<List<Projects>> res = new ArrayList<>();
 		List<HomeWork> homeWorks = findByUserId(userid);
-		log.info(homeWorks.toString());
 		for (HomeWork homeWork:homeWorks) {
-			if(homeWork.getEndtime().before(DateTime.now())){
-				DoingProjects.add(new Projects(homeWork,studentMapper.countByWorkId(homeWork.getId())));
-			}else{
+			if(homeWork.getEndtime().before(new Timestamp(System.currentTimeMillis()))){
 				DoneProjects.add(new Projects(homeWork,studentMapper.countByWorkId(homeWork.getId())));
+			}else{
+				DoingProjects.add(new Projects(homeWork,studentMapper.countByWorkId(homeWork.getId())));
 			}
 		}
-		log.info(DoingProjects.toString());
-		log.info(DoneProjects.toString());
 		res.add(DoingProjects);
 		res.add(DoneProjects);
 		return res;

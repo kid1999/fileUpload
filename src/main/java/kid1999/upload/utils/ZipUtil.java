@@ -53,7 +53,7 @@ public class ZipUtil {
      */
     public  void zipFile(ZipModel zipModel, ZipOutputStream outputstream) throws IOException {
         if (zipModel != null && zipModel.getFilePath() != null && zipModel.getFileName() != null) {
-            System.out.println(zipModel.getFilePath());
+            log.info(zipModel.getFileName() + ",被下载: " + zipModel.getFilePath());
             byte[] content = fastDFSClientUtils.downloadFile(zipModel.getFilePath());
             InputStream bInStream = new ByteArrayInputStream(content);
             ZipEntry entry = new ZipEntry(zipModel.getFileName());

@@ -1,13 +1,12 @@
 package kid1999.upload.controller;
 
-import cn.hutool.core.date.DateTime;
 import kid1999.upload.dto.Projects;
-import kid1999.upload.dto.Students;
 import kid1999.upload.model.HomeWork;
 import kid1999.upload.model.Student;
 import kid1999.upload.model.User;
 import kid1999.upload.service.homeworkService;
 import kid1999.upload.service.studentService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.List;
 
 @Controller
+@Slf4j
 public class userPage {
 
 	@Autowired
@@ -36,6 +37,7 @@ public class userPage {
 	@GetMapping("/userpage")
 	String userpage(HttpServletRequest request,
 	                Model model){
+		log.info("用户主页");
 		User user = (User) request.getSession().getAttribute("user");
 		List<List<Projects>> projects = homeworkService.findProjects(user.getId());
 		model.addAttribute("DoingProject",projects.get(0));
@@ -60,6 +62,7 @@ public class userPage {
 	                  @RequestParam(value = "type") String type,
 	                  @RequestParam(value = "endtime") String endtime
 	){
+		log.info("创建项目");
 		User user = (User) request.getSession().getAttribute("user");
 		if(homeworkService.findHKByTitleAndUserID(title,user.getId()) != null){
 			model.addAttribute("info","该项目已被创建！");
@@ -85,17 +88,18 @@ public class userPage {
 		homeWork.setTitle(title);
 		homeWork.setInfomation(desc);
 		homeWork.setType(type);
-//		homeWork.setCreatetime(now.getTime());
-//		homeWork.setEndtime(date.getTime());
+		homeWork.setCreatetime(new Timestamp(System.currentTimeMillis()));
+		homeWork.setEndtime(new Timestamp(System.currentTimeMillis()));
 		homeWork = homeworkService.addHomeWork(homeWork);    // 新建work并返回
 		homeworkService.add(homeWork.getId(),user.getId());   // 新建user-work
-		return "redirect:homeworks/userpage";
+		return "redirect:/userpage";
 	}
 
 
 	@PostMapping("/search")
 	String search(@RequestParam("filename") String filename,
 	              Model model){
+		log.info("搜索");
 		List<Student> students = studentService.findStuByfilename(filename);
 		List<Student> studentDto = new ArrayList<>();
 		for (Student student:students) {

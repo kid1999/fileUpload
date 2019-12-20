@@ -40,6 +40,7 @@ public class Index {
 	// 首页
 	@GetMapping("/")
 	public String index(HttpServletRequest request){
+		log.info("主页");
 		Cookie[] cookies = request.getCookies();
 		if(cookies != null){
 			for (Cookie cookie : cookies) {
@@ -59,6 +60,7 @@ public class Index {
 	// 登录
 	@GetMapping("/login")
 	String login(){
+		log.info("尝试登录");
 		return "user/login";
 	}
 
@@ -76,7 +78,7 @@ public class Index {
 	             HttpServletResponse response,
 	             @RequestParam(value = "name") String name,
 	             @RequestParam(value = "password") String password){
-
+		log.info("登录验证");
 		if(userService.findUserByName(name) == null){
 			return Result.fail(400,"用户名不存在!");
 		}
@@ -105,7 +107,7 @@ public class Index {
 	                @RequestParam(value = "password1") String password1,
 	                @RequestParam(value = "password2") String password2
 	){
-
+		log.info("注册");
 		if(!password1.equals(password2)){
 			return Result.fail(400,"密码重复!");
 		}
@@ -124,6 +126,7 @@ public class Index {
 
 	@GetMapping("/logout")
 	public String logout(HttpServletRequest request,HttpServletResponse response){
+		log.info("退出登录");
 		User user = (User) request.getSession().getAttribute("user");
 		String name = user.getName();
 		request.getSession().removeAttribute("user");//清空session信息

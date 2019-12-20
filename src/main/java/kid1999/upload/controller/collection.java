@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,9 +42,10 @@ public class collection {
 	                     @RequestParam(value = "worktitle") String worktitle,
 	                     @RequestParam(value = "userid") int userid,
 	                     Model model){
+		log.info("用户主页");
 		Object session =  request.getSession().getAttribute("user");
 		if(session == null){
-			return "redirect:index";
+			return "redirect:/";
 		}
 		User user = (User) session;
 		if(user.getId() == userid){
@@ -63,9 +65,6 @@ public class collection {
 			model.addAttribute("count",students.size());
 			model.addAttribute("worktitle",worktitle);
 			model.addAttribute("remarks",remarks);
-			if(students.size() != 0){
-				model.addAttribute("studentid",students.get(0).getId());
-			}
 			return "homeworks/homeworkList";
 		}else{    // 这是访问用户
 			model.addAttribute("info","访问权限错误!");
@@ -78,9 +77,7 @@ public class collection {
 	String postcollection( @RequestParam(value = "worktitle") String worktitle,
 	                       @RequestParam(value = "userid") int userid,
 	                       Model model){
-		int count = studentService.getStudentsByTitle(worktitle,userid).size();
 		Projects project = homeworkService.getProByTitle(worktitle,userid);
-		model.addAttribute("count",count);
 		model.addAttribute("project",project);
 		return "homeworks/upload";
 	}
@@ -92,7 +89,6 @@ public class collection {
 	                        @RequestParam("workid") int workid,
 	                        @RequestParam("type") String type,
 	                        @RequestParam("remarks") String remarks,
-	                        @RequestParam("filepath") String filepath,
 	                        @RequestParam("name") String sname,
 	                        @RequestParam("studentClass") String classname,
 	                        @RequestParam("studentId") String studentno,
@@ -103,7 +99,6 @@ public class collection {
 		if (file.isEmpty()){
 			return Result.fail(400,"文件不允许为空");
 		}
-
 		// 获取来访页面url
 		String referer = request.getHeader("referer");
 		if(referer != null){
@@ -111,7 +106,6 @@ public class collection {
 		}else{
 			model.addAttribute("referer",request.getHeader("host"));
 		}
-
 		// 文件信息处理
 		String fname = file.getOriginalFilename();
 		String filename = "";
@@ -126,13 +120,13 @@ public class collection {
 			case "6" : filename = sname + "." + fname.substring(fname.lastIndexOf(".") + 1);break;
 			case "7" : filename = sname + "." + fname.substring(fname.lastIndexOf(".") + 1);break;
 		}
-
+		log.info(sname+ "--" + studentno + "--" + filename );
 		// 构造student
 		Student newStudent = new Student();
 		newStudent.setName(sname);
 		newStudent.setClassname(classname);
 		newStudent.setRemarks(remarks);
-//		newStudent.setUptime(System.currentTimeMillis());
+		newStudent.setUptime(new Timestamp(System.currentTimeMillis()));
 		newStudent.setWorkid(workid);
 		newStudent.setFilename(filename);
 

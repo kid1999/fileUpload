@@ -33,15 +33,14 @@
 
             <!--下载控件-->
             <div id="two" class="container">
-                <form action="/download" method="post" th:if="${studentDto} != null">
+                <form action="/download" method="post" th:if="${students} != null">
                     <div class="btn-group" role="group" aria-label="...">
                         <a type="button" class="btn btn-default btn-success" th:href="@{'/upload?' + 'userid=' + ${session.user.getId()} + '&worktitle=' + ${worktitle}}">项目地址</a>
                         <select class="selectpicker btn-group" multiple data-actions-box="true" name="filenames">
-                            <div th:each="student,stuState : ${students}">
+                            <div th:each="student : ${students}">
                                 <option th:text="${student.name}" th:value="${student.filename} + ' ' + ${student.fileurl}"/>
                             </div>
                         </select>
-                        <input type="hidden" name="studentid" th:value="${studentid}">
                         <input type="submit" class="btn btn-group btn-primary" value="下载">
                     </div>
                 </form>

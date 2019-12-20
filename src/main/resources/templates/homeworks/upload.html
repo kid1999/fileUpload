@@ -32,10 +32,10 @@
                 <div class="col-lg-10 col-lg-offset-1">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h2 th:text="${project.title}"></h2>
-                            <p th:text="'创建时间: ' + ${project.createtime} + '  |  截止时间: '+${project.endtime}"></p>
-                            <p th:text="'描述信息: '+${project.infomation}"></p>
-                            <span th:text="'已收: ' + ${count}"/>
+                            <h2 th:text="${project.HomeWork.title}"></h2>
+                            <p th:text="'创建时间: ' + ${project.HomeWork.createtime} + '  |  截止时间: '+${project.HomeWork.endtime}"></p>
+                            <p th:text="'描述信息: '+${project.HomeWork.infomation}"></p>
+                            <span th:text="'已收: ' + ${project.count}"/>
                         </div>
                         <div class="panel-body">
                             <form accept-charset="UTF-8" id="form"  enctype="multipart/form-data">
@@ -58,9 +58,8 @@
                                     </div>
 
                                     <input id ="input-id" name="file" type ="file" class ="file" >
-                                    <input type="hidden" name="workid" th:value="${project.id}">
-                                    <input type="hidden" name="type" th:value="${project.type}">
-                                    <input type="hidden" name="filepath" th:value="${project.filepath}">
+                                    <input type="hidden" name="workid" th:value="${project.HomeWork.id}">
+                                    <input type="hidden" name="type" th:value="${project.HomeWork.type}">
                                     <input class="btn btn-lg btn-success btn-block" id="submit" value="提交">
                                 </fieldset>
                             </form>

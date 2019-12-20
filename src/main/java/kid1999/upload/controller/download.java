@@ -23,7 +23,7 @@ public class download {
 	private ZipUtil zipUtil;
 
 	@PostMapping("download")
-	void download2(HttpServletRequest request,
+	void download(HttpServletRequest request,
 									 HttpServletResponse response) {
 		try {
 			if (request.getParameterValues("filenames") == null) {
