@@ -2,12 +2,12 @@ package kid1999.upload.controller;
 
 import kid1999.upload.dto.Projects;
 import kid1999.upload.dto.Result;
-import kid1999.upload.dto.Students;
 import kid1999.upload.model.Student;
 import kid1999.upload.model.User;
 import kid1999.upload.service.homeworkService;
 import kid1999.upload.service.studentService;
 import kid1999.upload.utils.FastDFSClientUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,11 +18,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 @Controller
+@Slf4j
 public class collection {
 
 	@Autowired
@@ -48,35 +48,28 @@ public class collection {
 		User user = (User) session;
 		if(user.getId() == userid){
 			List<Student> students = studentService.getStudentsByTitle(worktitle,userid);
-			List<Students> studentDto = new ArrayList<>();
-			List<Students> remarks = new ArrayList<>();
-			for (Student student:students) {
-				Students stu = new Students();
-				stu.setId(student.getId());
-				stu.setName(student.getName());
-				stu.setFilename(student.getFilename());
-				stu.setClassname(student.getClassname());
-				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-				stu.setTime(format.format(student.getUptime()));
-				stu.setFileurl(student.getFileurl());
-				studentDto.add(stu);
-				String remark = student.getRemarks();
-				if(remark != null && !remark.equals("")){
-					stu.setRemarks(remark);
-					remarks.add(stu);
-				}
-			}
-			model.addAttribute("studentDto",studentDto);
+			List<Student> remarks = new ArrayList<>();
+
+			//  评论修改中。。。
+//			for (Student student:students) {
+//				studentDto.add(student);
+//				String remark = student.getRemarks();
+//				if(remark != null && !remark.equals("")){
+//					remarks.add(remark);
+//					remarks.add(stu);
+//				}
+//			}
+			model.addAttribute("students",students);
 			model.addAttribute("count",students.size());
 			model.addAttribute("worktitle",worktitle);
 			model.addAttribute("remarks",remarks);
-			if(studentDto.size() != 0){
-				model.addAttribute("studentid",studentDto.get(0).getId());
+			if(students.size() != 0){
+				model.addAttribute("studentid",students.get(0).getId());
 			}
-			return "homeworkList";
+			return "homeworks/homeworkList";
 		}else{    // 这是访问用户
 			model.addAttribute("info","访问权限错误!");
-			return "error";
+			return "system/error";
 		}
 	}
 
@@ -89,7 +82,7 @@ public class collection {
 		Projects project = homeworkService.getProByTitle(worktitle,userid);
 		model.addAttribute("count",count);
 		model.addAttribute("project",project);
-		return "upload";
+		return "homeworks/upload";
 	}
 
 	// 文件上传处理
@@ -139,7 +132,7 @@ public class collection {
 		newStudent.setName(sname);
 		newStudent.setClassname(classname);
 		newStudent.setRemarks(remarks);
-		newStudent.setUptime(System.currentTimeMillis());
+//		newStudent.setUptime(System.currentTimeMillis());
 		newStudent.setWorkid(workid);
 		newStudent.setFilename(filename);
 

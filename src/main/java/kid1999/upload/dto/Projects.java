@@ -1,15 +1,12 @@
 package kid1999.upload.dto;
 
+import kid1999.upload.model.HomeWork;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class Projects {
-	private int id;
-	private String title;
-	private String createtime;
-	private String endtime;
-	private Integer count;  // 收集数量
-	private String infomation;
-	private String type;
-	private String filepath;
+	private HomeWork homeWork;
+	private int count;
 }

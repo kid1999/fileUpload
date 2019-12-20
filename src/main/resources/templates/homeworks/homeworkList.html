@@ -37,7 +37,7 @@
                     <div class="btn-group" role="group" aria-label="...">
                         <a type="button" class="btn btn-default btn-success" th:href="@{'/upload?' + 'userid=' + ${session.user.getId()} + '&worktitle=' + ${worktitle}}">项目地址</a>
                         <select class="selectpicker btn-group" multiple data-actions-box="true" name="filenames">
-                            <div th:each="student,stuState : ${studentDto}">
+                            <div th:each="student,stuState : ${students}">
                                 <option th:text="${student.name}" th:value="${student.filename} + ' ' + ${student.fileurl}"/>
                             </div>
                         </select>
@@ -62,11 +62,11 @@
                         </thead>
                         <!-- 内容 -->
                         <tbody>
-                        <tr th:each="student,stuState : ${studentDto}">
+                        <tr th:each="student,stuState : ${students}">
                             <th scope="row" th:text="${stuState.count}"></th>
                             <td th:text="${student.name}">Mark</td>
                             <td th:text="${student.classname}">Otto</td>
-                            <td th:text="${student.time}">Otto</td>
+                            <td th:text="${student.uptime}">Otto</td>
                         </tr>
                         </tbody>
                     </table>
@@ -90,8 +90,8 @@
 
                     <tr th:unless="${count} == 0" th:each="remark : ${remarks}">
                         <a class="list-group-item">
-                            <h5 class="list-group-item-heading" th:text="${remark.remarks}">评论</h5>
-                            <p class="list-group-item-text" th:text="${remark.classname} + ' ' +  ${remark.name}">name</p>
+                            <h5 class="list-group-item-heading" th:text="${remark.remark}">评论</h5>
+                            <p class="list-group-item-text" th:text="${remark.name} + ' ' +  ${remark.email}">name</p>
                         </a>
                     </tr>
 

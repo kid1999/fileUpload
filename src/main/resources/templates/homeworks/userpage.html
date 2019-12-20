@@ -48,15 +48,15 @@
                         <tbody>
                         <tr th:each="project : ${DoingProject}">
                             <th scope="row">
-                                <a th:href="@{'/deatils?' + 'userid=' + ${session.user.getId()} + '&worktitle=' + ${project.title} }" th:text="${project.title}"></a>
+                                <a th:href="@{'/deatils?' + 'userid=' + ${session.user.getId()} + '&worktitle=' + ${project.homeWork.title} }" th:text="${project.homeWork.title}"></a>
                             </th>
-                            <td th:text="${project.createtime}">Mark</td>
-                            <td th:text="${project.endtime}">Otto</td>
+                            <td th:text="${project.homeWork.createtime}">Mark</td>
+                            <td th:text="${project.homeWork.endtime}">Otto</td>
                             <td>
                                 <span class="badge" th:text="${project.count}">3</span>
                             </td>
                             <th scope="row">
-                                <a th:href="@{'/upload?' + 'userid=' + ${session.user.getId()} + '&worktitle=' + ${project.title} }">项目地址</a>
+                                <a th:href="@{'/upload?' + 'userid=' + ${session.user.getId()} + '&worktitle=' + ${project.homeWork.title} }">项目地址</a>
                             </th>
                         </tr>
                         </tbody>
