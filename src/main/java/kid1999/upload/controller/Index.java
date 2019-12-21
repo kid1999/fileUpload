@@ -173,7 +173,7 @@ public class Index {
 	}
 
 
-	/** 验证码设置
+	/** 验证码验证
 	 */
 	public Boolean checkVerificationCode(String vrifyCode, HttpServletRequest request) {
 		String verificationCodeIn = (String) request.getSession().getAttribute("vrifyCode");

@@ -17,5 +17,4 @@ public class FastDfsConfig {
 
     @Value("${fdfs.storagePort}")
     private String storagePort;
-
 }
