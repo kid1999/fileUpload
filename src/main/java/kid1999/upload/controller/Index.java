@@ -85,22 +85,27 @@ public class Index {
 				 HttpServletResponse response,
 				 @RequestParam(value = "name") String name,
 				 @RequestParam(value = "password") String password,
+				 @RequestParam(value = "keepLogin",required = false) String keepLogin,
 				 @RequestParam(value = "code") String code){
 		log.info("登录验证");
-
 		User user = new User();
 		user.setName(name);
-		String md5PassWord = DigestUtils.md5DigestAsHex(password.getBytes());
-		user.setPassword(md5PassWord);
-		System.out.println(code);
+		user.setPassword(DigestUtils.md5DigestAsHex(password.getBytes()));
 		if (checkVerificationCode(code,request)){
 			if(userService.findUserByName(name) != null){
 				if ((user = userService.login(user)) != null){
 					String uuid = UUID.randomUUID().toString();
-					redisTemplate.opsForValue().set(uuid,user,sessionMaxAge, TimeUnit.SECONDS);
 					request.getSession().setAttribute("user",user);
-					Cookie cookie = new Cookie(URLEncoder.encode(name), URLEncoder.encode(uuid));
-					cookie.setMaxAge(cookieMaxAge);
+					Cookie cookie = null;
+					if(keepLogin != null){
+						redisTemplate.opsForValue().set(uuid,user,sessionMaxAge*100, TimeUnit.SECONDS);
+						cookie = new Cookie(URLEncoder.encode(name), URLEncoder.encode(uuid));
+						cookie.setMaxAge(cookieMaxAge*100);
+					}else{
+						redisTemplate.opsForValue().set(uuid,user,sessionMaxAge, TimeUnit.SECONDS);
+						cookie = new Cookie(URLEncoder.encode(name), URLEncoder.encode(uuid));
+						cookie.setMaxAge(cookieMaxAge);
+					}
 					response.addCookie(cookie);
 					return Result.success("登录成功!");
 				}else{

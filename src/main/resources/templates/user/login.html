@@ -49,7 +49,7 @@
 
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" name="is_remember" value="yes"> 保持登录
+                                    <input type="checkbox" name="keepLogin" value="true"> 保持登录
                                 </label>
                                 <a href="find_password" style="display: inline-block;float: right" title="找回密码">忘记密码？</a>
                             </div>
@@ -136,6 +136,7 @@
                             self.location.href="/userpage";
                         }else{
                             layer.msg(data.info);
+                            $("#captcha-img").click();      // 刷新验证码
                         }
                         console.info(JSON.stringify(data));
                     },

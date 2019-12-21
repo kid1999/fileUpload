@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 /**
- * @desc:
+ * @desc: 打包下载文件的包装类
  * @auther: kid1999
  * @date: 2019/12/19 20:20
  **/

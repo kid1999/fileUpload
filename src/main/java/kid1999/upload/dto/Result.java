@@ -4,7 +4,7 @@ import lombok.Data;
 
 /**
  * @author kid1999
- * @title: Result
+ * @title: 普通ajax的包装类
  * @date 2019/12/9 16:26
  */
 
