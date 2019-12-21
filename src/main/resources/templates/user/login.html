@@ -7,11 +7,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>登录</title>
     <link rel="stylesheet" href="/static/css/login.css">
-    <link href="/static/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
     <link href="/static/css/bootstrapValidator.css">
+    <link rel="stylesheet" href="/static/css/layer.css">
     <script src="/static/js/jquery-3.3.1.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
     <script src="/static/js/bootstrapValidator.js"></script>
+    <script src="/static/js/layer.js"></script>
 </head>
 
 
@@ -35,15 +37,29 @@
                                 <label>密码: </label>
                                 <input class="form-control" placeholder="密码" name="password" type="password">
                             </div>
+
+                            <div class="form-group">
+                                <div class="input-group" style="float: left;width: 195px;">
+                                    <label>验证码: </label>
+                                    <input type="text" name="code" id="code" class="form-control" style="width: 150px" maxlength="5" placeholder="验证码" autocomplete="off">&nbsp;
+                                </div>
+                                <img id="captcha-img" style="width: 120px;height: 40px;display: inline-block;float: right"  src="/api/kaptcha/vrifyCode" onclick="this.src='/api/kaptcha/vrifyCode?d='+ new Date()*1" title="看不清？换一张" />
+                                <div class="clearfix"></div>
+                            </div>
+
                             <div class="checkbox">
                                 <label>
-                                    <input name="remember" type="checkbox" value="Remember Me"> 记住信息
+                                    <input type="checkbox" name="is_remember" value="yes"> 保持登录
                                 </label>
-                                <label>
-                                    <span id="info"  th:if="${info} != null" th:text="${info}" />
-                                </label>
+                                <a href="find_password" style="display: inline-block;float: right" title="找回密码">忘记密码？</a>
                             </div>
-                            <input class="btn btn-lg btn-success btn-block" id="submit" value="登录">
+                            <div class="form-group" >
+                                <button type="button" id="submit" class="btn btn-success" style="width: 100%"  data-loading-text="正在登录..." autocomplete="off">立即登录</button>
+                            </div>
+                            <div class="form-group">
+                                还没有账号？<a href="register" title="立即注册">立即注册</a>
+                            </div>
+
                         </fieldset>
                     </form>
                 </div>
@@ -56,6 +72,7 @@
 <script>
 
     $(function () {
+        // 表单验证
         $("#form").bootstrapValidator({
             live: 'disabled',//验证时机，enabled是内容有变化就验证（默认），disabled和submitted是提交再验证
             excluded: [':disabled', ':hidden', ':not(:visible)'],//排除无需验证的控件，比如被禁用的或者被隐藏的
@@ -86,6 +103,18 @@
                         }
                     }
                 },
+                code: {
+                    validators: {
+                        notEmpty: {
+                            message: '验证码不能为空'
+                        },
+                        stringLength: {
+                            min: 4,
+                            max: 4,
+                            message: '验证码是4位字符'
+                        }
+                    }
+                },
             }
         });
         $("#submit").click(function () {//非submit按钮点击后进行验证，如果是submit则无需此句直接验证
@@ -103,14 +132,15 @@
                     // 请求成功预处理，返回的值为success的参数data
                     success: function(data){
                         if(data.code === 200){
+                            layer.msg(data.info);
                             self.location.href="/userpage";
                         }else{
-                            alert(data.info);
+                            layer.msg(data.info);
                         }
                         console.info(JSON.stringify(data));
                     },
                     error: function(xhr, errMsg, e){
-                        console.info(errMsg);
+                        layer.msg(errMsg)
                     },
                 });
             }

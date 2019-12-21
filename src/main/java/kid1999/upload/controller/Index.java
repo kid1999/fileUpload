@@ -1,9 +1,11 @@
 package kid1999.upload.controller;
 
+import com.google.code.kaptcha.impl.DefaultKaptcha;
 import kid1999.upload.dto.Result;
 import kid1999.upload.model.User;
 import kid1999.upload.service.userService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -18,6 +20,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -31,6 +36,9 @@ public class Index {
 	@Autowired
 	private RedisTemplate redisTemplate;
 
+	@Autowired
+	DefaultKaptcha defaultKaptcha;
+
 	@Value("${cookieMaxAge}")
 	private int cookieMaxAge;
 
@@ -39,13 +47,13 @@ public class Index {
 
 	// 首页
 	@GetMapping("/")
-	public String index(HttpServletRequest request){
+	public String index(HttpServletRequest request) throws UnsupportedEncodingException {
 		log.info("主页");
 		Cookie[] cookies = request.getCookies();
 		if(cookies != null){
 			for (Cookie cookie : cookies) {
-				String name = cookie.getName();
-				String uuid = cookie.getValue();
+				String name = URLDecoder.decode(cookie.getName(), "gbk");
+				String uuid = URLDecoder.decode(cookie.getValue(), "gbk");
 				if (redisTemplate.hasKey(uuid)){
 					User user = (User) redisTemplate.opsForValue().get(uuid);
 					if(user.getName().equals(name)){
@@ -73,59 +81,73 @@ public class Index {
 	// 登录验证
 	@PostMapping("/login")
 	@ResponseBody
-	Result login(Model model,
-	             HttpServletRequest request,
-	             HttpServletResponse response,
-	             @RequestParam(value = "name") String name,
-	             @RequestParam(value = "password") String password){
+	Result login(HttpServletRequest request,
+				 HttpServletResponse response,
+				 @RequestParam(value = "name") String name,
+				 @RequestParam(value = "password") String password,
+				 @RequestParam(value = "code") String code){
 		log.info("登录验证");
-		if(userService.findUserByName(name) == null){
-			return Result.fail(400,"用户名不存在!");
-		}
+
 		User user = new User();
 		user.setName(name);
 		String md5PassWord = DigestUtils.md5DigestAsHex(password.getBytes());
 		user.setPassword(md5PassWord);
-		if ((user = userService.login(user)) != null){
-			String uuid = UUID.randomUUID().toString();
-			redisTemplate.opsForValue().set(uuid,user,sessionMaxAge, TimeUnit.SECONDS);
-			request.getSession().setAttribute("user",user);
-			Cookie cookie = new Cookie(name,uuid);
-			cookie.setMaxAge(cookieMaxAge);
-			response.addCookie(cookie);
-			return Result.success("登录成功！");
-		}else{
-			model.addAttribute("info","账号密码错误，请重新登录！");
-			return Result.fail(400,"账号密码错误，请重新登录！");
+		System.out.println(code);
+		if (checkVerificationCode(code,request)){
+			if(userService.findUserByName(name) != null){
+				if ((user = userService.login(user)) != null){
+					String uuid = UUID.randomUUID().toString();
+					redisTemplate.opsForValue().set(uuid,user,sessionMaxAge, TimeUnit.SECONDS);
+					request.getSession().setAttribute("user",user);
+					Cookie cookie = new Cookie(URLEncoder.encode(name), URLEncoder.encode(uuid));
+					cookie.setMaxAge(cookieMaxAge);
+					response.addCookie(cookie);
+					return Result.success("登录成功!");
+				}else{
+					return Result.fail(400,"账号密码错误，请重新登录!");
+				}}
+			else{
+				return Result.fail(400,"用户名不存在!");
+			}}
+		else {
+			return Result.fail(400,"验证码错误，或已失效!");
 		}
 	}
 
 	@PostMapping("/register")
 	@ResponseBody
-	Result register(Model model,
-	                @RequestParam(value = "name") String name,
-	                @RequestParam(value = "password1") String password1,
-	                @RequestParam(value = "password2") String password2
-	){
+	Result register(HttpServletRequest request,
+					@RequestParam(value = "name") String name,
+					@RequestParam(value = "password1") String password1,
+					@RequestParam(value = "password2") String password2,
+					@RequestParam(value = "email") String email,
+					@RequestParam(value = "code") String code){
 		log.info("注册");
-		if(!password1.equals(password2)){
-			return Result.fail(400,"密码重复!");
+		if(checkVerificationCode(code,request)){
+			if(!password1.equals(password2)){
+				return Result.fail(400,"密码重复!");
+			}
+			if(userService.findUserByName(name) != null){
+				return Result.fail(400,"用户名已存在!");
+			}
+			if(userService.findUserByEmail(email) != null){
+				return Result.fail(400,"邮箱已注册!");
+			}
+			User user = new User();
+			user.setName(name);
+			String md5PassWord = DigestUtils.md5DigestAsHex(password1.getBytes());
+			user.setPassword(md5PassWord);
+			user.setEmail(email);
+			userService.addUser(user);
+			return Result.success("注册成功！");
+		}else{
+			return Result.fail(400,"验证码错误，或已失效!");
 		}
-		if(userService.findUserByName(name) != null){
-			return Result.fail(400,"用户名已存在!");
-		}
-		User user = new User();
-		user.setName(name);
-		String md5PassWord = DigestUtils.md5DigestAsHex(password1.getBytes());
-		user.setPassword(md5PassWord);
-		userService.addUser(user);
-		model.addAttribute("info","恭喜: " + user.getName() + " 注册成功！，请登录");
-		return Result.success("注册成功！");
 	}
 
 
 	@GetMapping("/logout")
-	public String logout(HttpServletRequest request,HttpServletResponse response){
+	public String logout(HttpServletRequest request,HttpServletResponse response) throws UnsupportedEncodingException {
 		log.info("退出登录");
 		User user = (User) request.getSession().getAttribute("user");
 		String name = user.getName();
@@ -134,7 +156,8 @@ public class Index {
 		//退出登录的时候清空cookie信息,cookie需要通过HttpServletRequest，HttpServletResponse获取
 		Cookie[] cookies = request.getCookies();
 		for(Cookie c:cookies){
-			if(name.equals(c.getName())){
+			String cookieName = URLDecoder.decode(c.getName(), "gbk");
+			if(name.equals(cookieName)){
 				c.setMaxAge(0);
 				response.addCookie(c);
 			}
@@ -147,6 +170,18 @@ public class Index {
 		model.addAttribute("info","该项目已被创建！");
 		model.addAttribute("referer","/");
 		return "system/error";
+	}
+
+
+	/** 验证码设置
+	 */
+	public Boolean checkVerificationCode(String vrifyCode, HttpServletRequest request) {
+		String verificationCodeIn = (String) request.getSession().getAttribute("vrifyCode");
+		request.getSession().removeAttribute("vrifyCode");
+		if (StringUtils.isEmpty(verificationCodeIn) || !verificationCodeIn.equals(vrifyCode)) {
+			return false;
+		}
+		return true;
 	}
 
 }

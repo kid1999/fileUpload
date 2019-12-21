@@ -12,11 +12,11 @@ import java.time.Duration;
 
 /**
  * @author kid1999
- * @title: redisConfig
+ * @title: redis配置类
  * @date 2019/12/9 11:47
  */
 
-public class redisConfig {
+public class RedisConfig {
 	@Value("${sessionMaxAge}")
 	private Long sessionMaxAge;
 

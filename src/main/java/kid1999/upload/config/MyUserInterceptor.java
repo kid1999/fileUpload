@@ -10,7 +10,13 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-// 拦截器规则
+
+/**
+ * @desc:  系统拦截器设置
+ * @auther: kid1999
+ * @date: 2019/12/21 11:59
+ **/
+
 @Component
 public class MyUserInterceptor implements HandlerInterceptor {
 

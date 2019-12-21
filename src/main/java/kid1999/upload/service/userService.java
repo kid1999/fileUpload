@@ -20,6 +20,12 @@ public class userService {
     return userMapper.selectOne(wrapper);
   }
 
+  public User findUserByEmail(String email){
+    QueryWrapper wrapper = new QueryWrapper();
+    wrapper.eq("email",email);
+    return userMapper.selectOne(wrapper);
+  }
+
   // 增加 使用自带的 insert
   public int addUser(User user) {
     return userMapper.insert(user);

@@ -8,7 +8,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import javax.annotation.Resource;
 
 
-// 拦截器配置
+/**
+ * @desc:  拦截器配置
+ * @auther: kid1999
+ * @date: 2019/12/21 11:59
+ **/
+
 @Configuration
 public class WebAppConfig extends WebMvcConfigurerAdapter {
 
@@ -21,7 +26,7 @@ public class WebAppConfig extends WebMvcConfigurerAdapter {
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		//注册自定义拦截器，添加拦截路径和排除拦截路径
-		registry.addInterceptor(myUserInterceptor).addPathPatterns("/**").excludePathPatterns("/","/register","/login","/upload","/error","/success","/repeat","/search","/upfile","/static/**");
+		registry.addInterceptor(myUserInterceptor).addPathPatterns("/**").excludePathPatterns("/","/api/**","/register","/login","/upload","/error","/success","/repeat","/search","/upfile","/static/**");
 	}
 
 	// 静态资源配置

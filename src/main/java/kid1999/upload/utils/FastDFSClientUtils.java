@@ -5,7 +5,7 @@ import com.github.tobato.fastdfs.domain.fdfs.StorePath;
 import com.github.tobato.fastdfs.domain.proto.storage.DownloadByteArray;
 import com.github.tobato.fastdfs.exception.FdfsUnsupportStorePathException;
 import com.github.tobato.fastdfs.service.FastFileStorageClient;
-import kid1999.upload.config.fastDfsConfig;
+import kid1999.upload.config.FastDfsConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -29,7 +29,7 @@ public class FastDFSClientUtils {
     private FastFileStorageClient storageClient;
 
     @Autowired
-    private fastDfsConfig appConfig;   // 项目参数配置
+    private FastDfsConfig appConfig;   // 项目参数配置
 
     /**
      * 上传文件
