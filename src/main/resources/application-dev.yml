@@ -6,6 +6,15 @@ server:
     context-path: /
 
 
+# cookie设置
+cookieMaxAge: 3600
+sessionMaxAge: 3600
+
+
+# 默认用户免费空间
+user:
+  capacity: 1048576  # kb
+
 
 # fastDFS 配置
 fdfs:
@@ -19,10 +28,6 @@ fdfs:
   trackerList: #TrackerList参数,支持多个，我这里只有一个，如果有多个在下方加- x.x.x.x:port
     - 10.16.11.230:22122
 
-
-# cookie设置
-cookieMaxAge: 3600
-sessionMaxAge: 3600
 
 # 邮箱设置
 mail:

@@ -73,7 +73,7 @@ public class userPage {
 		//  转换时间
 		Date now = new Date();
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
-		Date date = new Date();
+		Date date = null;
 		try {
 			date = format.parse(endtime);
 			if(date.before(now)){

@@ -19,4 +19,5 @@ public class Student {
   private String remarks;
   private String filename;
   private String fileurl;
+  private Double filesize;
 }

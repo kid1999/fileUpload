@@ -55,6 +55,9 @@ public class UserController {
 	@Value("${sessionMaxAge}")
 	private Long sessionMaxAge;
 
+	@Value("${user.capacity}")
+	private double freeCapacity;
+
 	// 登录
 	@GetMapping("/login")
 	String login(){
@@ -148,6 +151,8 @@ public class UserController {
 			String md5PassWord = DigestUtils.md5DigestAsHex(password1.getBytes());
 			user.setPassword(md5PassWord);
 			user.setEmail(email);
+			user.setRole(1);
+			user.setCapacity(freeCapacity);
 			userService.addUser(user);
 			return Result.success("注册成功！");
 		}else{

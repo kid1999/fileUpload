@@ -48,7 +48,9 @@ public class studentService {
 		return studentMapper.findStuByfilename(filename);
 	}
 
-	public List<Student> getPathById(int id) {
-		return studentMapper.getPathById(id);
+
+	// 删除一个学生提交信息
+	public void deleteStudentById(int studentId) {
+		studentMapper.deleteById(studentId);
 	}
 }

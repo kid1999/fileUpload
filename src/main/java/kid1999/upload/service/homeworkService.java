@@ -35,6 +35,7 @@ public class homeworkService{
 
 	// 通过title寻找work对象
 	public HomeWork findHKByTitleAndUserID(String title,int userId) {
+
 		return homeworkMapper.findHKByTitleAndUserID(title,userId);
 	}
 
@@ -78,5 +79,10 @@ public class homeworkService{
 		} else{
 			return null;
 		}
+	}
+
+	// 获取项目磁盘使用量
+	public double getCapacity(int workid){
+		return studentMapper.getCapacity(workid);
 	}
 }

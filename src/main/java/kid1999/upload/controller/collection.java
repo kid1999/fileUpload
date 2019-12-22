@@ -6,17 +6,18 @@ import kid1999.upload.model.Student;
 import kid1999.upload.service.homeworkService;
 import kid1999.upload.service.studentService;
 import kid1999.upload.utils.FastDFSClientUtils;
-import kid1999.upload.utils.Layui;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.sql.Timestamp;
-import java.util.List;
 
 @Controller
 @Slf4j
@@ -37,58 +38,9 @@ public class collection {
 	String Test(Model model,
 				@RequestParam(value = "worktitle") String worktitle){
 		model.addAttribute("worktitle",worktitle);
-		return "test";
+		return "homeworks/homeworkDetails";
 	}
 
-
-	@GetMapping("/homeworks")
-	@ResponseBody
-	Layui getcollection(@RequestParam(value = "worktitle") String worktitle,
-						@RequestParam(value = "userid") int userid,
-						@RequestParam(value = "pageSize",defaultValue = "10") int pageSize,
-						@RequestParam(value = "page",defaultValue = "1") int page
-						){
-		log.info("项目详情页");
-		List<Student> students = studentService.getStudentsByTitle(worktitle,userid);
-		return Layui.data(1,students);
-	}
-
-
-
-//	@GetMapping("/deatils")
-//	String getcollection(HttpServletRequest request,
-//	                     @RequestParam(value = "worktitle") String worktitle,
-//	                     @RequestParam(value = "userid") int userid,
-//	                     Model model){
-//		log.info("项目详情页");
-//		Object session =  request.getSession().getAttribute("user");
-//		if(session == null){
-//			return "redirect:/";
-//		}
-//		User user = (User) session;
-//		if(user.getId() == userid){
-//			List<Student> students = studentService.getStudentsByTitle(worktitle,userid);
-//			List<Student> remarks = new ArrayList<>();
-//
-//			//  评论修改中。。。
-////			for (Student student:students) {
-////				studentDto.add(student);
-////				String remark = student.getRemarks();
-////				if(remark != null && !remark.equals("")){
-////					remarks.add(remark);
-////					remarks.add(stu);
-////				}
-////			}
-//			model.addAttribute("students",students);
-//			model.addAttribute("count",students.size());
-//			model.addAttribute("worktitle",worktitle);
-//			model.addAttribute("remarks",remarks);
-//			return "homeworks/homeworkList";
-//		}else{    // 这是访问用户
-//			model.addAttribute("info","访问权限错误!");
-//			return "system/error";
-//		}
-//	}
 
 	// 文件上传页面
 	@GetMapping("/upload")
@@ -147,7 +99,8 @@ public class collection {
 		newStudent.setUptime(new Timestamp(System.currentTimeMillis()));
 		newStudent.setWorkid(workid);
 		newStudent.setFilename(filename);
-
+		double filesize = (double) file.getSize();
+		newStudent.setFilesize(filesize/1024);
 		// 先查看是否重复
 		Student student = studentService.getStudentBySname(workid,sname);
 

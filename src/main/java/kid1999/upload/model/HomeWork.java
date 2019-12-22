@@ -25,4 +25,5 @@ public class HomeWork {
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
   private Timestamp endtime;
   private String type;
+  private Double capacity;
 }
