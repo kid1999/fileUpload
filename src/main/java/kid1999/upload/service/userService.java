@@ -26,9 +26,17 @@ public class userService {
     return userMapper.selectOne(wrapper);
   }
 
+
   // 增加 使用自带的 insert
   public int addUser(User user) {
     return userMapper.insert(user);
+  }
+
+  // 更新
+  public int updateUser(User user){
+    QueryWrapper wrapper = new QueryWrapper();
+    wrapper.eq("name",user.getName());
+    return userMapper.update(user,wrapper);
   }
 
 

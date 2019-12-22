@@ -19,7 +19,7 @@ import java.util.zip.ZipOutputStream;
 
 @RestController
 @Slf4j
-public class download {
+public class DownloadController {
 
 	@Autowired
 	private ZipUtil zipUtil;

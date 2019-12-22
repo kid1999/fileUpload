@@ -1,16 +1,17 @@
 package kid1999.upload.controller;
 
+import cn.hutool.core.util.RandomUtil;
 import com.google.code.kaptcha.impl.DefaultKaptcha;
 import kid1999.upload.dto.Result;
 import kid1999.upload.model.User;
 import kid1999.upload.service.userService;
+import kid1999.upload.utils.MailUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,9 +27,15 @@ import java.net.URLEncoder;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @author kid1999
+ * @title: UserController
+ * @date 2019/12/22 16:40
+ */
+
 @Controller
 @Slf4j
-public class Index {
+public class UserController {
 
 	@Autowired
 	private userService userService;
@@ -39,31 +46,14 @@ public class Index {
 	@Autowired
 	DefaultKaptcha defaultKaptcha;
 
+	@Autowired
+	private MailUtil mailUtil;
+
 	@Value("${cookieMaxAge}")
 	private int cookieMaxAge;
 
 	@Value("${sessionMaxAge}")
 	private Long sessionMaxAge;
-
-	// 首页
-	@GetMapping("/")
-	public String index(HttpServletRequest request) throws UnsupportedEncodingException {
-		log.info("主页");
-		Cookie[] cookies = request.getCookies();
-		if(cookies != null){
-			for (Cookie cookie : cookies) {
-				String name = URLDecoder.decode(cookie.getName(), "gbk");
-				String uuid = URLDecoder.decode(cookie.getValue(), "gbk");
-				if (redisTemplate.hasKey(uuid)){
-					User user = (User) redisTemplate.opsForValue().get(uuid);
-					if(user.getName().equals(name)){
-						request.getSession().setAttribute("user",user);
-					}
-				}
-			}
-		}
-		return "index";
-	}
 
 	// 登录
 	@GetMapping("/login")
@@ -78,15 +68,29 @@ public class Index {
 		return "user/register";
 	}
 
+	// 核对信息
+	@GetMapping("/checktable")
+	String checkTable(){
+		return "user/checktable";
+	}
+
+
+	// 修改密码
+	@GetMapping("/changepasswd")
+	String changePasswd(){
+		return "user/changepasswd";
+	}
+
+
 	// 登录验证
 	@PostMapping("/login")
 	@ResponseBody
 	Result login(HttpServletRequest request,
-				 HttpServletResponse response,
-				 @RequestParam(value = "name") String name,
-				 @RequestParam(value = "password") String password,
-				 @RequestParam(value = "keepLogin",required = false) String keepLogin,
-				 @RequestParam(value = "code") String code){
+	             HttpServletResponse response,
+	             @RequestParam(value = "name") String name,
+	             @RequestParam(value = "password") String password,
+	             @RequestParam(value = "keepLogin",required = false) String keepLogin,
+	             @RequestParam(value = "code") String code){
 		log.info("登录验证");
 		User user = new User();
 		user.setName(name);
@@ -119,14 +123,15 @@ public class Index {
 		}
 	}
 
+	// 注册验证
 	@PostMapping("/register")
 	@ResponseBody
 	Result register(HttpServletRequest request,
-					@RequestParam(value = "name") String name,
-					@RequestParam(value = "password1") String password1,
-					@RequestParam(value = "password2") String password2,
-					@RequestParam(value = "email") String email,
-					@RequestParam(value = "code") String code){
+	                @RequestParam(value = "name") String name,
+	                @RequestParam(value = "password1") String password1,
+	                @RequestParam(value = "password2") String password2,
+	                @RequestParam(value = "email") String email,
+	                @RequestParam(value = "code") String code){
 		log.info("注册");
 		if(checkVerificationCode(code,request)){
 			if(!password1.equals(password2)){
@@ -150,9 +155,72 @@ public class Index {
 		}
 	}
 
+	// 填写表单 （核对账号，邮箱）
+	@PostMapping("/checktable")
+	@ResponseBody
+	Result checkTable(HttpServletRequest request,
+	                  @RequestParam(value = "name") String name,
+	                  @RequestParam(value = "email") String email,
+	                  @RequestParam(value = "code") String code){
+		log.info("核对账户，邮箱");
+		if(checkVerificationCode(code,request)){
+			if(name.equals("") || email.equals("")){
+				return Result.fail(400,"用户名或邮箱不能为空");
+			}else{
+				User user = userService.findUserByName(name);
+				if( user == null){
+					return Result.fail(400,"用户名不存在");
+				}
+				if(!user.getEmail().equals(email)){
+					return Result.fail(400,"用户，邮箱不匹配");
+				}
+				String mailCode = RandomUtil.randomString(6);
+				mailUtil.sendMailCode(email,"你的验证码",mailCode);
+				request.getSession().setAttribute("mailCode",mailCode);
+				return Result.success("请填写邮箱验证码");
+			}
+		}else{
+			return Result.fail(400,"验证码不对");
+		}
+	}
 
+
+	// 核对验证码 （核对，验证码）
+	@PostMapping("/changepasswd")
+	@ResponseBody
+	Result changePass(HttpServletRequest request,
+	                  @RequestParam(value = "name") String name,
+	                  @RequestParam(value = "mailCode") String mailCode,
+	                  @RequestParam(value = "password1") String password1,
+	                  @RequestParam(value = "password2") String password2){
+		log.info("核对邮箱验证码，修改密码");
+		if(name.equals("") || mailCode.equals("")){
+			return Result.fail(400,"用户名或验证码不能为空");
+		}else{
+			User user = userService.findUserByName(name);
+			if( user == null){
+				return Result.fail(400,"用户名不存在");
+			}
+			if(!password1.equals(password2)){
+				return Result.fail(400,"前后密码不一致");
+			}
+			if(request.getSession().getAttribute("mailCode").equals(mailCode)){
+				User newUser = new User();
+				newUser.setName(name);
+				newUser.setPassword(DigestUtils.md5DigestAsHex(password1.getBytes()));
+				userService.updateUser(newUser);
+				return Result.success("修改成功！");
+			}else{
+				return Result.fail(400,"验证码错误！");
+			}
+		}
+	}
+
+
+
+	// 退出登录
 	@GetMapping("/logout")
-	public String logout(HttpServletRequest request,HttpServletResponse response) throws UnsupportedEncodingException {
+	String logout(HttpServletRequest request,HttpServletResponse response) throws UnsupportedEncodingException {
 		log.info("退出登录");
 		User user = (User) request.getSession().getAttribute("user");
 		String name = user.getName();
@@ -170,17 +238,10 @@ public class Index {
 		return "redirect:/";
 	}
 
-	@GetMapping("/error")
-	String error(Model model){
-		model.addAttribute("info","该项目已被创建！");
-		model.addAttribute("referer","/");
-		return "system/error";
-	}
 
-
-	/** 验证码验证
-	 */
+	// 验证码验证
 	public Boolean checkVerificationCode(String vrifyCode, HttpServletRequest request) {
+		log.info("验证码验证");
 		String verificationCodeIn = (String) request.getSession().getAttribute("vrifyCode");
 		request.getSession().removeAttribute("vrifyCode");
 		if (StringUtils.isEmpty(verificationCodeIn) || !verificationCodeIn.equals(vrifyCode)) {

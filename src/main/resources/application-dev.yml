@@ -24,6 +24,11 @@ fdfs:
 cookieMaxAge: 3600
 sessionMaxAge: 3600
 
+# 邮箱设置
+mail:
+  fromMail:
+    addr: 1447250889@qq.com
+
 
 
 
@@ -92,5 +97,19 @@ spring:
     encoding: UTF-8
     content: text/html
     cache: false
+
+# 邮件设置
+  mail:
+    host: smtp.qq.com
+    username: 1447250889@qq.com # 邮箱账号
+    password: vynxqlwqpnmphjcb    # 授权码（下面将会告诉你怎么申请）
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+
 
 
