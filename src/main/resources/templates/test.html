@@ -61,41 +61,27 @@
         });
     }
 
-    // function downloadHomeWorks(data){
-    //     $.ajax({
-    //         type:"POST",
-    //         url: '/download',
-    //         dataType:"json",
-    //         contentType:"application/json",
-    //         data:JSON.stringify(data),
-    //         success:function(data){
-    //             layer.msg(data.info);
-    //             $.download('/download', 'post', data.value); // 下载文件
-    //         }
-    //     });
-    // }
-
-    function downloadHomeWorks(data) {
-        var url = "download";
-        var fileName = "testAjaxDownload.txt";
-        var form = $("<form></form>").attr("action", url).attr("method", "post");
-        form.append($("<input></input>").attr("dataType", "json").attr("Content type","application/json").attr("data", data));
-        form.appendTo('body').submit().remove();
+    function download(data) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", '/download', true);
+        // 设置POST请求的请求头
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.responseType = "blob";    //ajax返回响应数据的类型修改为blob
+        xhr.onload = function() {
+            if (this.status === 200) {
+                var blob = this.response; //使用response作为返回值。
+                var url = URL.createObjectURL(blob); // 创建临时下载链接
+                var fileName = 'test.zip'; //自定义文件名和文件后缀
+                // 转换完成，创建一个a标签用于下载
+                var a = document.createElement("a");
+                a.download = fileName;
+                a.href = url;
+                a.click();
+                URL.revokeObjectURL(a.href); //删除临时链接
+            }
+        };
+        xhr.send(JSON.stringify(data));
     }
-
-    // function downloadHomeWorks(data) {
-    //     try {
-    //         var queryForm = data;
-    //         var exportForm = $("<form action='/download' method='post'></form>")
-    //         exportForm.html(queryForm);
-    //         $(document.body).append(exportForm);
-    //         exportForm.submit();
-    //     } catch (e) {
-    //         console.log(e);
-    //     } finally {
-    //         exportForm.remove();
-    //     }
-    // }
 
 
     // 加载表
@@ -132,11 +118,14 @@
                 ,data = checkStatus.data; //获取选中的数据
             switch(obj.event){
                 case 'download':
+                    console.info(data);
+                    console.info(data.length)
                     if(data.length == 0){
                         layer.msg('请选择需要下载的文件！');
+                    }else{
+                        layer.msg('开始下载！');
+                        download(data);
                     }
-                    console.info(data);
-                    downloadHomeWorks(data);
             }
         });
 
@@ -148,7 +137,7 @@
             if(layEvent === 'detail'){
                 layer.msg('查看操作');
             } else if(layEvent === 'del'){
-                layer.confirm('真的删除行么', function(index){
+                layer.confirm('真的删除行吗？', function(index){
                     obj.del(); //删除对应行（tr）的DOM结构
                     layer.close(index);
                     //向服务端发送删除指令
