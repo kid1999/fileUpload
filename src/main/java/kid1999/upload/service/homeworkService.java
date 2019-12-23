@@ -1,6 +1,7 @@
 package kid1999.upload.service;
 
-import kid1999.upload.dto.Projects;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import kid1999.upload.dto.Project;
 import kid1999.upload.mapper.homeworkMapper;
 import kid1999.upload.mapper.studentMapper;
 import kid1999.upload.mapper.userworkMapper;
@@ -46,16 +47,16 @@ public class homeworkService{
 	}
 
 	// 查询当前的 已完成和未完成 项目
-	public List<List<Projects>> findProjects(Integer userid){
-		List<Projects> DoingProjects = new ArrayList<>();
-		List<Projects> DoneProjects = new ArrayList<>();
-		List<List<Projects>> res = new ArrayList<>();
+	public List<List<Project>> findProjects(Integer userid){
+		List<Project> DoingProjects = new ArrayList<>();
+		List<Project> DoneProjects = new ArrayList<>();
+		List<List<Project>> res = new ArrayList<>();
 		List<HomeWork> homeWorks = findByUserId(userid);
 		for (HomeWork homeWork:homeWorks) {
 			if(homeWork.getEndtime().before(new Timestamp(System.currentTimeMillis()))){
-				DoneProjects.add(new Projects(homeWork,studentMapper.countByWorkId(homeWork.getId())));
+				DoneProjects.add(new Project(homeWork,studentMapper.countByWorkId(homeWork.getId())));
 			}else{
-				DoingProjects.add(new Projects(homeWork,studentMapper.countByWorkId(homeWork.getId())));
+				DoingProjects.add(new Project(homeWork,studentMapper.countByWorkId(homeWork.getId())));
 			}
 		}
 		res.add(DoingProjects);
@@ -72,17 +73,30 @@ public class homeworkService{
 		userworkMapper.insert(userwork);
 	}
 
-	public Projects getProByTitle(String worktitle, int userid) {
-		HomeWork homeWork = studentMapper.getWorkByTitle(worktitle,userid);
+	// 获取项目磁盘使用量
+	public double getCapacity(int workid){
+		return studentMapper.getCapacity(workid);
+	}
+
+	// 通过workId 查询userid
+	public Userwork findUserIdByWorkId(int workId) {
+		QueryWrapper wrapper = new QueryWrapper();
+		wrapper.eq("workid",workId);
+		return userworkMapper.selectOne(wrapper);
+	}
+
+	// 回传project 通过 workid
+	public Project getProjectByworkId(int worktid) {
+		HomeWork homeWork = homeworkMapper.selectById(worktid);
 		if(homeWork != null){
-			return new Projects(homeWork,studentMapper.countByWorkId(homeWork.getId()));
+			return new Project(homeWork,studentMapper.countByWorkId(homeWork.getId()));
 		} else{
 			return null;
 		}
 	}
 
-	// 获取项目磁盘使用量
-	public double getCapacity(int workid){
-		return studentMapper.getCapacity(workid);
+	// 通过workId 查询homework
+	public HomeWork findHomeWorkById(int worktid) {
+		return homeworkMapper.selectById(worktid);
 	}
 }

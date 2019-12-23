@@ -32,7 +32,6 @@ public class ApiController {
 
     /**
      * 删除student记录
-     * @return
      */
     @DeleteMapping("/homework")
     Result deleteHomeWork(@RequestBody Student student){
@@ -44,21 +43,16 @@ public class ApiController {
 
     /**
      * 获取homework列表
-     * @param worktitle
-     * @param userid
-     * @param pageSize
-     * @param page
-     * @return
      */
     @GetMapping("/homeworks")
     @ResponseBody
-    Layui getcollection(@RequestParam(value = "worktitle") String worktitle,
+    Layui getHomeworks(@RequestParam(value = "workid") String workid,
                         @RequestParam(value = "userid") int userid,
-                        @RequestParam(value = "pageSize",defaultValue = "10") int pageSize,
+                        @RequestParam(value = "limit",defaultValue = "10") int limit,
                         @RequestParam(value = "page",defaultValue = "1") int page
     ){
-        log.info("项目详情页");
-        List<Student> students = studentService.getStudentsByTitle(worktitle,userid);
+        log.info("获取homeworks");
+        List<Student> students = studentService.getStudentsByWorkId(workid,page,limit);
         return Layui.data(1,students);
     }
 

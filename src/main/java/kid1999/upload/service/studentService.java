@@ -1,6 +1,8 @@
 package kid1999.upload.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import kid1999.upload.mapper.studentMapper;
 import kid1999.upload.model.Student;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,5 +54,14 @@ public class studentService {
 	// 删除一个学生提交信息
 	public void deleteStudentById(int studentId) {
 		studentMapper.deleteById(studentId);
+	}
+
+	// 查询提交信息 通过 workid
+	public List<Student> getStudentsByWorkId(String workid, int pageNo, int pageSize) {
+		IPage<Student> page = new Page<>(pageNo, pageSize);
+		QueryWrapper<Student> wrapper = new QueryWrapper<>();
+		wrapper.eq("workid",workid);
+		IPage<Student> studentIPage = studentMapper.selectPage(page, wrapper);
+		return studentIPage.getRecords();
 	}
 }

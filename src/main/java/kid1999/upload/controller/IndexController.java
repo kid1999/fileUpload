@@ -48,6 +48,11 @@ public class IndexController {
 		return "system/error";
 	}
 
+	@GetMapping("/test")
+	String test(){
+		return "test";
+	}
+
 
 
 }

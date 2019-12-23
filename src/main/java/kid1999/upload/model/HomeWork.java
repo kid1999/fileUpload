@@ -26,4 +26,6 @@ public class HomeWork {
   private Timestamp endtime;
   private String type;
   private Double capacity;
+  private String invitationCode;
+  private int encryption;
 }

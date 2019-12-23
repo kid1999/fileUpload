@@ -13,7 +13,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class Projects {
+public class Project {
 	private HomeWork homeWork;
 	private int count;
 }

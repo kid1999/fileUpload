@@ -94,7 +94,7 @@
             ,id: 'TestId'
             ,where: {
                 userid: [[${session.user.getId()}]],
-                worktitle: [[${worktitle}]]
+                workid: [[${workid}]]
             }
             ,title: '学生上传信息'
             ,totalRow: true
@@ -103,12 +103,12 @@
             ,cols: [
                 [
                     {type: 'checkbox', fixed: 'left'}
-                    ,{field:'id', title:'学号'}
+                    ,{field:'id', title:'学号',sort: true}
                     ,{field:'name', title:'姓名'}
-                    ,{field:'classname', title:'班级'}
-                    ,{field:'uptime', title:'上传时间'}
+                    ,{field:'classname', title:'班级',sort: true}
+                    ,{field:'uptime', title:'上传时间',sort: true}
                     ,{field:'filename', title:'文件名'}
-                    ,{field:'filesize', title:'文件大小'}
+                    ,{field:'filesize', title:'文件大小(kb)',sort: true}
                     ,{fixed: 'right', align:'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
                 ]
             ]

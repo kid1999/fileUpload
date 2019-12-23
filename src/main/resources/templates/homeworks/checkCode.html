@@ -3,7 +3,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
-    <title>创建项目信息</title>
+    <title>请输入邀请码</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -11,11 +11,12 @@
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
     <script src="/static/js/jquery-3.3.1.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
-    <script src="/static/layui/layui.js"></script>
+    <script src="/static/layui/layui.js" type="text/javascript" ></script>
 </head>
 <body>
 
 <div th:insert="~{base :: navbar}"/>
+
 
 <div class="container">
 
@@ -23,7 +24,7 @@
         <div class="col-md-4 col-md-offset-4">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">创建项目信息</h3>
+                    <h3 class="panel-title">请输入邀请码</h3>
                 </div>
                 <div class="panel-body">
                     <form accept-charset="UTF-8" class="layui-form">
@@ -31,37 +32,23 @@
 
                             <div class="form-group">
                                 <label>项目名称:</label>
-                                <input type="text" class="form-control layui-input" name="title" required  lay-verify="title" placeholder="文件柜名" autocomplete="off" >
+                                <p th:text="${project.homeWork.title}" >
                             </div>
 
                             <div class="form-group">
-                                <label>填写描述信息:</label>
-                                <textarea placeholder="请输入内容" class="form-control layui-textarea" name="infomation"></textarea>
+                                <label>描述信息:</label>
+                                <p th:text="${project.homeWork.infomation}">
                             </div>
 
                             <div class="form-group">
-                                <label>文件命名格式:</label>
-                                <select name="type" lay-verify="">
-                                    <option value="6">姓名</option>
-                                    <option value="7">学号</option>
-                                    <option value="1">姓名-文件名</option>
-                                    <option value="2">学号-文件名</option>
-                                    <option value="3">学号-姓名-文件名</option>
-                                    <option value="4">班级-姓名-文件名</option>
-                                    <option value="5">班级-姓名-学号-文件名</option>
-                                </select>
+                                <label>结束时间：</label>
+                                <p th:text="${project.homeWork.endtime}">
                             </div>
 
-
                             <div class="form-group">
-                                <label>是否加密：</label>
-                                <input type="checkbox" name="encryption" lay-skin="switch" lay-text="是|否" value="1">
-                            </div>
-
-
-                            <div class="form-group">
-                                <label>选择截止日期：</label>
-                                <input type="text" class="layui-input" required  lay-verify="endtime"  id="date" name="endtime" placeholder="yyyy-MM-dd HH:mm:ss">
+                                <label>邀请码：</label>
+                                <input type="text" required  lay-verify="code" name="code" class="form-control layui-input" placeholder="请输入邀请码">
+                                <input type="hidden" name="workid" th:value="${project.homeWork.id}">
                             </div>
 
                             <input class="btn btn-lg btn-success btn-block" lay-submit lay-filter="formDemo" value="提交">
@@ -76,25 +63,25 @@
 </div>
 
 
-<script th:inline="JavaScript">
 
+<script th:inline="JavaScript">
 
     // 提交申请
     function PostTable(data){
         $.ajax({
-            url: '/createWork',
+            url: '/checkCode',
             type: "POST",
             async: true, // 是否异步请求（此处需这只为异步请求true，否则bootstrap的modal不会顺序显示）
             cache: false, // 是否缓存此页面，每次都请求服务器
-            contentType: "application/json", //"application/x-www-form-urlencoded", // 内容编码类型，默认
+            contentType: "application/x-www-form-urlencoded", //"application/json",  内容编码类型，默认
             dataType: "json", // 预期服务器返回数据格式
             timeout: 3000, // 超时时间，60s
-            data: JSON.stringify(data), // 请求参数
+            data: data, // 请求参数
             success: function(data){
                 if(data.code === 200){
                     layer.msg(data.info);
                     /*<![CDATA[*/
-                    var href = [[@{/userpage}]];
+                    var href = [[@{/upload}]] + "?workid=" + [[${project.homeWork.id}]];
                     /*]]>*/
                     window.location = href;
                 }else{
@@ -109,31 +96,17 @@
     }
 
 
-    layui.use(['form', 'laydate'], function(){
+    layui.use(['form'], function(){
         var form = layui.form
-            ,layer = layui.layer
-            ,laydate = layui.laydate;
+            ,layer = layui.layer;
 
-        //日期时间选择器
-        laydate.render({
-            elem: '#date'
-            ,type: 'datetime'
-        });
 
         //自定义验证规则
         form.verify({
-            title: function(value){
-                if(value.length < 2){
-                    return '项目名称至少得2个字符啊';
+            code: function(value){
+                if(value.length != 8){
+                    return '邀请码为8位字符';
                 }
-            },
-            endtime: function(value){
-                if(value.length == 0){
-                    return '请选择结束时间';
-                }
-            }
-            ,required: function(value){
-                layedit.sync(editIndex);
             }
         });
 

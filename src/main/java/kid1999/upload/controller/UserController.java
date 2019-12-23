@@ -137,8 +137,11 @@ public class UserController {
 	                @RequestParam(value = "code") String code){
 		log.info("注册");
 		if(checkVerificationCode(code,request)){
+			if(name.length() < 2 || name.length() > 20){
+				return Result.fail(400,"用户名不规范！");
+			}
 			if(!password1.equals(password2)){
-				return Result.fail(400,"密码重复!");
+				return Result.fail(400,"前后密码不一致!");
 			}
 			if(userService.findUserByName(name) != null){
 				return Result.fail(400,"用户名已存在!");

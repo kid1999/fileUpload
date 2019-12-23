@@ -1,8 +1,10 @@
 package kid1999.upload.controller;
 
-import kid1999.upload.dto.Projects;
+import kid1999.upload.dto.Project;
 import kid1999.upload.dto.Result;
+import kid1999.upload.model.HomeWork;
 import kid1999.upload.model.Student;
+import kid1999.upload.model.Userwork;
 import kid1999.upload.service.homeworkService;
 import kid1999.upload.service.studentService;
 import kid1999.upload.utils.FastDFSClientUtils;
@@ -10,10 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,7 +20,7 @@ import java.sql.Timestamp;
 
 @Controller
 @Slf4j
-public class collection {
+public class CollectionController {
 
 	@Autowired
 	private homeworkService homeworkService;
@@ -33,26 +32,86 @@ public class collection {
 	private FastDFSClientUtils fastDFSClientUtils;
 
 
-	//　这是admin 某个项目详情页面
+	/**
+	 * 某个项目详情页面
+	 * @param model
+	 * @param userId
+	 * @param workId
+	 * @return
+	 */
 	@GetMapping("/deatils")
 	String Test(Model model,
-				@RequestParam(value = "worktitle") String worktitle){
-		model.addAttribute("worktitle",worktitle);
-		return "homeworks/homeworkDetails";
+	            @RequestParam(value = "userid") int userId,
+				@RequestParam(value = "workid") int workId){
+		Userwork userwork = homeworkService.findUserIdByWorkId(workId);
+		if(userwork.getUserid() == userId){
+			model.addAttribute("workid",workId);
+			return "homeworks/homeworkDetails";
+		}else{
+			return "index";
+		}
 	}
 
 
-	// 文件上传页面
+	/**
+	 * 文件上传页面
+	 * @param request
+	 * @param workid
+	 * @param model
+	 * @return
+	 */
 	@GetMapping("/upload")
-	String postcollection( @RequestParam(value = "worktitle") String worktitle,
-	                       @RequestParam(value = "userid") int userid,
+	String postcollection(HttpServletRequest request,
+	                       @RequestParam(value = "workid") int workid,
 	                       Model model){
-		Projects project = homeworkService.getProByTitle(worktitle,userid);
-		model.addAttribute("project",project);
-		return "homeworks/upload";
+		HomeWork homeWork = homeworkService.findHomeWorkById(workid);
+		Project project = homeworkService.getProjectByworkId(workid);
+		String InvitationCode = String.valueOf(request.getSession().getAttribute("invitationCode"));
+		if(homeWork.getEncryption() == 0 || InvitationCode.equals(homeWork.getInvitationCode())){
+			model.addAttribute("project",project);
+			return "homeworks/upload";
+		}else{
+			model.addAttribute("project",project);
+			return "homeworks/checkCode";
+		}
 	}
 
-	// 文件上传处理
+	/**
+	 * 校验邀请码
+	 * @param request
+	 * @param code
+	 * @param workid
+	 * @return
+	 */
+	@PostMapping("/checkCode")
+	@ResponseBody
+	Result checkCode(HttpServletRequest request,
+	                 @RequestParam("code") String code,
+	                 @RequestParam("workid")int workid){
+		log.info("校验邀请码");
+		HomeWork homeWork = homeworkService.findHomeWorkById(workid);
+		if(homeWork.getInvitationCode().equals(code)){
+			request.getSession().setAttribute("invitationCode",code);
+			return Result.success("校验通过！");
+		}else {
+			return Result.fail(400,"邀请码错误！");
+		}
+	}
+
+
+	/**
+	 * 文件上传处理
+	 * @param file
+	 * @param workid
+	 * @param type
+	 * @param remarks
+	 * @param sname
+	 * @param classname
+	 * @param studentId
+	 * @param model
+	 * @param request
+	 * @return
+	 */
 	@PostMapping("/upfile")
 	@ResponseBody
 	Result singleFileUpload(@RequestParam("file") MultipartFile file,
@@ -61,13 +120,17 @@ public class collection {
 	                        @RequestParam("remarks") String remarks,
 	                        @RequestParam("name") String sname,
 	                        @RequestParam("studentClass") String classname,
-	                        @RequestParam("studentId") String studentno,
+	                        @RequestParam("studentId") String studentId,
 	                        Model model,
 	                        HttpServletRequest request) {
-
-		Result result = new Result();
+		log.info("文件上传处理");
+		HomeWork homeWork = homeworkService.findHomeWorkById(workid);
+		Timestamp endtime = homeWork.getEndtime();
 		if (file.isEmpty()){
 			return Result.fail(400,"文件不允许为空");
+		}
+		if(endtime.before(new Timestamp(System.currentTimeMillis()))){
+			return Result.fail(400,"本项目已停止接收文件上传！");
 		}
 		// 获取来访页面url
 		String referer = request.getHeader("referer");
@@ -83,14 +146,14 @@ public class collection {
 		// 处理保存的文件名
 		switch (type){
 			case "1" : filename = sname + "-" + fname;break;
-			case "2" : filename = studentno + "-" + fname;break;
-			case "3" : filename = studentno + "-" + sname + "-" + fname;break;
+			case "2" : filename = studentId + "-" + fname;break;
+			case "3" : filename = studentId + "-" + sname + "-" + fname;break;
 			case "4" : filename = classname + "-" + sname + "-" + fname;break;
-			case "5" : filename = classname + "-" + sname + "-" + studentno + "-" + fname;break;
+			case "5" : filename = classname + "-" + sname + "-" + studentId + "-" + fname;break;
 			case "6" : filename = sname + "." + fname.substring(fname.lastIndexOf(".") + 1);break;
 			case "7" : filename = sname + "." + fname.substring(fname.lastIndexOf(".") + 1);break;
 		}
-		log.info(sname+ "--" + studentno + "--" + filename );
+		log.info(sname+ "--" + studentId + "--" + filename );
 		// 构造student
 		Student newStudent = new Student();
 		newStudent.setName(sname);
@@ -99,6 +162,7 @@ public class collection {
 		newStudent.setUptime(new Timestamp(System.currentTimeMillis()));
 		newStudent.setWorkid(workid);
 		newStudent.setFilename(filename);
+		newStudent.setStudentId(studentId);
 		double filesize = (double) file.getSize();
 		newStudent.setFilesize(filesize/1024);
 		// 先查看是否重复

@@ -33,7 +33,10 @@
             <div id="two">
                 <div class="panel panel-success">
                     <div class="panel-heading">正在进行中的项目</div>
-                    <table class="table">
+                    <div class="panel-body" th:if="${#lists.isEmpty(DoingProject)}">
+                        <span class="text-center">暂无！</span>
+                    </div>
+                    <table class="table" th:unless="${#lists.isEmpty(DoingProject)}">
                         <!--标题-->
                         <thead>
                         <tr>
@@ -41,6 +44,7 @@
                             <th>创建时间</th>
                             <th>结束时间</th>
                             <th>已收</th>
+                            <th>邀请码</th>
                             <th>项目地址</th>
                         </tr>
                         </thead>
@@ -48,15 +52,17 @@
                         <tbody>
                         <tr th:each="project : ${DoingProject}">
                             <th scope="row">
-                                <a th:href="@{'/deatils?' + 'userid=' + ${session.user.getId()} + '&worktitle=' + ${project.homeWork.title} }" th:text="${project.homeWork.title}"></a>
+                                <a th:href="@{'/deatils?' + 'userid=' + ${session.user.getId()} + '&workid=' + ${project.homeWork.id} }" th:text="${project.homeWork.title}"></a>
                             </th>
                             <td th:text="${project.homeWork.createtime}">Mark</td>
                             <td th:text="${project.homeWork.endtime}">Otto</td>
                             <td>
                                 <span class="badge" th:text="${project.count}">3</span>
                             </td>
+                            <td th:if="${project.homeWork.invitationCode} == null" th:text="无">invitationCode</td>
+                            <td th:unless="${project.homeWork.invitationCode} == null" th:text="${project.homeWork.invitationCode}">invitationCode</td>
                             <th scope="row">
-                                <a th:href="@{'/upload?' + 'userid=' + ${session.user.getId()} + '&worktitle=' + ${project.homeWork.title} }">项目地址</a>
+                                <a th:href="@{'/upload?'+ 'workid=' + ${project.homeWork.id} }">项目地址</a>
                             </th>
                         </tr>
                         </tbody>
@@ -67,7 +73,11 @@
             <div id="three">
                 <div class="panel panel-default">
                     <div class="panel-heading">已结束的项目</div>
-                    <table class="table">
+                    <div class="panel-body" th:if="${#lists.isEmpty(DoneProject)}">
+                        <span class="text-center">暂无！</span>
+                    </div>
+
+                    <table class="table" th:unless="${#lists.isEmpty(DoneProject)}">
                         <!--标题-->
                         <thead>
                         <tr>
@@ -75,24 +85,27 @@
                             <th>创建时间</th>
                             <th>结束时间</th>
                             <th>已收</th>
+                            <th>邀请码</th>
                             <th>项目地址</th>
                         </tr>
                         </thead>
                         <!-- 内容 -->
                         <tbody>
-                            <tr th:each="project : ${DoneProject}">
-                                <th scope="row">
-                                    <a th:href="@{'/deatils?' + 'userid=' + ${session.user.getId()} + '&worktitle=' + ${project.homeWork.title} }" th:text="${project.homeWork.title}"></a>
-                                </th>
-                                <td th:text="${project.homeWork.createtime}">Mark</td>
-                                <td th:text="${project.homeWork.endtime}">Otto</td>
-                                <td>
-                                    <span class="badge" th:text="${project.count}">3</span>
-                                </td>
-                                <th scope="row">
-                                    <a th:href="@{'/upload?' + 'userid=' + ${session.user.getId()} + '&worktitle=' + ${project.homeWork.title} }">项目地址</a>
-                                </th>
-                            </tr>
+                        <tr th:each="project : ${DoneProject}">
+                            <th scope="row">
+                                <a th:href="@{'/deatils?' + 'userid=' + ${session.user.getId()} + '&workid=' + ${project.homeWork.id} }" th:text="${project.homeWork.title}"></a>
+                            </th>
+                            <td th:text="${project.homeWork.createtime}">Mark</td>
+                            <td th:text="${project.homeWork.endtime}">Otto</td>
+                            <td>
+                                <span class="badge" th:text="${project.count}">3</span>
+                            </td>
+                            <td th:if="${project.homeWork.invitationCode} == null" th:text="无">invitationCode</td>
+                            <td th:unless="${project.homeWork.invitationCode} == null" th:text="${project.homeWork.invitationCode}">invitationCode</td>
+                            <th scope="row">
+                                <a th:href="@{'/upload?'+ 'workid=' + ${project.homeWork.id} }">项目地址</a>
+                            </th>
+                        </tr>
                         </tbody>
                     </table>
                 </div>
