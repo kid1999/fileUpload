@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
  **/
 
 @Component
-public class MyUserInterceptor implements HandlerInterceptor {
+public class UserInterceptor implements HandlerInterceptor {
 
 	@Autowired
 	private RedisTemplate redisTemplate;
@@ -26,6 +26,8 @@ public class MyUserInterceptor implements HandlerInterceptor {
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+
+		// 身份验证
 		Cookie[] cookies = request.getCookies();
 		// 通过 cookie 认证
 		if(cookies != null){
@@ -49,4 +51,6 @@ public class MyUserInterceptor implements HandlerInterceptor {
 			return false ;
 		}
 	}
+
+
 }

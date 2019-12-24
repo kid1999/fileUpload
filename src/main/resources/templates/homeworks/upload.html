@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
     <link type="text/css" rel="stylesheet" href="/static/css/fileinput.min.css"/>
     <link href="/static/css/bootstrapValidator.css">
-    <link rel="stylesheet" href="css/layer.css">
+    <link rel="stylesheet" href="/static/css/layer.css">
     <script src="/static/js/jquery-3.3.1.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="/static/js/fileinput.min.js"></script>
@@ -151,9 +151,9 @@
                     success:function (data) {
                         console.info(data);
                         if (data.code === 200) {
-                            alert(data['info']);
+                            layer.msg(data['info'])
                         } else {
-                            alert(data.info);
+                            layer.msg(data['info'])
                         }
                     }
                 });

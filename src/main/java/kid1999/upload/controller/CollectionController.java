@@ -132,13 +132,6 @@ public class CollectionController {
 		if(endtime.before(new Timestamp(System.currentTimeMillis()))){
 			return Result.fail(400,"本项目已停止接收文件上传！");
 		}
-		// 获取来访页面url
-		String referer = request.getHeader("referer");
-		if(referer != null){
-			model.addAttribute("referer",referer);
-		}else{
-			model.addAttribute("referer",request.getHeader("host"));
-		}
 		// 文件信息处理
 		String fname = file.getOriginalFilename();
 		String filename = "";

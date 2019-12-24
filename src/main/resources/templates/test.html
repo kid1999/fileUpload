@@ -1,10 +1,12 @@
+
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>主页</title>
+    <title>文件收集列表</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
     <script src="/static/js/jquery-3.3.1.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
@@ -15,22 +17,9 @@
 
 <div th:insert="~{base :: navbar}"/>
 
-<div class="container">
-    <div class="jumbotron">
-        <h1 th:if="${session.user == null}">欢迎光临！</h1>
-        <h1 th:unless="${session.user == null}" th:text="'欢迎回来， ' + ${session.user.getName()}"></h1>
-        <p>这里可以开启一个空间，收集文件。</p>
-        <p th:if="${session.user == null}"><a class="btn btn-primary btn-lg" href="/login" role="button">登录</a> <a class="btn btn-success btn-lg" href="/register" role="button">注册</a></p>
-        <p th:unless="${session.user == null}"><a class="btn btn-success btn-lg" href="/userpage" role="button">进入项目文件夹</a></p>
-    </div>
-</div>
-
 
 <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
-<div id="main" class="container" style="width: 1300px;height:800px;"></div>
-
-</body>
-
+<div id="main" style="width: 1200px;height:800px;"></div>
 <script type="text/javascript">
     // 绘制图表。
     var myChart = echarts.init(document.getElementById('main'));
@@ -63,7 +52,7 @@
 
                 title: [{
                     left: 'center',
-                    text: '30天网站点击量统计'
+                    text: '30天网站访问量统计'
                 }],
                 tooltip: {
                     trigger: 'axis'
@@ -72,7 +61,7 @@
                     data: dateList
                 }],
                 yAxis: [{
-                    name: '日点击量',
+                    name: '日访问量',
                     splitLine: {show: false}
                 }],
                 grid: [{
@@ -95,7 +84,7 @@
 
 </script>
 
-
 <footer th:insert="~{base :: footer}" class="navbar-fixed-bottom"/>
 
+</body>
 </html>

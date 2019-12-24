@@ -19,14 +19,16 @@ public class WebAppConfig extends WebMvcConfigurerAdapter {
 
 	//自定义的拦截器
 	@Resource
-	private MyUserInterceptor myUserInterceptor;
+	private UserInterceptor UserInterceptor;
 
-
+	@Resource
+	private DayCountInterceptor dayCountInterceptor;
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		//注册自定义拦截器，添加拦截路径和排除拦截路径
-		registry.addInterceptor(myUserInterceptor)
+		registry.addInterceptor(dayCountInterceptor).addPathPatterns("/**").excludePathPatterns("/static/**","/api/**");
+		registry.addInterceptor(UserInterceptor)
 				.addPathPatterns("/**")
 				.excludePathPatterns("/",
 						"/api/**","/test",
@@ -37,6 +39,8 @@ public class WebAppConfig extends WebMvcConfigurerAdapter {
 						"/checktable","/changepasswd",
 						"/static/**");
 	}
+
+	//注册自定义拦截器，添加拦截路径和排除拦截路径
 
 	// 静态资源配置
 	@Override
