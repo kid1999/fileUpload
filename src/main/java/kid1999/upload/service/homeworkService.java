@@ -4,9 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import kid1999.upload.dto.Project;
 import kid1999.upload.mapper.homeworkMapper;
 import kid1999.upload.mapper.studentMapper;
-import kid1999.upload.mapper.userworkMapper;
 import kid1999.upload.model.HomeWork;
-import kid1999.upload.model.Userwork;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,8 +23,6 @@ public class homeworkService{
 	@Autowired
 	private studentMapper studentMapper;
 
-	@Autowired
-	private userworkMapper userworkMapper;
 
 	// 新建work项目并返回对象
 	public HomeWork addHomeWork(HomeWork homeWork){
@@ -34,29 +30,31 @@ public class homeworkService{
 		return homeWork;
 	}
 
-	// 通过title寻找work对象
+	// 通过title,userid 寻找work对象
 	public HomeWork findHKByTitleAndUserID(String title,int userId) {
-
-		return homeworkMapper.findHKByTitleAndUserID(title,userId);
+		QueryWrapper<HomeWork> wrapper = new QueryWrapper<>();
+		wrapper.eq("title",title).eq("user_id",userId);
+		return homeworkMapper.selectOne(wrapper);
 	}
 
 	// 返回一个user 的所有work项目
-	public List<HomeWork> findByUserId(Integer userid){
-		List<HomeWork> homeWorks = homeworkMapper.findByUserId(userid);
-		return homeWorks;
+	public List<HomeWork> findWorksByUserId(Integer userId){
+		QueryWrapper<HomeWork> wrapper = new QueryWrapper<>();
+		wrapper.eq("user_id",userId);
+		return homeworkMapper.selectList(wrapper);
 	}
 
 	// 查询当前的 已完成和未完成 项目
-	public List<List<Project>> findProjects(Integer userid){
+	public List<List<Project>> findProjects(Integer userId){
 		List<Project> DoingProjects = new ArrayList<>();
 		List<Project> DoneProjects = new ArrayList<>();
 		List<List<Project>> res = new ArrayList<>();
-		List<HomeWork> homeWorks = findByUserId(userid);
+		List<HomeWork> homeWorks = findWorksByUserId(userId);
 		for (HomeWork homeWork:homeWorks) {
 			if(homeWork.getEndtime().before(new Timestamp(System.currentTimeMillis()))){
-				DoneProjects.add(new Project(homeWork,studentMapper.countByWorkId(homeWork.getId())));
+				DoneProjects.add(new Project(homeWork,countByWorkId(homeWork.getId())));
 			}else{
-				DoingProjects.add(new Project(homeWork,studentMapper.countByWorkId(homeWork.getId())));
+				DoingProjects.add(new Project(homeWork,countByWorkId(homeWork.getId())));
 			}
 		}
 		res.add(DoingProjects);
@@ -64,32 +62,26 @@ public class homeworkService{
 		return res;
 	}
 
-
-	// 关联 work 和 user
-	public void add(int workid, int userid) {
-		Userwork userwork = new Userwork();
-		userwork.setWorkid(workid);
-		userwork.setUserid(userid);
-		userworkMapper.insert(userwork);
-	}
-
-	// 获取项目磁盘使用量
-	public double getCapacity(int workid){
-		return studentMapper.getCapacity(workid);
-	}
-
-	// 通过workId 查询userid
-	public Userwork findUserIdByWorkId(int workId) {
+	// 统计student数量
+	public int countByWorkId(Integer workId){
 		QueryWrapper wrapper = new QueryWrapper();
 		wrapper.eq("workid",workId);
-		return userworkMapper.selectOne(wrapper);
+		return studentMapper.selectCount(wrapper);
+	}
+
+
+	// 通过workId 查询 homework
+	public HomeWork findUserIdByWorkId(int workId) {
+		QueryWrapper wrapper = new QueryWrapper();
+		wrapper.eq("id",workId);
+		return homeworkMapper.selectOne(wrapper);
 	}
 
 	// 回传project 通过 workid
 	public Project getProjectByworkId(int worktid) {
 		HomeWork homeWork = homeworkMapper.selectById(worktid);
 		if(homeWork != null){
-			return new Project(homeWork,studentMapper.countByWorkId(homeWork.getId()));
+			return new Project(homeWork,countByWorkId(homeWork.getId()));
 		} else{
 			return null;
 		}
@@ -97,6 +89,23 @@ public class homeworkService{
 
 	// 通过workId 查询homework
 	public HomeWork findHomeWorkById(int worktid) {
-		return homeworkMapper.selectById(worktid);
+		QueryWrapper wrapper = new QueryWrapper();
+		wrapper.eq("id",worktid);
+		return homeworkMapper.selectOne(wrapper);
+	}
+
+	// 汇总一个项目的文件夹空间
+	public double CountHomeWorkCapacityById(int id) {
+		return  studentMapper.getCapacity(id);
+	}
+
+	// 获取项目磁盘使用量
+	public double getCapacity(int workid){
+		return studentMapper.getCapacity(workid);
+	}
+
+	// 更新homework
+	public void updateHomeWork(HomeWork homeWork) {
+		homeworkMapper.updateById(homeWork);
 	}
 }

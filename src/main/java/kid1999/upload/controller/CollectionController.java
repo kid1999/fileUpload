@@ -4,7 +4,6 @@ import kid1999.upload.dto.Project;
 import kid1999.upload.dto.Result;
 import kid1999.upload.model.HomeWork;
 import kid1999.upload.model.Student;
-import kid1999.upload.model.Userwork;
 import kid1999.upload.service.homeworkService;
 import kid1999.upload.service.studentService;
 import kid1999.upload.utils.FastDFSClientUtils;
@@ -12,7 +11,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -43,8 +45,8 @@ public class CollectionController {
 	String Test(Model model,
 	            @RequestParam(value = "userid") int userId,
 				@RequestParam(value = "workid") int workId){
-		Userwork userwork = homeworkService.findUserIdByWorkId(workId);
-		if(userwork.getUserid() == userId){
+		HomeWork homeWork = homeworkService.findUserIdByWorkId(workId);
+		if(homeWork.getUserId() == userId){
 			model.addAttribute("workid",workId);
 			return "homeworks/homeworkDetails";
 		}else{

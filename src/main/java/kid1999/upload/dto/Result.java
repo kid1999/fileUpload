@@ -12,11 +12,13 @@ import lombok.Data;
 public class Result {
 	private int code;
 	private String info;
+	private Object data;
 
 	public static Result success(String info){
 		Result result = new Result();
 		result.setCode(200);
 		result.setInfo(info);
+		result.data = null;
 		return result;
 	}
 
@@ -24,6 +26,12 @@ public class Result {
 		Result result = new Result();
 		result.setCode(code);
 		result.setInfo(info);
+		result.data = null;
+		return result;
+	}
+
+	public static Result addData(Result result,Object data){
+		result.setData(data);
 		return result;
 	}
 

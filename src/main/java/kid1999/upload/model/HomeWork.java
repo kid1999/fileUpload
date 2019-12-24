@@ -28,4 +28,5 @@ public class HomeWork {
   private Double capacity;
   private String invitationCode;
   private int encryption;
+  private int userId;
 }

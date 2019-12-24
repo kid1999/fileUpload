@@ -7,6 +7,7 @@ import kid1999.upload.model.Student;
 import kid1999.upload.model.User;
 import kid1999.upload.service.homeworkService;
 import kid1999.upload.service.studentService;
+import kid1999.upload.service.userService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,9 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Controller
 @Slf4j
@@ -30,6 +29,9 @@ public class userPage {
 	@Autowired
 	private studentService studentService;
 
+	@Autowired
+	private userService userService;
+
 	// user 主页
 	@GetMapping("/userpage")
 	String userpage(HttpServletRequest request,
@@ -39,9 +41,29 @@ public class userPage {
 		List<List<Project>> projects = homeworkService.findProjects(user.getId());
 		model.addAttribute("DoingProject",projects.get(0));
 		model.addAttribute("DoneProject",projects.get(1));
-		model.addAttribute("students",studentService.getRemarksByUserid(user.getId()));
+		model.addAttribute("students",null);
 		return "homeworks/userpage";
 	}
+
+	@GetMapping("/spaceUsage")
+	@ResponseBody
+	Result getSpaceUsage(@RequestParam("userid") int userid){
+		User user = userService.findUserById(userid);
+		List<HomeWork> homeWorks = homeworkService.findWorksByUserId(userid);
+		double used = 0;
+		for (HomeWork homeWork:homeWorks){
+			double count = homeworkService.CountHomeWorkCapacityById(homeWork.getId());
+			System.out.println(count + " " + homeWork.getId());
+			used += count;
+			homeWork.setCapacity(count);
+			homeworkService.updateHomeWork(homeWork);
+		}
+		Map<String,Double> map = new HashMap<>();
+		map.put("total",user.getCapacity()/1024);
+		map.put("used",used==0 ? 0 : used/1024 );
+		return Result.addData(Result.success("获取剩余空间成功"),map);
+	}
+
 
 	// 创建项目
 	@GetMapping("/createWork")
@@ -72,55 +94,18 @@ public class userPage {
 		}
 		homeWork.setCapacity(0.0);
 		homeWork.setCreatetime(new Timestamp(System.currentTimeMillis()));
-		homeWork = homeworkService.addHomeWork(homeWork);    // 新建work并返回
-		homeworkService.add(homeWork.getId(),user.getId());   // 新建user-work
+		homeWork.setUserId(user.getId());
+		homeworkService.addHomeWork(homeWork);    // 新建work并返回
 		return Result.success("创建成功！");
 	}
 
 
-//	@Transactional
-//	@PostMapping("/createWork")
-//	String createWork(HttpServletRequest request,
-//	                  Model model,
-//	                  @RequestParam(value = "title") String title,
-//	                  @RequestParam(value = "desc") String desc,
-//	                  @RequestParam(value = "type") String type,
-//	                  @RequestParam(value = "endtime") String endtime
-//	){
-//		log.info("创建项目");
-//		User user = (User) request.getSession().getAttribute("user");
-//		if(homeworkService.findHKByTitleAndUserID(title,user.getId()) != null){
-//			model.addAttribute("info","该项目已被创建！");
-//			model.addAttribute("referer",request.getRequestURI());
-//			return "system/error";
-//		}
-//
-//		//  转换时间
-//		Date now = new Date();
-//		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
-//		Date date = null;
-//		try {
-//			date = format.parse(endtime);
-//			if(date.before(now)){
-//				model.addAttribute("info","时间设置错误！");
-//				return "system/error";
-//			}
-//		} catch (ParseException e) {
-//			e.printStackTrace();
-//		}
-//
-//		HomeWork homeWork = new HomeWork();
-//		homeWork.setTitle(title);
-//		homeWork.setInfomation(desc);
-//		homeWork.setType(type);
-//		homeWork.setCreatetime(new Timestamp(System.currentTimeMillis()));
-//		homeWork.setEndtime(new Timestamp(System.currentTimeMillis()));
-//		homeWork = homeworkService.addHomeWork(homeWork);    // 新建work并返回
-//		homeworkService.add(homeWork.getId(),user.getId());   // 新建user-work
-//		return "redirect:/userpage";
-//	}
-
-
+	/**
+	 * 搜索提交记录
+	 * @param filename
+	 * @param model
+	 * @return
+	 */
 	@PostMapping("/search")
 	String search(@RequestParam("filename") String filename,
 	              Model model){
