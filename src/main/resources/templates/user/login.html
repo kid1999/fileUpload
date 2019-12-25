@@ -136,8 +136,8 @@
                             self.location.href="/userpage";
                         }else{
                             layer.msg(data.info);
-                            $("#captcha-img").click();      // 刷新验证码
                         }
+                        $("#captcha-img").click();  // 刷新验证码
                         console.info(JSON.stringify(data));
                     },
                     error: function(xhr, errMsg, e){
