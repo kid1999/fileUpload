@@ -17,7 +17,7 @@
         <div class="col-lg-6 offset-3">
             <div class="card text-center bg-white border-bottom shadow-sm">
                 <div class="card-header">
-                    <span>请登录</span>
+                    <span>请修改信息</span>
                 </div>
                 <div class="card-body">
                     <form accept-charset="UTF-8" id="form">
@@ -43,23 +43,12 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="email" class="col-sm-2 col-form-label">邮箱</label>
+                            <label for="mailCode" class="col-sm-2 col-form-label">邮箱验证码</label>
                             <div class="col-sm-10">
-                                <input type="email" class="form-control" id="email" name="email" placeholder="请输入邮箱" required="required">
-                                <div class="invalid-feedback">邮箱格式错误</div>
+                                <input type="text" class="form-control" id="mailCode" name="mailCode" placeholder="请输入邮箱验证码" required="required">
+                                <div class="invalid-feedback">邮箱验证码不能为空</div>
                             </div>
                         </div>
-                        <div class="form-group row">
-                            <label for="code" class="col-sm-2 col-form-label">验证码</label>
-                            <div class="col-sm-6">
-                                <input type="text" class="form-control" id="code" name="code" placeholder="请输入验证码" required="required">
-                                <div class="invalid-feedback">验证码不能为空</div>
-                            </div>
-                            <div class="col-sm-4">
-                                <img id="captcha-img" style="width: 120px;height: 40px;display: inline-block;float: right"  src="/api/kaptcha/vrifyCode" onclick="this.src='/api/kaptcha/vrifyCode?d='+ new Date()*1" title="看不清？换一张" />
-                            </div>
-                        </div>
-
 
                         <div class="form-group row">
                             <button type="button"  class="btn btn-primary btn-block" id="submit">立即修改</button>
@@ -107,7 +96,7 @@
                     console.info(JSON.stringify(data));
                 },
                 error: function(xhr, errMsg, e){
-                    bs4pop.notice(data.info, {type: 'warning'})
+                    bs4pop.notice("发生未知错误！", {type: 'warning'})
                     $("#captcha-img").click();  // 刷新验证码
                 },
             });

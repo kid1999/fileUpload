@@ -5,11 +5,13 @@ server:
   servlet:
     context-path: /
 
-
-# cookie设置
-cookieMaxAge: 3600
-sessionMaxAge: 3600
-
+# 系统配置类：
+systemconfig:
+  cookie_maxAge: 604800
+  cookie_minAge: 3600
+  session_maxAge: 604800
+  session_minAge: 3600
+  code_maxAge: 1800
 
 # 默认用户免费空间
 user:
@@ -107,7 +109,7 @@ spring:
   mail:
     host: smtp.qq.com
     username: 1447250889@qq.com # 邮箱账号
-    password: vynxqlwqpnmphjcb    # 授权码（下面将会告诉你怎么申请）
+    password: jfwvdwbfnxhrihge    # 授权码（下面将会告诉你怎么申请）
     properties:
       mail:
         smtp:

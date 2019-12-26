@@ -92,7 +92,7 @@
                 success: function(data){
                     if(data.code === 200){
                         bs4pop.notice(data.info, {type: 'success'})
-                        self.location.href="/userpage";
+                        self.location.href="/changepasswd";
                     }else{
                         bs4pop.notice(data.info, {type: 'danger'})
                     }
@@ -101,7 +101,7 @@
                 },
                 error: function(xhr, errMsg, e){
                     $("#captcha-img").click();  // 刷新验证码
-                    bs4pop.notice(data.info, {type: 'warning'})
+                    bs4pop.notice("发生未知错误！", {type: 'warning'})
                 }
             });
         }

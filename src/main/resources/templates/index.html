@@ -3,7 +3,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
     <head>
-        <title>test</title>
+        <title>主页</title>
         <div th:replace="common_file :: common_file"></div>
     </head>
 
@@ -12,12 +12,21 @@
 <div th:insert="common_file :: header"/>
 <div class="container">
 
-    <div class="jumbotron p-4 p-md-5 text-white rounded bg-dark">
+    <div class="jumbotron p-4 p-md-5 text-white rounded bg-dark" th:if="${session.user == null}">
         <div class="col-md-6 px-0">
-            <h1 class="display-4 font-italic" th:if="${session.user == null}">欢迎光临！</h1>
-            <p class="lead my-3">这里可以开启一个空间，收集文件。</p>
-            <p class="lead mb-0" th:if="${session.user == null}"><a class="btn btn-primary btn-lg" href="/login" role="button">登录</a> <a class="btn btn-success btn-lg" href="/register" role="button">注册</a></p>
-            <p class="lead mb-0" th:unless="${session.user == null}"><a class="btn btn-success btn-lg" href="/userpage" role="button">进入项目文件夹</a></p>
+            <h1 class="display-4 font-italic" >欢迎光临！</h1>
+            <p class="lead my-3">注册用户，可以开启一个空间，收集文件哦。</p>
+            <a class="btn btn-primary btn-lg" href="/login" role="button">登录</a>
+            <a class="btn btn-success btn-lg" href="/register" role="button">注册</a></p>
+
+        </div>
+    </div>
+
+    <div class="jumbotron p-4 p-md-5 text-white rounded bg-dark" th:unless="${session.user == null}">
+        <div class="col-md-6 px-0">
+            <h1 class="display-4 font-italic" th:text="'欢迎回来， ' + ${session.user.getName()}"></h1>
+            <p class="lead my-3">点击这里，查看历史记录哦。</p>
+            <p class="lead mb-0"><a class="btn btn-success btn-lg" href="/userpage" role="button">进入项目文件夹</a></p>
         </div>
     </div>
 

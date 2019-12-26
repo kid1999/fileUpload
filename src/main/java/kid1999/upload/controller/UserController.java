@@ -3,6 +3,7 @@ package kid1999.upload.controller;
 import cn.hutool.core.util.RandomUtil;
 import com.google.code.kaptcha.impl.DefaultKaptcha;
 import kid1999.upload.dto.Result;
+import kid1999.upload.dto.SystemConfig;
 import kid1999.upload.model.User;
 import kid1999.upload.service.userService;
 import kid1999.upload.utils.MailUtil;
@@ -49,11 +50,8 @@ public class UserController {
 	@Autowired
 	private MailUtil mailUtil;
 
-	@Value("${cookieMaxAge}")
-	private int cookieMaxAge;
-
-	@Value("${sessionMaxAge}")
-	private Long sessionMaxAge;
+	@Autowired
+	private SystemConfig systemConfig;
 
 	@Value("${user.capacity}")
 	private double freeCapacity;
@@ -105,13 +103,13 @@ public class UserController {
 					request.getSession().setAttribute("user",user);
 					Cookie cookie = null;
 					if(keepLogin != null){
-						redisTemplate.opsForValue().set(uuid,user,sessionMaxAge*100, TimeUnit.SECONDS);
+						redisTemplate.opsForValue().set(uuid,user,systemConfig.getSession_maxAge(), TimeUnit.SECONDS);
 						cookie = new Cookie(URLEncoder.encode(name), URLEncoder.encode(uuid));
-						cookie.setMaxAge(cookieMaxAge*100);
+						cookie.setMaxAge(systemConfig.getCookie_maxAge());
 					}else{
-						redisTemplate.opsForValue().set(uuid,user,sessionMaxAge, TimeUnit.SECONDS);
+						redisTemplate.opsForValue().set(uuid,user,systemConfig.getSession_minAge(), TimeUnit.SECONDS);
 						cookie = new Cookie(URLEncoder.encode(name), URLEncoder.encode(uuid));
-						cookie.setMaxAge(cookieMaxAge);
+						cookie.setMaxAge(systemConfig.getCookie_minAge());
 					}
 					response.addCookie(cookie);
 					return Result.success("登录成功!");
@@ -184,7 +182,8 @@ public class UserController {
 				}
 				String mailCode = RandomUtil.randomString(6);
 				mailUtil.sendMailCode(email,"你的验证码",mailCode);
-				request.getSession().setAttribute("mailCode",mailCode);
+				System.out.println(mailCode);
+				request.getSession().setAttribute(name,mailCode);
 				return Result.success("请填写邮箱验证码");
 			}
 		}else{
@@ -212,7 +211,7 @@ public class UserController {
 			if(!password1.equals(password2)){
 				return Result.fail(400,"前后密码不一致");
 			}
-			if(request.getSession().getAttribute("mailCode").equals(mailCode)){
+			if(request.getSession().getAttribute(name).equals(mailCode)){
 				User newUser = new User();
 				newUser.setName(name);
 				newUser.setPassword(DigestUtils.md5DigestAsHex(password1.getBytes()));

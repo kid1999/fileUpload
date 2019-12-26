@@ -114,7 +114,7 @@ $("#submit").click(function(event){
             },
             error: function(xhr, errMsg, e){
                 $("#captcha-img").click();  // 刷新验证码
-                bs4pop.notice(data.info, {type: 'warning'})
+                bs4pop.notice("发生未知错误！", {type: 'warning'})
             }
         });
     }

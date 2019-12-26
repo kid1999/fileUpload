@@ -107,7 +107,7 @@ $("#submit").click(function(event){
                 console.info(JSON.stringify(data));
             },
             error: function(xhr, errMsg, e){
-                bs4pop.notice(data.info, {type: 'warning'})
+                bs4pop.notice("发生未知错误！", {type: 'warning'})
                 $("#captcha-img").click();  // 刷新验证码
             },
         });
