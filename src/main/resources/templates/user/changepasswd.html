@@ -1,112 +1,156 @@
-
 <!DOCTYPE html>
+<!--suppress ALL-->
 <html xmlns:th="http://www.thymeleaf.org">
-
 <head>
-    <title>register</title>
-    <div th:replace="common_file :: common_file"></div>
+
+    <title>修改密码</title>
+    <div th:insert="base :: static_files"/>
+
 </head>
-
 <body>
-
-<div th:insert="common_file :: header"/>
-
+<div th:insert="~{base :: navbar}"/>
 <div class="container">
-
-    <div class="row">
-        <div class="col-lg-6 offset-3">
-            <div class="card text-center bg-white border-bottom shadow-sm">
-                <div class="card-header">
-                    <span>请修改信息</span>
+    <div class="row vertical-offset-100">
+        <div class="col-md-4 col-md-offset-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">修改密码</h3>
                 </div>
-                <div class="card-body">
+                <div class="panel-body">
                     <form accept-charset="UTF-8" id="form">
-                        <div class="form-group row">
-                            <label for="name" class="col-sm-2 col-form-label">用户名</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" id="name" name="name" placeholder="请输入用户名" required="required" pattern="[A-Za-z0-9\u4e00-\u9fa5]{4,10}">
-                                <div class="invalid-feedback">请输入用户名4-10位字母数字或中文！</div>
+                        <fieldset>
+                            <div class="form-group">
+                                <label>用户名: </label>
+                                <input class="form-control" placeholder="用户名" name="name" type="text" id="name">
                             </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="password1" class="col-sm-2 col-form-label">密码</label>
-                            <div class="col-sm-10">
-                                <input type="password" class="form-control" id="password1" name="password1" placeholder="请输入新密码" required="required">
-                                <div class="invalid-feedback">密码不能为空</div>
+                            <div class="form-group">
+                                <label>密码: </label>
+                                <input class="form-control" placeholder="密码" name="password1" type="password" value="" id="password">
                             </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="password2" class="col-sm-2 col-form-label">再次输入密码</label>
-                            <div class="col-sm-10">
-                                <input type="password" class="form-control" id="password2" name="password2" placeholder="请再次输入密码" required="required">
-                                <div class="invalid-feedback">密码不能为空</div>
+                            <div class="form-group">
+                                <label>再次输入密码: </label>
+                                <input class="form-control" placeholder="再次输入密码" name="password2" type="password" value="" id="password1">
                             </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="mailCode" class="col-sm-2 col-form-label">邮箱验证码</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" id="mailCode" name="mailCode" placeholder="请输入邮箱验证码" required="required">
-                                <div class="invalid-feedback">邮箱验证码不能为空</div>
-                            </div>
-                        </div>
 
-                        <div class="form-group row">
-                            <button type="button"  class="btn btn-primary btn-block" id="submit">立即修改</button>
-                        </div>
+                            <div class="form-group">
+                                <label>邮箱验证码: </label>
+                                <input class="form-control" placeholder="邮箱验证码" name="mailCode" type="text" value="" id="mailCode">
+                            </div>
 
+                            <div class="form-group" >
+                                <button type="button" id="submit" class="btn btn-success" style="width: 100%"  data-loading-text="正在修改..." autocomplete="off">立即修改</button>
+                            </div>
+                        </fieldset>
                     </form>
-
                 </div>
             </div>
         </div>
     </div>
-
 </div>
+
 
 <script>
 
-
-    $("#submit").click(function(event){
-        var status = "";
-        Array.prototype.filter.call($('#form'), function (target) {
-            status = target.checkValidity();
-            $('#form').addClass('was-validated');
-        });
-        if(!status){
-            bs4pop.notice("信息填写错误", {type: 'warning'});
-        }else {
-            $.ajax({
-                url: '/changepasswd',
-                type: "post",
-                async: true, // 是否异步请求（此处需这只为异步请求true，否则bootstrap的modal不会顺序显示）
-                cache: false, // 是否缓存此页面，每次都请求服务器
-                contentType: "application/x-www-form-urlencoded", // 内容编码类型，默认
-                dataType: "json", // 预期服务器返回数据格式
-                timeout: 3000, // 超时时间，60s
-                data: $("#form").serialize(), // 请求参数
-                // 请求成功预处理，返回的值为success的参数data
-                success: function(data){
-                    if(data.code === 200){
-                        bs4pop.notice(data.info, {type: 'success'})
-                        self.location.href="/login";
-                    }else{
-                        bs4pop.notice(data.info, {type: 'danger'})
+    $(function () {
+        $("#form").bootstrapValidator({
+            live: 'disabled',//验证时机，enabled是内容有变化就验证（默认），disabled和submitted是提交再验证
+            excluded: [':disabled', ':hidden', ':not(:visible)'],//排除无需验证的控件，比如被禁用的或者被隐藏的
+            submitButtons: '#submit',//指定提交按钮，如果验证失败则变成disabled，但我没试成功，反而加了这句话非submit按钮也会提交到action指定页面
+            message: '通用的验证失败消息',//好像从来没出现过
+            feedbackIcons: {//根据验证结果显示的各种图标
+                valid: 'glyphicon glyphicon-ok',
+                invalid: 'glyphicon glyphicon-remove',
+                validating: 'glyphicon glyphicon-refresh'
+            },
+            fields: {
+                name: {
+                    validators: {
+                        notEmpty: {
+                            message: '用户名不能为空'
+                        },
+                        stringLength: {
+                            min: 2,
+                            max: 12,
+                            message: '用户名由2-12位字符组成'
+                        }
                     }
-                    $("#captcha-img").click();  // 刷新验证码
-                    console.info(JSON.stringify(data));
                 },
-                error: function(xhr, errMsg, e){
-                    bs4pop.notice("发生未知错误！", {type: 'warning'})
-                    $("#captcha-img").click();  // 刷新验证码
+                password1: {
+                    validators: {
+                        notEmpty: {
+                            message: '密码不能为空'
+                        }
+                    }
                 },
-            });
-
-        }
+                password2: {
+                    validators: {
+                        notEmpty: {
+                            message: '密码不能为空'
+                        },
+                        identical: {//与指定控件内容比较是否相同，比如两次密码不一致
+                            field: 'password1',//指定控件name
+                            message: '前后密码不一致'
+                        }
+                    }
+                },
+                mailCode: {
+                    validators: {
+                        notEmpty: {
+                            message: '验证码不能为空'
+                        },
+                        stringLength: {
+                            min: 6,
+                            max: 6,
+                            message: '验证码是6位字符'
+                        }
+                    }
+                },
+            }
+        });
+        $("#submit").click(function () {//非submit按钮点击后进行验证，如果是submit则无需此句直接验证
+            $("#form").bootstrapValidator('validate');//提交验证
+            if ($("#form").data('bootstrapValidator').isValid()) {//获取验证结果，如果成功，执行下面代码
+                $.ajax({
+                    url: '/changepasswd',
+                    type: "post",
+                    async: true, // 是否异步请求（此处需这只为异步请求true，否则bootstrap的modal不会顺序显示）
+                    cache: false, // 是否缓存此页面，每次都请求服务器
+                    contentType: "application/x-www-form-urlencoded", // 内容编码类型，默认
+                    dataType: "json", // 预期服务器返回数据格式
+                    timeout: 3000, // 超时时间，60s
+                    data: $("#form").serialize(), // 请求参数
+                    // 请求成功预处理，返回的值为success的参数data
+                    success: function(data){
+                        if(data.code === 200){
+                            new $.zui.Messager(data.info, {
+                                type: 'success' // 定义颜色主题
+                            }).show();
+                            self.location.href="/login";
+                        }else{
+                            new $.zui.Messager(data.info, {
+                                type: 'danger' // 定义颜色主题
+                            }).show();
+                        }
+                        $("#captcha-img").click();  // 刷新验证码
+                        console.info(JSON.stringify(data));
+                    },
+                    error: function(xhr, errMsg, e){
+                        $("#captcha-img").click();  // 刷新验证码
+                        new $.zui.Messager(errMsg, {
+                            type: 'warning' // 定义颜色主题
+                        }).show();
+                    },
+                });
+            }
+        });
     });
+
 
 
 
 </script>
 
+
 </body>
+<footer th:insert="~{base :: footer}" class="navbar-fixed-bottom"/>
 </html>

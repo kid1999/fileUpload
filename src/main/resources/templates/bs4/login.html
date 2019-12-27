@@ -1,0 +1,128 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>login</title>
+    <div th:replace="common_file :: common_file"></div>
+</head>
+
+<body>
+
+<div th:insert="common_file :: header"/>
+
+<div class="container">
+
+    <div class="row">
+        <div class="col-lg-6 offset-3">
+            <div class="card text-center bg-white border-bottom shadow-sm">
+                <div class="card-header">
+                    <h5>请登录</h5>
+                </div>
+                <div class="card-body">
+                    <form accept-charset="UTF-8" id="form">
+                        <div class="form-group row">
+                            <label for="name" class="col-sm-2 col-form-label"><strong>用户名</strong></label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="name" name="name" placeholder="请输入用户名" required="required">
+                                <div class="invalid-feedback">用户名不能为空</div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="password" class="col-sm-2 col-form-label"><strong>密码</strong></label>
+                            <div class="col-sm-10">
+                                <input type="password" class="form-control" id="password" name="password" placeholder="请输入密码" required="required">
+<!--                                <div class="valid-feedback">Looks good!</div>-->
+                                <div class="invalid-feedback">密码不能为空</div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="code" class="col-sm-2 col-form-label"><strong>验证码</strong></label>
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control" id="code" name="code" placeholder="请输入验证码" required="required">
+                                <div class="invalid-feedback">验证码不能为空</div>
+                            </div>
+                            <div class="col-sm-4">
+                                <img id="captcha-img" style="width: 120px;height: 40px;display: inline-block;float: right"  src="/api/kaptcha/vrifyCode" onclick="this.src='/api/kaptcha/vrifyCode?d='+ new Date()*1" title="看不清？换一张" />
+                            </div>
+                        </div>
+
+
+                        <div class="form-group row">
+                            <div class="custom-control custom-checkbox mr-sm-2 offset-2">
+                                <input type="checkbox" class="custom-control-input" id="keepLogin" name="keepLogin">
+                                <label class="custom-control-label" for="keepLogin">记住登录</label>
+                            </div>
+
+                            <div class="custom-control custom-checkbox mr-sm-2 offset-4">
+                                <a href="/checktable" style="display: inline-block;float: right" title="找回密码">忘记密码？</a>
+                            </div>
+
+                        </div>
+
+                        <div class="form-group row">
+                            <button type="button"  class="btn btn-primary btn-block" id="submit">登  录</button>
+                        </div>
+
+
+                        <div class="custom-control custom-checkbox offset-7">
+                            还没有账号？<a href="register" title="立即注册">立即注册</a>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+
+
+$("#submit").click(function(event){
+    var status = "";
+    Array.prototype.filter.call($('#form'), function (target) {
+        status = target.checkValidity();
+        $('#form').addClass('was-validated');
+    });
+    if(!status){
+        bs4pop.notice("账号密码填写错误", {type: 'warning'})
+        console.info("failed");
+    }else {
+        console.info("success");
+        $.ajax({
+            url: '/login',
+            type: "post",
+            async: true, // 是否异步请求（此处需这只为异步请求true，否则bootstrap的modal不会顺序显示）
+            cache: false, // 是否缓存此页面，每次都请求服务器
+            contentType: "application/x-www-form-urlencoded", // 内容编码类型，默认
+            dataType: "json", // 预期服务器返回数据格式
+            timeout: 3000, // 超时时间，60s
+            data: $("#form").serialize(), // 请求参数
+            // 请求成功预处理，返回的值为success的参数data
+            success: function(data){
+                if(data.code === 200){
+                    bs4pop.notice(data.info, {type: 'success'})
+                    self.location.href="/userpage";
+                }else{
+                    bs4pop.notice(data.info, {type: 'danger'})
+                }
+                $("#captcha-img").click();  // 刷新验证码
+                console.info(JSON.stringify(data));
+            },
+            error: function(xhr, errMsg, e){
+                $("#captcha-img").click();  // 刷新验证码
+                bs4pop.notice("发生未知错误！", {type: 'warning'})
+            }
+        });
+    }
+});
+
+
+
+</script>
+
+</body>
+</html>

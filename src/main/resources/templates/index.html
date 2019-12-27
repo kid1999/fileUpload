@@ -1,108 +1,96 @@
-
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+<head>
 
-    <head>
-        <title>主页</title>
-        <div th:replace="common_file :: common_file"></div>
-    </head>
+    <title>主页</title>
+    <div th:insert="base :: static_files"/>
 
+</head>
 <body>
 
-<div th:insert="common_file :: header"/>
+<div th:insert="~{base :: navbar}"/>
+
 <div class="container">
-
-    <div class="jumbotron p-4 p-md-5 text-white rounded bg-dark" th:if="${session.user == null}">
-        <div class="col-md-6 px-0">
-            <h1 class="display-4 font-italic" >欢迎光临！</h1>
-            <p class="lead my-3">注册用户，可以开启一个空间，收集文件哦。</p>
-            <a class="btn btn-primary btn-lg" href="/login" role="button">登录</a>
-            <a class="btn btn-success btn-lg" href="/register" role="button">注册</a></p>
-
-        </div>
+    <div class="jumbotron">
+        <h1 th:if="${session.user == null}">欢迎光临！</h1>
+        <h1 th:unless="${session.user == null}" th:text="'欢迎回来， ' + ${session.user.getName()}"></h1>
+        <p>这里可以开启一个空间，收集文件。</p>
+        <p th:if="${session.user == null}"><a class="btn btn-primary btn-lg" href="/login" role="button">登录</a> <a class="btn btn-success btn-lg" href="/register" role="button">注册</a></p>
+        <p th:unless="${session.user == null}"><a class="btn btn-success btn-lg" href="/userpage" role="button">进入项目文件夹</a></p>
     </div>
-
-    <div class="jumbotron p-4 p-md-5 text-white rounded bg-dark" th:unless="${session.user == null}">
-        <div class="col-md-6 px-0">
-            <h1 class="display-4 font-italic" th:text="'欢迎回来， ' + ${session.user.getName()}"></h1>
-            <p class="lead my-3">点击这里，查看历史记录哦。</p>
-            <p class="lead mb-0"><a class="btn btn-success btn-lg" href="/userpage" role="button">进入项目文件夹</a></p>
-        </div>
-    </div>
-
-    <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
-    <div id="main" style="width: 1100px;height:800px;"></div>
-    <script type="text/javascript">
-        // 绘制图表。
-        var myChart = echarts.init(document.getElementById('main'));
-
-        myChart.showLoading();
-        var dateList = [];
-        var valueList = [];
-        // 获取数据
-        $.ajax({
-            url: '/api/dayCount',
-            type: "get",
-            contentType:  "application/x-www-form-urlencoded", //"application/json", 内容编码类型，默认
-            dataType: "json", // 预期服务器返回数据格式
-            timeout: 3000, // 超时时间，60s
-            data: {}, // 请求参数
-            success: function(data){
-                for (var i=0;i< data.length;i++){
-                    dateList.push(data[i].day);
-                    valueList.push(data[i].count);
-                }
-                myChart.hideLoading();
-                myChart.setOption({
-                    visualMap: [{
-                        show: false,
-                        type: 'continuous',
-                        seriesIndex: 0,
-                        min: 0,
-                        max: 10000          // 设置颜色区间
-                    }],
-
-                    title: [{
-                        left: 'center',
-                        text: '30天网站访问量统计'
-                    }],
-                    tooltip: {
-                        trigger: 'axis'
-                    },
-                    xAxis: [{
-                        data: dateList
-                    }],
-                    yAxis: [{
-                        name: '日访问量',
-                        splitLine: {show: false}
-                    }],
-                    grid: [{
-                        bottom: '60%'
-                    }, {
-                        top: '60%'
-                    }],
-                    series: [{
-                        type: 'line',
-                        showSymbol: false,
-                        data: valueList
-                    }]
-                });
-
-                dateList = [];
-                valueList = [];
-            }
-        });
-
-
-    </script>
 </div>
 
-<script>
+
+<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+<div id="main" class="container" style="width: 1300px;height:800px;"></div>
+
+</body>
+
+<script type="text/javascript">
+    // 绘制图表。
+    var myChart = echarts.init(document.getElementById('main'));
+
+    myChart.showLoading();
+    var dateList = [];
+    var valueList = [];
+    // 获取数据
+    $.ajax({
+        url: '/api/dayCount',
+        type: "get",
+        contentType:  "application/x-www-form-urlencoded", //"application/json", 内容编码类型，默认
+        dataType: "json", // 预期服务器返回数据格式
+        timeout: 3000, // 超时时间，60s
+        data: {}, // 请求参数
+        success: function(data){
+            for (var i=0;i< data.length;i++){
+                dateList.push(data[i].day);
+                valueList.push(data[i].count);
+            }
+            myChart.hideLoading();
+            myChart.setOption({
+                visualMap: [{
+                    show: false,
+                    type: 'continuous',
+                    seriesIndex: 0,
+                    min: 0,
+                    max: 10000          // 设置颜色区间
+                }],
+
+                title: [{
+                    left: 'center',
+                    text: '30天网站点击量统计'
+                }],
+                tooltip: {
+                    trigger: 'axis'
+                },
+                xAxis: [{
+                    data: dateList
+                }],
+                yAxis: [{
+                    name: '日点击量',
+                    splitLine: {show: false}
+                }],
+                grid: [{
+                    bottom: '60%'
+                }, {
+                    top: '60%'
+                }],
+                series: [{
+                    type: 'line',
+                    showSymbol: false,
+                    data: valueList
+                }]
+            });
+
+            dateList = [];
+            valueList = [];
+        }
+    });
+
 
 </script>
 
 
+<footer th:insert="~{base :: footer}" class="navbar-fixed-bottom"/>
 
-
-</body>
 </html>

@@ -3,6 +3,40 @@
 <body>
 
 
+
+<th:block th:fragment="static_files">
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/zui/css/zui.min.css">
+    <link rel="stylesheet" href="/static/css/bootstrapValidator.css">
+    <script src="/static/js/jquery-3.3.1.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/boostrap4/js/popper.min.js"></script>
+    <script src="/static/js/bootstrapValidator.js"></script>
+    <script src="/static/zui/js/zui.min.js"></script>
+    <script src="/static/js/echarts.js"></script>
+
+
+    <style>
+        body{
+            background-image: url("static/img/bg.jpg");
+            background-repeat: no-repeat;
+            -moz-background-size:100% 100%;
+            background-size:100% 100%;
+            background-attachment: fixed;
+        }
+        a:hover{
+            text-decoration:none;
+            color:black;
+        } 
+    </style>
+
+</th:block>
+
+
 <nav class="navbar navbar-default" role="navigation"  th:fragment="navbar" >
     <div class="container-fluid">
         <div class="navbar-header">
@@ -20,7 +54,6 @@
 
             <ul class="nav navbar-nav navbar-right" th:if="${session.user != null}" >
                 <li class="dropdown">
-                    <!--<span class="caret"></span>-->
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                         <img src="/static/img/head.jpg" alt="head" class="img-circle" style="width: 25px">
                     </a>

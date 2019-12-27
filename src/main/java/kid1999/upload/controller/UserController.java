@@ -211,14 +211,18 @@ public class UserController {
 			if(!password1.equals(password2)){
 				return Result.fail(400,"前后密码不一致");
 			}
-			if(request.getSession().getAttribute(name).equals(mailCode)){
-				User newUser = new User();
-				newUser.setName(name);
-				newUser.setPassword(DigestUtils.md5DigestAsHex(password1.getBytes()));
-				userService.updateUser(newUser);
-				return Result.success("修改成功！");
-			}else{
-				return Result.fail(400,"验证码错误！");
+			try {
+				if(request.getSession().getAttribute(name).equals(mailCode)){
+					User newUser = new User();
+					newUser.setName(name);
+					newUser.setPassword(DigestUtils.md5DigestAsHex(password1.getBytes()));
+					userService.updateUser(newUser);
+					return Result.success("修改成功！");
+				}else{
+					return Result.fail(400,"验证码错误！");
+				}
+			}catch (Exception e){
+				return Result.fail(400,"修改时发生异常！");
 			}
 		}
 	}
