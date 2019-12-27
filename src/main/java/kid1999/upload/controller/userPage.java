@@ -1,8 +1,11 @@
 package kid1999.upload.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import kid1999.upload.dto.Project;
 import kid1999.upload.dto.Result;
+import kid1999.upload.mapper.remarkMapper;
 import kid1999.upload.model.HomeWork;
+import kid1999.upload.model.Remark;
 import kid1999.upload.model.Student;
 import kid1999.upload.model.User;
 import kid1999.upload.service.homeworkService;
@@ -32,17 +35,25 @@ public class userPage {
 	@Autowired
 	private userService userService;
 
+	@Autowired
+	private remarkMapper remarkMapper;
+
 	// user 主页
 	@GetMapping("/userpage")
 	String userpage(HttpServletRequest request,
 	                Model model){
 		log.info("用户主页");
-		User user = (User) request.getSession().getAttribute("user");
-		List<List<Project>> projects = homeworkService.findProjects(user.getId());
-		model.addAttribute("DoingProject",projects.get(0));
-		model.addAttribute("DoneProject",projects.get(1));
-		model.addAttribute("students",null);
-		return "homeworks/userpage";
+		try{
+			User user = (User) request.getSession().getAttribute("user");
+			List<List<Project>> projects = homeworkService.findProjects(user.getId());
+			model.addAttribute("DoingProject",projects.get(0));
+			model.addAttribute("DoneProject",projects.get(1));
+			model.addAttribute("students",null);
+			model.addAttribute("remarks",getRemarks(user.getId()));
+			return "homeworks/userpage";
+		}catch (Exception e){
+			return "error/403";
+		}
 	}
 
 	@GetMapping("/spaceUsage")
@@ -78,6 +89,7 @@ public class userPage {
 	Result createWork(HttpServletRequest request,
 	                  @RequestBody HomeWork homeWork){
 		log.info("创建项目");
+		System.out.println(homeWork);
 		if(homeWork.getTitle().length() < 2 || homeWork.getTitle().length() > 50){
 			return Result.fail(400,"项目命名不规范！");
 		}
@@ -97,6 +109,19 @@ public class userPage {
 		homeWork.setUserId(user.getId());
 		homeworkService.addHomeWork(homeWork);    // 新建work并返回
 		return Result.success("创建成功！");
+	}
+
+
+	List<Remark> getRemarks(int userId){
+		log.info("获取remarks");
+		try {
+			QueryWrapper<Remark> wrapper = new QueryWrapper<>();
+			wrapper.eq("user_id",userId).orderByDesc("create_time").last("limit 5");
+			return remarkMapper.selectList(wrapper);
+		}catch (Exception e){
+			log.error(e.getMessage());
+			return null;
+		}
 	}
 
 

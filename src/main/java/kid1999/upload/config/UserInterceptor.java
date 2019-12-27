@@ -9,6 +9,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.net.URLDecoder;
 
 
 /**
@@ -26,22 +27,37 @@ public class UserInterceptor implements HandlerInterceptor {
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-
-		// 身份验证
 		Cookie[] cookies = request.getCookies();
-		// 通过 cookie 认证
+		System.out.println("身份验证");
 		if(cookies != null){
 			for (Cookie cookie : cookies) {
-				String name = cookie.getName();
-				String uuid = cookie.getValue();
+				String name = URLDecoder.decode(cookie.getName(), "gbk");
+				String uuid = URLDecoder.decode(cookie.getValue(), "gbk");
 				if (redisTemplate.hasKey(uuid)){
 					User user = (User) redisTemplate.opsForValue().get(uuid);
 					if(user.getName().equals(name)){
+						request.getSession().setAttribute("user",user);
 						return true;
 					}
 				}
 			}
 		}
+
+//		// 身份验证
+//		Cookie[] cookies = request.getCookies();
+//		// 通过 cookie 认证
+//		if(cookies != null){
+//			for (Cookie cookie : cookies) {
+//				String name = cookie.getName();
+//				String uuid = cookie.getValue();
+//				if (redisTemplate.hasKey(uuid)){
+//					User user = (User) redisTemplate.opsForValue().get(uuid);
+//					if(user.getName().equals(name)){
+//						return true;
+//					}
+//				}
+//			}
+//		}
 		// 通过 session 认证
 		if(request.getSession().getAttribute("user") != null){
 			return true;

@@ -2,16 +2,11 @@
 <!--suppress ALL-->
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="utf-8">
+
     <title>创建项目信息</title>
-    <meta name="renderer" content="webkit">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <link rel="stylesheet" href="/static/layui/css/layui.css" media="all">
-    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
-    <script src="/static/js/jquery-3.3.1.min.js"></script>
-    <script src="/static/js/bootstrap.min.js"></script>
-    <script src="/static/layui/layui.js"></script>
+    <div th:insert="base :: static_files"/>
+    <div th:insert="base :: layui"/>
+
 </head>
 <body>
 
@@ -64,7 +59,7 @@
                                 <input type="text" class="layui-input" required  lay-verify="endtime"  id="date" name="endtime" placeholder="yyyy-MM-dd HH:mm:ss">
                             </div>
 
-                            <input class="btn btn-lg btn-success btn-block" lay-submit lay-filter="formDemo" value="提交">
+                            <button class="btn btn-lg btn-success btn-block" lay-submit lay-filter="formDemo">提交</button>
 
                         </fieldset>
                     </form>
@@ -92,18 +87,18 @@
             data: JSON.stringify(data), // 请求参数
             success: function(data){
                 if(data.code === 200){
-                    layer.msg(data.info);
+                    layer.msg(data.info, {time: 5000, icon:6});
                     /*<![CDATA[*/
                     var href = [[@{/userpage}]];
                     /*]]>*/
                     window.location = href;
                 }else{
-                    layer.msg(data.info);
+                    layer.msg(data.info, {time: 5000, icon:5});
                 }
             },
             error: function(xhr, errMsg, e){
                 console.info(JSON.stringify(data));
-                layer.msg(errMsg)
+                layer.msg("发生未知错误！", {time: 5000, icon:2});
             }
         });
     }

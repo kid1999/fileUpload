@@ -2,14 +2,11 @@
 <!--suppress ALL-->
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <title>用户页面</title>
-    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
-    <script src="/static/js/jquery-3.3.1.min.js"></script>
-    <script src="/static/js/bootstrap.min.js"></script>
-    <script src="/static/js/echarts.js"></script>
+    <div th:insert="base :: static_files"/>
+    <div th:insert="base :: layui"/>
+
 </head>
 <body>
 
@@ -20,8 +17,9 @@
 
 <div class="container">
     <div class="row">
+
         <!--主题-->
-        <div class="col-lg-9">
+        <div class="col-md-9">
             <div class="headfontsize" id="one">
                 <h1 class="headh1content" th:text="${session.user.getName()} + ',的项目列表'">
                     hello,你要新建一个项目吗?
@@ -115,19 +113,49 @@
 
 
 
-
         <!--侧边栏-->
-        <div class="col-lg-3">
-            <div class="list-group">
-                <a href="#" class="list-group-item active">
-                    <h4 class="list-group-item-heading">用户空间使用量</h4>
-                </a>
-
-                <div id="main" class="container" style="width: 300px;height: 150px;"></div>
-
+        <div class="col-md-3">
+            <div class="panel panel-default">
+                <div class="panel-heading">用户空间使用量</div>
+                <div class="panel-body">
+                    <div id="main" class="container" style="width: 300px;height: 150px;"></div>
+                    <div class="container">
+                        <p> 用户文件夹空间总量: <strong id="total">0</strong> M </p>
+                        <p> 用户文件夹空间已用: <strong id="used">0</strong> M </p>
+                        <p> 用户文件夹空间剩余: <strong id="free">0</strong> M </p>
+                        <button class="btn-sm btn-primary">点击查看详情</button>
+                        <button class="btn-sm btn-success">点击购买容量</button>
+                    </div>
+                </div>
             </div>
+
+
+
+            <div class="panel panel-default">
+                <div class="panel-heading">用户留言信息：</div>
+
+
+                    <div class="layui-collapse" lay-filter="test" th:if="${#arrays.length(remarks)} != 0" th:each="remark : ${remarks}">
+                        <div class="layui-colla-item">
+                            <h2 class="layui-colla-title" th:text="${remark.name} + ' - ' + ${remark.createTime}">为什么前端工程师多不愿意用 Bootstrap 框架？</h2>
+                            <div class="layui-colla-content">
+                                <p th:text="${remark.remark}">因为不适合。如果希望开发长期的项目或者制作产品类网站，那么就需要实现特定的设计，为了在维护项目中可以方便地按设计师要求快速修改样式，肯定会逐步编写出各种业务组件、工具类，相当于为项目自行开发一套框架。——来自知乎@Kayo</p>
+                                <a th:href="'mailto:' + ${remark.email}"><button type="button" class="layui-btn layui-btn-fluid layui-btn-xs">回复 <i class="layui-icon layui-icon-reply-fill"></i></button></a>
+                            </div>
+                        </div>
+                    </div>
+                <div class="panel-body" th:unless="${#arrays.length(remarks)} != 0">
+                    <span class="text-center">暂无留言！</span>
+                </div>
+            </div>
+
+
+
+
         </div>
+
     </div>
+
 </div>
 
 
@@ -137,7 +165,6 @@
 <script type="text/javascript">
     // 绘制图表。
     var myChart = echarts.init(document.getElementById('main'));
-
     myChart.showLoading();
     var dataList = [];
     // 获取数据
@@ -153,6 +180,9 @@
             if(data.code == 200){
                 var total = data.data.total;
                 var used = data.data.used;
+                $("#total").html(total.toFixed(2))
+                $("#used").html(used.toFixed(2))
+                $("#free").html((total - used).toFixed(2))
                 dataList.push({value: used, name:'已用'},
                     {value: total - used, name:'可用'})
             }
@@ -196,6 +226,18 @@
             });
             dataList = [];
         }
+    });
+
+
+    // 留言板
+    layui.use(['element', 'layer'], function(){
+        var element = layui.element;
+        var layer = layui.layer;
+
+        // //监听折叠
+        // element.on('collapse(test)', function(data){
+        //
+        // });
     });
 
 

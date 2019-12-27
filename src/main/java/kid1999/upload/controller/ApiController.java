@@ -16,7 +16,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 /**
- * @desc:   提供 json 数据接口
+ * @desc:   提供 json 数据接口 (无权限)
  * @auther: kid1999
  * @date: 2019/12/22 0:10
  **/
