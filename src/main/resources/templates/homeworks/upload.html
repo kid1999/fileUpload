@@ -30,7 +30,7 @@
                             <h2 th:text="${project.HomeWork.title}"></h2>
                             <p th:text="'创建时间: ' + ${project.HomeWork.createtime} + '  |  截止时间: '+${project.HomeWork.endtime}"></p>
                             <p th:text="'描述信息: '+${project.HomeWork.infomation}"></p>
-                            <span th:text="'已收: ' + ${project.count}"/>
+                            <span>已收: </span><strong th:text="${project.count}"/><span> 份文件</span>
                         </div>
                         <div class="panel-body">
                             <form accept-charset="UTF-8" id="form"  enctype="multipart/form-data">
@@ -70,6 +70,31 @@
         <!--侧边栏-->
         <div class="col-md-3">
 
+
+
+            <div class="panel panel-default">
+                <div class="panel-heading">搜索提交记录</div>
+                <div class="panel-body">
+                    <form accept-charset="UTF-8" class="layui-form">
+                        <fieldset>
+
+                            <div class="form-group">
+                                <label>姓名</label>
+                                <input type="text" placeholder="请输入姓名" class="form-control layui-input" name="name" lay-verify="name"></input>
+                            </div>
+
+                            <input type="hidden" name="workId" th:value="${project.HomeWork.id}">
+
+                            <button class="btn btn-md btn-success btn-block" lay-submit lay-filter="formSearch">搜索提交记录</button>
+
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+
+
+
+
             <div class="panel panel-default">
                 <div class="panel-heading">留言给Ta</div>
                 <div class="panel-body">
@@ -93,7 +118,7 @@
 
                             <input type="hidden" name="workId" th:value="${project.HomeWork.id}">
 
-                            <button class="btn btn-lg btn-success btn-block" lay-submit lay-filter="formRemark">提交留言</button>
+                            <button class="btn btn-md btn-success btn-block" lay-submit lay-filter="formRemark">提交留言</button>
 
                         </fieldset>
                     </form>
@@ -183,8 +208,8 @@
     });
 
 
-    // 提交申请
-    function PostTable(data){
+    // remark 提交申请
+    function PostReark(data){
         $.ajax({
             url: '/createRemark',
             type: "POST",
@@ -208,6 +233,31 @@
         });
     }
 
+
+    // remark 提交申请
+    function PostSearch(data){
+        $.ajax({
+            url: '/api/search',
+            type: "POST",
+            async: true, // 是否异步请求（此处需这只为异步请求true，否则bootstrap的modal不会顺序显示）
+            cache: false, // 是否缓存此页面，每次都请求服务器
+            contentType: "application/x-www-form-urlencoded", // 内容编码类型，默认
+            dataType: "json", // 预期服务器返回数据格式
+            timeout: 3000, // 超时时间，60s
+            data: data, // 请求参数
+            success: function(data){
+                if(data.code === 200){
+                    layer.msg(data.info, {time: 5000, icon:6});
+                }else{
+                    layer.msg(data.info, {time: 5000, icon:5});
+                }
+            },
+            error: function(xhr, errMsg, e){
+                console.info(JSON.stringify(data));
+                layer.msg("发生未知错误！", {time: 5000, icon:2});
+            }
+        });
+    }
 
     layui.use(['form', 'laydate'], function(){
         var form = layui.form
@@ -235,9 +285,15 @@
             }
         });
 
-        //监听提交
+        //监听提交remark
         form.on('submit(formRemark)', function(data){
-            PostTable(data.field);
+            PostReark(data.field);
+            return false;
+        });
+
+        //监听提交 search
+        form.on('submit(formSearch)', function(data){
+            PostSearch(data.field);
             return false;
         });
 

@@ -169,9 +169,10 @@ public class CollectionController {
 				newStudent.setId(student.getId());    // 把id带走
 				String fileUrl = fastDFSClientUtils.updateFile(file,student.getFileurl());		//使用fastDFS写入
 				newStudent.setFileurl(fileUrl);
-				studentService.updateStudent(newStudent);
+				studentService.updateStudentByNameAndId(newStudent);
 				return Result.success("你已经提交过了，上传成功！");
 			}catch (Exception e){
+				log.error(e.getMessage());
 				return Result.fail(400,"文件上传失败！");
 			}
 		}
@@ -180,8 +181,10 @@ public class CollectionController {
 			String fileUrl = fastDFSClientUtils.uploadFile(file);
 			newStudent.setFileurl(fileUrl);
 			studentService.addStudent(newStudent);
+			homeworkService.incHomeWorkCount(workid);       // +1 人
 			return Result.success("文件上传成功！");
 		}catch (Exception e){
+			log.error(e.getMessage());
 			return Result.fail(400,"文件上传失败！");
 		}
 	}

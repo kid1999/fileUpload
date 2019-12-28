@@ -1,8 +1,5 @@
 package kid1999.upload.config;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import kid1999.upload.dto.Result;
 import kid1999.upload.mapper.remarkMapper;
 import kid1999.upload.model.HomeWork;
@@ -10,7 +7,9 @@ import kid1999.upload.model.Remark;
 import kid1999.upload.service.homeworkService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 

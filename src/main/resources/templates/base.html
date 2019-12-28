@@ -52,12 +52,16 @@
         </div>
 
         <div id="navbar" class="navbar-collapse collapse">
-            <form class="navbar-form navbar-left" method="post" action="/search">
-                <div class="form-group">
-                    <input type="text" name="filename" placeholder="输入文件名,查询提交记录" class="form-control">
-                </div>
-                <button type="submit" class="btn btn-success">搜索</button>
-            </form>
+<!--            <form class="navbar-form navbar-left" method="post" action="/search">-->
+<!--                <div class="form-group">-->
+<!--                    <input type="text" name="filename" placeholder="输入文件名,查询提交记录" class="form-control">-->
+<!--                </div>-->
+<!--                <button type="submit" class="btn btn-success">搜索</button>-->
+<!--            </form>-->
+
+            <ul class="nav navbar-nav navbar-left">
+                <li><a href="/test"> test</a></li>
+            </ul>
 
 
             <ul class="nav navbar-nav navbar-right" th:if="${session.user != null}" >

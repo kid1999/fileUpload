@@ -29,12 +29,17 @@ public class studentService {
 		return studentMapper.insert(newStudent);
 	}
 
-	// 更新student
-	public int updateStudent(Student student) {
+	// 更新student by id and name
+	public int updateStudentByNameAndId(Student student) {
 		QueryWrapper<Student> wrapper = new QueryWrapper<>();
 		wrapper.eq("id",student.getId())
 				.eq("name",student.getName());
 		return studentMapper.update(student,wrapper);
+	}
+
+	// 更新student by id
+	public void updateStudentById(Student student) {
+		studentMapper.updateById(student);
 	}
 
 	// 匹配filname 的student记录
@@ -56,4 +61,6 @@ public class studentService {
 		IPage<Student> studentIPage = studentMapper.selectPage(page, wrapper);
 		return studentIPage.getRecords();
 	}
+
+
 }

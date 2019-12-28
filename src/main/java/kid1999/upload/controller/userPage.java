@@ -6,10 +6,8 @@ import kid1999.upload.dto.Result;
 import kid1999.upload.mapper.remarkMapper;
 import kid1999.upload.model.HomeWork;
 import kid1999.upload.model.Remark;
-import kid1999.upload.model.Student;
 import kid1999.upload.model.User;
 import kid1999.upload.service.homeworkService;
-import kid1999.upload.service.studentService;
 import kid1999.upload.service.userService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +18,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Controller
 @Slf4j
@@ -29,8 +30,6 @@ public class userPage {
 	@Autowired
 	private homeworkService homeworkService;
 
-	@Autowired
-	private studentService studentService;
 
 	@Autowired
 	private userService userService;
@@ -82,7 +81,12 @@ public class userPage {
 		return "homeworks/creatework";
 	}
 
-
+	/**
+	 * 创建 留言
+	 * @param request
+	 * @param homeWork
+	 * @return
+	 */
 	@Transactional
 	@PostMapping("/createWork")
 	@ResponseBody
@@ -111,7 +115,11 @@ public class userPage {
 		return Result.success("创建成功！");
 	}
 
-
+	/**
+	 * 获取 remarks
+	 * @param userId
+	 * @return
+	 */
 	List<Remark> getRemarks(int userId){
 		log.info("获取remarks");
 		try {
@@ -125,23 +133,4 @@ public class userPage {
 	}
 
 
-	/**
-	 * 搜索提交记录
-	 * @param filename
-	 * @param model
-	 * @return
-	 */
-	@PostMapping("/search")
-	String search(@RequestParam("filename") String filename,
-	              Model model){
-		log.info("搜索");
-		List<Student> students = studentService.findStuByfilename(filename);
-		List<Student> studentDto = new ArrayList<>();
-		for (Student student:students) {
-			studentDto.add(student);
-		}
-		model.addAttribute("students",studentDto);
-		model.addAttribute("count",students.size());
-		return "system/searchresult";
-	}
 }

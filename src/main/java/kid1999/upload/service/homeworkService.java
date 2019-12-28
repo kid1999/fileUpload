@@ -108,4 +108,20 @@ public class homeworkService{
 	public void updateHomeWork(HomeWork homeWork) {
 		homeworkMapper.updateById(homeWork);
 	}
+
+	// 增加一个人数
+	public void incHomeWorkCount(int workId) {
+		homeworkMapper.incHomeWorkCountById(workId);
+	}
+
+	// 减少一个人数
+	public void minusHomeWorkCount(int workId) {
+		homeworkMapper.minusHomeWorkCountById(workId);
+	}
+
+
+	// 删除一个作业
+	public void deleteHomeWorkById(HomeWork homeWork) {
+		homeworkMapper.deleteById(homeWork.getId());
+	}
 }

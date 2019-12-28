@@ -29,4 +29,5 @@ public class HomeWork {
   private String invitationCode;
   private int encryption;
   private int userId;
+  private int total;
 }
