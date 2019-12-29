@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -121,7 +122,20 @@ public class homeworkService{
 
 
 	// 删除一个作业
-	public void deleteHomeWorkById(HomeWork homeWork) {
-		homeworkMapper.deleteById(homeWork.getId());
+	public void deleteHomeWorkById(int id) {
+		homeworkMapper.deleteById(id);
 	}
+
+    public void changeEncryption(int id) {
+		HomeWork homeWork = findHomeWorkById(id);
+		if(homeWork.getEncryption() == 0){
+			String invitaionCode = UUID.randomUUID().toString().substring(0,8);
+			homeWork.setInvitationCode(invitaionCode);
+			homeWork.setEncryption(1);
+		}else {
+			homeWork.setInvitationCode("");
+			homeWork.setEncryption(0);
+		}
+		homeworkMapper.updateById(homeWork);
+    }
 }

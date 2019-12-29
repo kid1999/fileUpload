@@ -14,6 +14,7 @@ import kid1999.upload.utils.FastDFSClientUtils;
 import kid1999.upload.utils.Layui;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -94,35 +95,64 @@ public class ApiController {
 
 
 
-
+    /**
+     * 获取doingHomeWork列表
+     */
     @GetMapping("/user/doingHomeWork")
     Layui doingHomeWorks(HttpServletRequest request){
+        log.info("获取doingHomeWork列表");
         User user = (User) request.getSession().getAttribute("user");
         List<HomeWork> homeWorks = homeworkService.findWorksByUserId(user.getId());
         System.out.println(homeWorks);
         return Layui.data(homeWorks.size(),homeWorks);
     }
 
+    /**
+     * 获取doneHomeWork列表
+     */
     @GetMapping("/user/doneHomeWork")
     Layui doneHomeWorks(HttpServletRequest request){
+        log.info("获取doneHomeWork列表");
         User user = (User) request.getSession().getAttribute("user");
         List<List<Project>> projects = homeworkService.findProjects(user.getId());
         return Layui.data(projects.get(1).size(),projects.get(1));
     }
 
 
+    /**
+     * 修改HomeWork
+     */
     @PutMapping("/user/homework")
     Result updateHomeWork(@RequestBody HomeWork homeWork){
+        log.info("修改HomeWork");
     	homeworkService.updateHomeWork(homeWork);
     	return Result.success("更新成功！");
     }
 
+    /**
+     *删除HomeWork
+     */
+    @Transactional
     @DeleteMapping("/user/homework")
     Result deleteHomeWork(@RequestBody HomeWork homeWork){
-	    homeworkService.deleteHomeWorkById(homeWork);
+        log.info("删除HomeWork");
+        System.out.println(homeWork);
+        studentService.deleteStudentByWorkId(homeWork.getId());
+	    homeworkService.deleteHomeWorkById(homeWork.getId());
 	    return Result.success("删除成功！");
     }
 
+    /**
+     * 修改homework加密
+     * @param id
+     * @return
+     */
+    @PostMapping("/changeEncryption")
+    Result changeEncryption(@RequestParam("id") int id){
+        log.info("修改homework加密");
+        homeworkService.changeEncryption(id);
+        return Result.success("修改成功！");
+    }
 
 
 
