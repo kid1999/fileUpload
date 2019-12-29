@@ -4,10 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import kid1999.upload.dto.Project;
 import kid1999.upload.dto.Result;
 import kid1999.upload.mapper.dayCountMapper;
-import kid1999.upload.model.DayCount;
-import kid1999.upload.model.HomeWork;
-import kid1999.upload.model.Student;
-import kid1999.upload.model.User;
+import kid1999.upload.mapper.remarkMapper;
+import kid1999.upload.model.*;
 import kid1999.upload.service.homeworkService;
 import kid1999.upload.service.studentService;
 import kid1999.upload.utils.FastDFSClientUtils;
@@ -42,6 +40,9 @@ public class ApiController {
 
     @Autowired
     private homeworkService homeworkService;
+
+    @Autowired
+    private remarkMapper remarkMapper;
 
     /**
      * 删除student记录
@@ -102,8 +103,7 @@ public class ApiController {
     Layui doingHomeWorks(HttpServletRequest request){
         log.info("获取doingHomeWork列表");
         User user = (User) request.getSession().getAttribute("user");
-        List<HomeWork> homeWorks = homeworkService.findWorksByUserId(user.getId());
-        System.out.println(homeWorks);
+        List<HomeWork> homeWorks = homeworkService.findWorksByUserIdBeforeNow(user.getId());
         return Layui.data(homeWorks.size(),homeWorks);
     }
 
@@ -114,8 +114,8 @@ public class ApiController {
     Layui doneHomeWorks(HttpServletRequest request){
         log.info("获取doneHomeWork列表");
         User user = (User) request.getSession().getAttribute("user");
-        List<List<Project>> projects = homeworkService.findProjects(user.getId());
-        return Layui.data(projects.get(1).size(),projects.get(1));
+        List<HomeWork> homeWorks = homeworkService.findWorksByUserIdAfterNow(user.getId());
+        return Layui.data(homeWorks.size(),homeWorks);
     }
 
 
@@ -147,11 +147,31 @@ public class ApiController {
      * @param id
      * @return
      */
-    @PostMapping("/changeEncryption")
+    @PostMapping("/user/changeEncryption")
     Result changeEncryption(@RequestParam("id") int id){
         log.info("修改homework加密");
         homeworkService.changeEncryption(id);
         return Result.success("修改成功！");
+    }
+
+
+
+
+    /**
+     * 获取 remarks
+     */
+    @GetMapping("/user/remarks")
+    Layui getRemarks(@RequestParam("userid") int userId){
+        log.info("获取remarks");
+        try {
+            QueryWrapper<Remark> wrapper = new QueryWrapper<>();
+            wrapper.eq("user_id",userId);
+            List<Remark> remarks =  remarkMapper.selectList(wrapper);
+            return Layui.data(remarks.size(),remarks);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            return null;
+        }
     }
 
 

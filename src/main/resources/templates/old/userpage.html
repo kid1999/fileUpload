@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<!--suppress ALL-->
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+
+    <title>用户页面</title>
+    <div th:insert="base :: static_files"/>
+    <div th:insert="base :: layui"/>
+
+</head>
+<body>
+
+<div th:insert="~{base :: navbar}"/>
+
+
+<!-- 第一页 -->
+
+<div class="container">
+    <div class="row">
+
+        <!--主题-->
+        <div class="col-md-9">
+            <div class="headfontsize" id="one">
+                <h1 class="headh1content" th:text="${session.user.getName()} + ',的项目列表'">
+                    hello,你要新建一个项目吗?
+                </h1>
+                <p class="btn-app-stroe">
+                    <a class="btn btn-success btn-lg" href="/createWork">立即创建,开始收集</a>
+                </p>
+            </div>
+
+            <div id="two">
+                <div class="panel panel-success">
+                    <div class="panel-heading">正在进行中的项目</div>
+                    <div class="panel-body" th:if="${#lists.isEmpty(DoingProject)}">
+                        <span class="text-center">暂无！</span>
+                    </div>
+                    <table class="table" th:unless="${#lists.isEmpty(DoingProject)}">
+                        <!--标题-->
+                        <thead>
+                        <tr>
+                            <th>title</th>
+                            <th>创建时间</th>
+                            <th>结束时间</th>
+                            <th>已收</th>
+                            <th>邀请码</th>
+                            <th>项目地址</th>
+                        </tr>
+                        </thead>
+                        <!-- 内容 -->
+                        <tbody>
+                        <tr th:each="project : ${DoingProject}">
+                            <th scope="row">
+                                <a th:href="@{'/deatils?' + 'userid=' + ${session.user.getId()} + '&workid=' + ${project.homeWork.id} }" th:text="${project.homeWork.title}"></a>
+                            </th>
+                            <td th:text="${project.homeWork.createtime}">Mark</td>
+                            <td th:text="${project.homeWork.endtime}">Otto</td>
+                            <td>
+                                <span class="badge" th:text="${project.count}">3</span>
+                            </td>
+                            <td th:if="${project.homeWork.invitationCode} == null" th:text="无">invitationCode</td>
+                            <td th:unless="${project.homeWork.invitationCode} == null" th:text="${project.homeWork.invitationCode}">invitationCode</td>
+                            <th scope="row">
+                                <a th:href="@{'/upload?'+ 'workid=' + ${project.homeWork.id} }">项目地址</a>
+                            </th>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="three">
+                <div class="panel panel-default">
+                    <div class="panel-heading">已结束的项目</div>
+                    <div class="panel-body" th:if="${#lists.isEmpty(DoneProject)}">
+                        <span class="text-center">暂无！</span>
+                    </div>
+
+                    <table class="table" th:unless="${#lists.isEmpty(DoneProject)}">
+                        <!--标题-->
+                        <thead>
+                        <tr>
+                            <th>title</th>
+                            <th>创建时间</th>
+                            <th>结束时间</th>
+                            <th>已收</th>
+                            <th>邀请码</th>
+                            <th>项目地址</th>
+                        </tr>
+                        </thead>
+                        <!-- 内容 -->
+                        <tbody>
+                        <tr th:each="project : ${DoneProject}">
+                            <th scope="row">
+                                <a th:href="@{'/deatils?' + 'userid=' + ${session.user.getId()} + '&workid=' + ${project.homeWork.id} }" th:text="${project.homeWork.title}"></a>
+                            </th>
+                            <td th:text="${project.homeWork.createtime}">Mark</td>
+                            <td th:text="${project.homeWork.endtime}">Otto</td>
+                            <td>
+                                <span class="badge" th:text="${project.count}">3</span>
+                            </td>
+                            <td th:if="${project.homeWork.invitationCode} == null" th:text="无">invitationCode</td>
+                            <td th:unless="${project.homeWork.invitationCode} == null" th:text="${project.homeWork.invitationCode}">invitationCode</td>
+                            <th scope="row">
+                                <a th:href="@{'/upload?'+ 'workid=' + ${project.homeWork.id} }">项目地址</a>
+                            </th>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!--侧边栏-->
+        <div class="col-md-3">
+            <div class="panel panel-default">
+                <div class="panel-heading">用户空间使用量</div>
+                <div class="panel-body">
+                    <div id="main" class="container" style="width: 300px;height: 150px;"></div>
+                    <div class="container">
+                        <p> 用户文件夹空间总量: <strong id="total">0</strong> M </p>
+                        <p> 用户文件夹空间已用: <strong id="used">0</strong> M </p>
+                        <p> 用户文件夹空间剩余: <strong id="free">0</strong> M </p>
+                        <button class="btn-sm btn-primary">点击查看详情</button>
+                        <button class="btn-sm btn-success">点击购买容量</button>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="panel panel-default">
+                <div class="panel-heading">用户留言信息：</div>
+
+
+                    <div class="layui-collapse" lay-filter="test" th:if="${#arrays.length(remarks)} != 0" th:each="remark : ${remarks}">
+                        <div class="layui-colla-item">
+                            <h2 class="layui-colla-title" th:text="${remark.name} + ' - ' + ${remark.createTime}">为什么前端工程师多不愿意用 Bootstrap 框架？</h2>
+                            <div class="layui-colla-content">
+                                <p th:text="${remark.remark}">因为不适合。如果希望开发长期的项目或者制作产品类网站，那么就需要实现特定的设计，为了在维护项目中可以方便地按设计师要求快速修改样式，肯定会逐步编写出各种业务组件、工具类，相当于为项目自行开发一套框架。——来自知乎@Kayo</p>
+                                <a th:href="'mailto:' + ${remark.email}"><button type="button" class="layui-btn layui-btn-fluid layui-btn-xs">回复 <i class="layui-icon layui-icon-reply-fill"></i></button></a>
+                            </div>
+                        </div>
+                    </div>
+                <div class="panel-body" th:unless="${#arrays.length(remarks)} != 0">
+                    <span class="text-center">暂无留言！</span>
+                </div>
+            </div>
+
+
+
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+<script type="text/javascript">
+    // 绘制图表。
+    var myChart = echarts.init(document.getElementById('main'));
+    myChart.showLoading();
+    var dataList = [];
+    // 获取数据
+    $.ajax({
+        url: '/spaceUsage',
+        type: "get",
+        contentType:  "application/x-www-form-urlencoded", //"application/json", 内容编码类型，默认
+        dataType: "json", // 预期服务器返回数据格式
+        timeout: 3000, // 超时时间，60s
+        data: {"userid": [[${session.user.getId()}]] }, // 请求参数
+        success: function(data){
+            console.info(data);
+            if(data.code == 200){
+                var total = data.data.total;
+                var used = data.data.used;
+                $("#total").html(total.toFixed(2))
+                $("#used").html(used.toFixed(2))
+                $("#free").html((total - used).toFixed(2))
+                dataList.push({value: used, name:'已用'},
+                    {value: total - used, name:'可用'})
+            }
+            myChart.hideLoading();
+            myChart.setOption({
+                tooltip: {
+                    trigger: 'item',
+                    formatter: "{a} <br/>{b}: {c} ({d}%)"
+                },
+                legend: {
+                    orient: 'vertical',
+                    x: 'left',
+                },
+                series: [
+                    {
+                        name:'用户空间使用情况',
+                        type:'pie',
+                        radius: ['50%', '70%'],
+                        avoidLabelOverlap: false,
+                        label: {
+                            normal: {
+                                show: false,
+                                position: 'center'
+                            },
+                            emphasis: {
+                                show: true,
+                                textStyle: {
+                                    fontSize: '30',
+                                    fontWeight: 'bold'
+                                }
+                            }
+                        },
+                        labelLine: {
+                            normal: {
+                                show: false
+                            }
+                        },
+                        data:dataList
+                    }
+                ]
+            });
+            dataList = [];
+        }
+    });
+
+
+    // 留言板
+    layui.use(['element', 'layer'], function(){
+        var element = layui.element;
+        var layer = layui.layer;
+
+        // //监听折叠
+        // element.on('collapse(test)', function(data){
+        //
+        // });
+    });
+
+
+</script>
+
+</body>
+
+
+<footer th:insert="~{base :: footer}" class="navbar-fixed-bottom"/>
+
+</html>
+

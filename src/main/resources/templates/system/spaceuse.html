@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<!--suppress ALL-->
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+
+    <title>用户页面</title>
+    <div th:insert="base :: static_files"/>
+    <div th:insert="base :: layui"/>
+
+</head>
+<body>
+
+<div th:insert="~{base :: navbar}"/>
+
+
+<!-- 第一页 -->
+
+<div class="container">
+    <div class="row">
+
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div id="main" class="col-8" style="width: 1000px;height: 720px;"></div>
+                    <div class="col-4">
+                        <p> 用户文件夹空间总量: <strong id="total">0</strong> M </p>
+                        <p> 用户文件夹空间已用: <strong id="used">0</strong> M </p>
+                        <p> 用户文件夹空间剩余: <strong id="free">0</strong> M </p>
+                        <button class="btn-sm btn-primary">点击查看详情</button>
+                        <button class="btn-sm btn-success">点击购买容量</button>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="panel panel-default">
+
+                <div id="show" class="container" style="width: 1115px;height: 760px;"></div>
+
+            </div>
+
+
+
+            <div class="panel panel-default">
+
+                <div id="show3" class="container" style="width: 800px;height: 600px;"></div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+<script type="text/javascript">
+    // 绘制图表。
+    var myChart = echarts.init(document.getElementById('main'));
+    myChart.showLoading();
+    var dataList = [];
+    // 获取数据
+    $.ajax({
+        url: '/spaceUseAll',
+        type: "get",
+        contentType:  "application/x-www-form-urlencoded", //"application/json", 内容编码类型，默认
+        dataType: "json", // 预期服务器返回数据格式
+        timeout: 3000, // 超时时间，60s
+        data: {"userid": [[${session.user.getId()}]] }, // 请求参数
+        success: function(data){
+            if(data.code == 200){
+                var total = data.data.total;
+                var used = data.data.used;
+                $("#total").html(total.toFixed(2))
+                $("#used").html(used.toFixed(2))
+                $("#free").html((total - used).toFixed(2))
+                dataList.push({value: used, name:'已用'},
+                    {value: total - used, name:'可用'})
+            }
+            myChart.hideLoading();
+            myChart.setOption({
+                title: {
+                    text: '用户空间使用情况概述',
+                    left: 'center',
+                    top: 20,
+                    textStyle: {
+                        color: '#000000'
+                    }
+                },
+                tooltip: {
+                    trigger: 'item',
+                    formatter: "{a} <br/>{b}: {c} ({d}%)"
+                },
+                legend: {
+                    orient: 'vertical',
+                    x: 'left',
+                },
+                series: [
+                    {
+                        name:'用户空间使用情况概述',
+                        type:'pie',
+                        radius: ['50%', '70%'],
+                        avoidLabelOverlap: false,
+                        label: {
+                            normal: {
+                                show: false,
+                                position: 'center'
+                            },
+                            emphasis: {
+                                show: true,
+                                textStyle: {
+                                    fontSize: '30',
+                                    fontWeight: 'bold'
+                                }
+                            }
+                        },
+                        labelLine: {
+                            normal: {
+                                show: false
+                            }
+                        },
+                        data:dataList
+                    }
+                ]
+            });
+            dataList = [];
+        }
+    });
+
+
+
+
+
+    // 图2
+    $.ajax({
+        url: '/spaceUseOne',
+        type: "get",
+        contentType:  "application/x-www-form-urlencoded", //"application/json", 内容编码类型，默认
+        dataType: "json", // 预期服务器返回数据格式
+        timeout: 3000, // 超时时间，60s
+        data: {"userid": [[${session.user.getId()}]] }, // 请求参数
+        success: function(data){
+            var dataList = [];
+            if(data.code == 200){
+                var d = data.data;
+                for(var key in d)
+                    dataList.push({"name":key,"value":d[key]});
+            }
+            var myChart2 = echarts.init(document.getElementById('show'));
+            myChart2.setOption({
+                title: {
+                    text: '项目内存使用情况',
+                    left: 'center',
+                    top: 20,
+                    textStyle: {
+                        color: '#000000'
+                    }
+                },
+
+                tooltip : {
+                    trigger: 'item',
+                    formatter: "{a} <br/>{b} : {c}kb ({d}%)"
+                },
+
+                visualMap: {
+                    show: false,
+                    min: 80,
+                    max: 600,
+                    inRange: {
+                        colorLightness: [0, 1]
+                    }
+                },
+                series : [
+                    {
+                        name:'项目名称',
+                        type:'pie',
+                        radius : '55%',
+                        center: ['50%', '50%'],
+                        data:dataList.sort(function (a, b) { return a.value - b.value; }),
+                        roseType: 'radius',
+                        label: {
+                            normal: {
+                                textStyle: {
+                                    color: 'rgba(0, 0, 0, 0.3)'
+                                }
+                            }
+                        },
+                        labelLine: {
+                            normal: {
+                                lineStyle: {
+                                    color: 'rgba(0, 0, 0, 0.3)'
+                                },
+                                smooth: 0.2,
+                                length: 10,
+                                length2: 20
+                            }
+                        },
+                        itemStyle: {
+                            normal: {
+                                color: '#c23531',
+                                shadowBlur: 200,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                        },
+
+                        animationType: 'scale',
+                        animationEasing: 'elasticOut',
+                        animationDelay: function (idx) {
+                            return Math.random() * 200;
+                        }
+                    }
+                ]
+            });
+
+        }
+    });
+
+
+
+
+
+    // 图3
+    $.ajax({
+        url: '/homeWorkCollecion',
+        type: "get",
+        contentType:  "application/x-www-form-urlencoded", //"application/json", 内容编码类型，默认
+        dataType: "json", // 预期服务器返回数据格式
+        timeout: 3000, // 超时时间，60s
+        data: {"userid": [[${session.user.getId()}]] }, // 请求参数
+        success: function(data) {
+            var names = [];
+            var values = [];
+            if (data.code == 200) {
+                var d = data.data;
+                for(var key in d){
+                    names.push(key);
+                    values.push(d[key]);
+                }
+                var myChart3 = echarts.init(document.getElementById('show3'));
+                myChart3.setOption({
+                    title: {
+                        text: '项目收集情况',
+                        left: 'center',
+                        top: 20,
+                        textStyle: {
+                            color: '#000000'
+                        }
+                    },
+                    color: ['#3398DB'],
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                            type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                        }
+                    },
+                    grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: '3%',
+                        containLabel: true
+                    },
+                    xAxis: [
+                        {
+                            type: 'category',
+                            data: names,
+                            axisTick: {
+                                alignWithLabel: true
+                            }
+                        }
+                    ],
+                    yAxis: [
+                        {
+                            type: 'value'
+                        }
+                    ],
+                    series: [
+                        {
+                            name: '收到',
+                            type: 'bar',
+                            barWidth: '60%',
+                            data: values,
+                            markPoint: {
+                                data: [
+                                    {type: 'max', name: '最大值'},
+                                    {type: 'min', name: '最小值'}
+                                ]
+                            },
+                            markLine: {
+                                data: [
+                                    {type: 'average', name: '平均值'}
+                                ]
+                            }
+                        }
+                    ]
+                })
+            }
+        }
+    });
+
+
+
+
+</script>
+
+</body>
+
+
+<footer th:insert="~{base :: footer}" class="navbar-fixed-bottom"/>
+
+</html>
+

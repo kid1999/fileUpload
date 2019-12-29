@@ -51,18 +51,8 @@
             <a class="navbar-brand" href="/">文件收集站</a>
         </div>
 
-        <div id="navbar" class="navbar-collapse collapse">
-<!--            <form class="navbar-form navbar-left" method="post" action="/search">-->
-<!--                <div class="form-group">-->
-<!--                    <input type="text" name="filename" placeholder="输入文件名,查询提交记录" class="form-control">-->
-<!--                </div>-->
-<!--                <button type="submit" class="btn btn-success">搜索</button>-->
-<!--            </form>-->
 
-            <ul class="nav navbar-nav navbar-left">
-                <li><a href="/test"> test</a></li>
-            </ul>
-
+        <div id="navbar" class="navbar-collapse collapse navbar-right">
 
             <ul class="nav navbar-nav navbar-right" th:if="${session.user != null}" >
                 <li class="dropdown">
@@ -82,8 +72,17 @@
             </ul>
         </div>
 
+
+        <ul class="nav navbar-nav navbar-right" th:if="${session.user != null}">
+            <li><a href="/test">测试页面</a></li>
+            <li><a href="/userpage">项目列表</a></li>
+            <li><a href="/spaceuse">空间使用量</a></li>
+            <li><a href="/userremark">留言信息</a></li>
+        </ul>
+
     </div>
 </nav>
+
 
 
 

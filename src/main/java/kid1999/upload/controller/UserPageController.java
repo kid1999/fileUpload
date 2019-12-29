@@ -1,7 +1,6 @@
 package kid1999.upload.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import kid1999.upload.dto.Project;
 import kid1999.upload.dto.Result;
 import kid1999.upload.mapper.remarkMapper;
 import kid1999.upload.model.HomeWork;
@@ -13,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,7 +23,7 @@ import java.util.UUID;
 
 @Controller
 @Slf4j
-public class userPage {
+public class UserPageController {
 
 	@Autowired
 	private homeworkService homeworkService;
@@ -39,31 +37,25 @@ public class userPage {
 
 	// user 主页
 	@GetMapping("/userpage")
-	String userpage(HttpServletRequest request,
-	                Model model){
+	String userpage(){
 		log.info("用户主页");
-		try{
-			User user = (User) request.getSession().getAttribute("user");
-			List<List<Project>> projects = homeworkService.findProjects(user.getId());
-			model.addAttribute("DoingProject",projects.get(0));
-			model.addAttribute("DoneProject",projects.get(1));
-			model.addAttribute("students",null);
-			model.addAttribute("remarks",getRemarks(user.getId()));
-			return "homeworks/userpage";
-		}catch (Exception e){
-			return "error/403";
-		}
+		return "homeworks/userpage";
 	}
 
-	@GetMapping("/spaceUsage")
+	/**
+	 * 总空间使用量概述
+	 * @param userid
+	 * @return
+	 */
+	@GetMapping("/spaceUseAll")
 	@ResponseBody
-	Result getSpaceUsage(@RequestParam("userid") int userid){
+	Result getSpaceUseAll(@RequestParam("userid") int userid){
+		log.info("获取总空间使用量概述");
 		User user = userService.findUserById(userid);
 		List<HomeWork> homeWorks = homeworkService.findWorksByUserId(userid);
 		double used = 0;
 		for (HomeWork homeWork:homeWorks){
 			double count = homeworkService.CountHomeWorkCapacityById(homeWork.getId());
-			System.out.println(count + " " + homeWork.getId());
 			used += count;
 			homeWork.setCapacity(count);
 			homeworkService.updateHomeWork(homeWork);
@@ -74,12 +66,62 @@ public class userPage {
 		return Result.addData(Result.success("获取剩余空间成功"),map);
 	}
 
+	/**
+	 * 项目空间使用情况
+	 * @param userid
+	 * @return
+	 */
+	@GetMapping("/spaceUseOne")
+	@ResponseBody
+	Result getSpaceUseOne(@RequestParam("userid") int userid){
+		log.info("获取项目空间使用情况");
+		User user = userService.findUserById(userid);
+		List<HomeWork> homeWorks = homeworkService.findWorksByUserId(userid);
+		Map<String,Double> map = new HashMap<>();
+		for (HomeWork homeWork:homeWorks){
+			map.put(homeWork.getTitle(),homeWork.getCapacity());
+		}
+		return Result.addData(Result.success("获取内存使用情况成功"),map);
+	}
+
+
+	@GetMapping("/homeWorkCollecion")
+	@ResponseBody
+	Result getHomeWorkCollecion(@RequestParam("userid") int userid){
+		log.info("获取项目收集情况");
+		User user = userService.findUserById(userid);
+		List<HomeWork> homeWorks = homeworkService.findWorksByUserId(userid);
+		Map<String,Integer> map = new HashMap<>();
+		for (HomeWork homeWork:homeWorks){
+			map.put(homeWork.getTitle(),homeWork.getTotal());
+		}
+		return Result.addData(Result.success("获取项目收集情况成功"),map);
+	}
+
+
+
 
 	// 创建项目
 	@GetMapping("/createWork")
 	String createWork(){
 		return "homeworks/creatework";
 	}
+
+
+	// 评论留言
+
+	@GetMapping("/userremark")
+	String userremark(){
+		return "system/userremark";
+	}
+
+	// 空间使用情况
+	@GetMapping("/spaceuse")
+	String spaceuse(){
+		return "system/spaceuse";
+	}
+
+
 
 	/**
 	 * 创建 留言
@@ -115,22 +157,7 @@ public class userPage {
 		return Result.success("创建成功！");
 	}
 
-	/**
-	 * 获取 remarks
-	 * @param userId
-	 * @return
-	 */
-	List<Remark> getRemarks(int userId){
-		log.info("获取remarks");
-		try {
-			QueryWrapper<Remark> wrapper = new QueryWrapper<>();
-			wrapper.eq("user_id",userId).orderByDesc("create_time").last("limit 5");
-			return remarkMapper.selectList(wrapper);
-		}catch (Exception e){
-			log.error(e.getMessage());
-			return null;
-		}
-	}
+
 
 
 }

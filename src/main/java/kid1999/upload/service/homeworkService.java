@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -44,6 +45,22 @@ public class homeworkService{
 		wrapper.eq("user_id",userId);
 		return homeworkMapper.selectList(wrapper);
 	}
+
+	// 返回一个user 的 doing 项目
+	public List<HomeWork> findWorksByUserIdBeforeNow(Integer userId){
+		QueryWrapper<HomeWork> wrapper = new QueryWrapper<>();
+		wrapper.eq("user_id",userId).ge("endtime", LocalDateTime.now());
+		return homeworkMapper.selectList(wrapper);
+	}
+
+	// 返回一个user 的 done 项目
+	public List<HomeWork> findWorksByUserIdAfterNow(Integer userId){
+		QueryWrapper<HomeWork> wrapper = new QueryWrapper<>();
+		wrapper.eq("user_id",userId).lt("endtime", LocalDateTime.now());
+		return homeworkMapper.selectList(wrapper);
+	}
+
+
 
 	// 查询当前的 已完成和未完成 项目
 	public List<List<Project>> findProjects(Integer userId){

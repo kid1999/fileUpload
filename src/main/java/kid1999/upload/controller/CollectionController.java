@@ -4,6 +4,7 @@ import kid1999.upload.dto.Project;
 import kid1999.upload.dto.Result;
 import kid1999.upload.model.HomeWork;
 import kid1999.upload.model.Student;
+import kid1999.upload.model.User;
 import kid1999.upload.service.homeworkService;
 import kid1999.upload.service.studentService;
 import kid1999.upload.utils.FastDFSClientUtils;
@@ -42,11 +43,12 @@ public class CollectionController {
 	 * @return
 	 */
 	@GetMapping("/deatils")
-	String Test(Model model,
-	            @RequestParam(value = "userid") int userId,
+	String Test(HttpServletRequest request,
+				Model model,
 				@RequestParam(value = "workid") int workId){
 		HomeWork homeWork = homeworkService.findUserIdByWorkId(workId);
-		if(homeWork.getUserId() == userId){
+		User user = (User) request.getSession().getAttribute("user");
+		if(homeWork.getUserId() == user.getId()){
 			model.addAttribute("workid",workId);
 			return "homeworks/homeworkDetails";
 		}else{

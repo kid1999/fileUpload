@@ -39,6 +39,7 @@ public class RemarkController {
 			HomeWork homeWork = homeworkService.findHomeWorkById(remark.getWorkId());
 			remark.setCreateTime(LocalDateTime.now());
 			remark.setUserId(homeWork.getUserId());
+			remark.setReaded(0);
 			remarkMapper.insert(remark);
 			return Result.success("留言已送达！");
 		}catch (Exception e){

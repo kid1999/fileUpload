@@ -13,149 +13,65 @@
 <div th:insert="~{base :: navbar}"/>
 
 
-<!-- 第一页 -->
-
-<div class="container">
-    <div class="row">
-
-        <!--主题-->
-        <div class="col-md-9">
+<div class="layui-container">
+    <div class="layui-row">
+        <div class="layui-col-md12">
             <div class="headfontsize" id="one">
-                <h1 class="headh1content" th:text="${session.user.getName()} + ',的项目列表'">
-                    hello,你要新建一个项目吗?
-                </h1>
-                <p class="btn-app-stroe">
-                    <a class="btn btn-success btn-lg" href="/createWork">立即创建,开始收集</a>
-                </p>
+                <h1 class="headh1content" style="text-align: center" th:text="${session.user.getName()} + '的项目列表'"></h1>
+                <a class="btn btn-success btn-lg" href="/createWork">立即创建,开始收集</a>
             </div>
 
-            <div id="two">
-                <div class="panel panel-success">
-                    <div class="panel-heading">正在进行中的项目</div>
-                    <div class="panel-body" th:if="${#lists.isEmpty(DoingProject)}">
-                        <span class="text-center">暂无！</span>
-                    </div>
-                    <table class="table" th:unless="${#lists.isEmpty(DoingProject)}">
-                        <!--标题-->
-                        <thead>
-                        <tr>
-                            <th>title</th>
-                            <th>创建时间</th>
-                            <th>结束时间</th>
-                            <th>已收</th>
-                            <th>邀请码</th>
-                            <th>项目地址</th>
-                        </tr>
-                        </thead>
-                        <!-- 内容 -->
-                        <tbody>
-                        <tr th:each="project : ${DoingProject}">
-                            <th scope="row">
-                                <a th:href="@{'/deatils?' + 'userid=' + ${session.user.getId()} + '&workid=' + ${project.homeWork.id} }" th:text="${project.homeWork.title}"></a>
-                            </th>
-                            <td th:text="${project.homeWork.createtime}">Mark</td>
-                            <td th:text="${project.homeWork.endtime}">Otto</td>
-                            <td>
-                                <span class="badge" th:text="${project.count}">3</span>
-                            </td>
-                            <td th:if="${project.homeWork.invitationCode} == null" th:text="无">invitationCode</td>
-                            <td th:unless="${project.homeWork.invitationCode} == null" th:text="${project.homeWork.invitationCode}">invitationCode</td>
-                            <th scope="row">
-                                <a th:href="@{'/upload?'+ 'workid=' + ${project.homeWork.id} }">项目地址</a>
-                            </th>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div id="three">
-                <div class="panel panel-default">
-                    <div class="panel-heading">已结束的项目</div>
-                    <div class="panel-body" th:if="${#lists.isEmpty(DoneProject)}">
-                        <span class="text-center">暂无！</span>
-                    </div>
-
-                    <table class="table" th:unless="${#lists.isEmpty(DoneProject)}">
-                        <!--标题-->
-                        <thead>
-                        <tr>
-                            <th>title</th>
-                            <th>创建时间</th>
-                            <th>结束时间</th>
-                            <th>已收</th>
-                            <th>邀请码</th>
-                            <th>项目地址</th>
-                        </tr>
-                        </thead>
-                        <!-- 内容 -->
-                        <tbody>
-                        <tr th:each="project : ${DoneProject}">
-                            <th scope="row">
-                                <a th:href="@{'/deatils?' + 'userid=' + ${session.user.getId()} + '&workid=' + ${project.homeWork.id} }" th:text="${project.homeWork.title}"></a>
-                            </th>
-                            <td th:text="${project.homeWork.createtime}">Mark</td>
-                            <td th:text="${project.homeWork.endtime}">Otto</td>
-                            <td>
-                                <span class="badge" th:text="${project.count}">3</span>
-                            </td>
-                            <td th:if="${project.homeWork.invitationCode} == null" th:text="无">invitationCode</td>
-                            <td th:unless="${project.homeWork.invitationCode} == null" th:text="${project.homeWork.invitationCode}">invitationCode</td>
-                            <th scope="row">
-                                <a th:href="@{'/upload?'+ 'workid=' + ${project.homeWork.id} }">项目地址</a>
-                            </th>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
 
 
 
-        <!--侧边栏-->
-        <div class="col-md-3">
-            <div class="panel panel-default">
-                <div class="panel-heading">用户空间使用量</div>
-                <div class="panel-body">
-                    <div id="main" class="container" style="width: 300px;height: 150px;"></div>
-                    <div class="container">
-                        <p> 用户文件夹空间总量: <strong id="total">0</strong> M </p>
-                        <p> 用户文件夹空间已用: <strong id="used">0</strong> M </p>
-                        <p> 用户文件夹空间剩余: <strong id="free">0</strong> M </p>
-                        <button class="btn-sm btn-primary">点击查看详情</button>
-                        <button class="btn-sm btn-success">点击购买容量</button>
+            <div class="layui-col-md12" style="margin-top: 20px">
+                <div class="layui-card">
+                    <div class="layui-card-header">正在进行中的项目：</div>
+                    <div class="layui-card-body">
+                        <table class="layui-hide" id="doing" lay-filter="doing"></table>
+
+                        <!--行工具栏-->
+                        <script type="text/html" id="barDemo1">
+                            <a class="layui-btn layui-btn-success layui-btn-xs" lay-event="show">查看</a>
+                            <a class="layui-btn layui-btn-success layui-btn-xs" lay-event="details">收集情况</a>
+                            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+                        </script>
+
+                        <!-- 是否加密 -->
+                        <script type="text/html" id="switchTpl1">
+                            <input type="checkbox" name="encryption" value="{{d.id}}" lay-skin="switch" lay-text="是|否" lay-filter="switchDemo1" {{ d.encryption == 0 ? '' : 'checked' }}>
+                        </script>
                     </div>
                 </div>
             </div>
 
 
 
-            <div class="panel panel-default">
-                <div class="panel-heading">用户留言信息：</div>
 
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-header">已结束的项目：</div>
+                    <div class="layui-card-body">
+                        <table class="layui-hide" id="done" lay-filter="done"></table>
 
-                    <div class="layui-collapse" lay-filter="test" th:if="${#arrays.length(remarks)} != 0" th:each="remark : ${remarks}">
-                        <div class="layui-colla-item">
-                            <h2 class="layui-colla-title" th:text="${remark.name} + ' - ' + ${remark.createTime}">为什么前端工程师多不愿意用 Bootstrap 框架？</h2>
-                            <div class="layui-colla-content">
-                                <p th:text="${remark.remark}">因为不适合。如果希望开发长期的项目或者制作产品类网站，那么就需要实现特定的设计，为了在维护项目中可以方便地按设计师要求快速修改样式，肯定会逐步编写出各种业务组件、工具类，相当于为项目自行开发一套框架。——来自知乎@Kayo</p>
-                                <a th:href="'mailto:' + ${remark.email}"><button type="button" class="layui-btn layui-btn-fluid layui-btn-xs">回复 <i class="layui-icon layui-icon-reply-fill"></i></button></a>
-                            </div>
-                        </div>
+                        <!--行工具栏-->
+                        <script type="text/html" id="barDemo2">
+                            <a class="layui-btn layui-btn-success layui-btn-xs" lay-event="show">查看</a>
+                            <a class="layui-btn layui-btn-success layui-btn-xs" lay-event="details">收集情况</a>
+                            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+                        </script>
+
+                        <!-- 是否加密 -->
+                        <script type="text/html" id="switchTpl2">
+                            <input type="checkbox" name="encryption" value="{{d.id}}" lay-skin="switch" lay-text="是|否" lay-filter="switchDemo2" {{ d.encryption == 0 ? '' : 'checked' }}>
+                        </script>
                     </div>
-                <div class="panel-body" th:unless="${#arrays.length(remarks)} != 0">
-                    <span class="text-center">暂无留言！</span>
                 </div>
             </div>
-
-
-
 
         </div>
 
     </div>
-
 </div>
 
 
@@ -163,81 +79,242 @@
 
 
 <script type="text/javascript">
-    // 绘制图表。
-    var myChart = echarts.init(document.getElementById('main'));
-    myChart.showLoading();
-    var dataList = [];
-    // 获取数据
-    $.ajax({
-        url: '/spaceUsage',
-        type: "get",
-        contentType:  "application/x-www-form-urlencoded", //"application/json", 内容编码类型，默认
-        dataType: "json", // 预期服务器返回数据格式
-        timeout: 3000, // 超时时间，60s
-        data: {"userid": [[${session.user.getId()}]] }, // 请求参数
-        success: function(data){
-            console.info(data);
-            if(data.code == 200){
-                var total = data.data.total;
-                var used = data.data.used;
-                $("#total").html(total.toFixed(2))
-                $("#used").html(used.toFixed(2))
-                $("#free").html((total - used).toFixed(2))
-                dataList.push({value: used, name:'已用'},
-                    {value: total - used, name:'可用'})
+
+    function changeEncryption(data){
+        $.ajax({
+            url: '/user/changeEncryption',
+            type: "post",
+            async: true, // 是否异步请求（此处需这只为异步请求true，否则bootstrap的modal不会顺序显示）
+            cache: false, // 是否缓存此页面，每次都请求服务器
+            contentType: "application/x-www-form-urlencoded", // 内容编码类型，默认
+            dataType: "json", // 预期服务器返回数据格式
+            timeout: 3000, // 超时时间，60s
+            data: data, // 请求参数
+            // 请求成功预处理，返回的值为success的参数data
+            success: function(data){
+                if(data.code === 200){
+                    layer.msg(data.info, {time: 5000, icon:6});
+                }else{
+                    layer.msg(data.info, {time: 5000, icon:2});
+                }
+                console.info(JSON.stringify(data));
+            },
+            error: function(xhr, errMsg, e){
+                layer.msg(errMsg, {time: 5000, icon:2});
             }
-            myChart.hideLoading();
-            myChart.setOption({
-                tooltip: {
-                    trigger: 'item',
-                    formatter: "{a} <br/>{b}: {c} ({d}%)"
-                },
-                legend: {
-                    orient: 'vertical',
-                    x: 'left',
-                },
-                series: [
-                    {
-                        name:'用户空间使用情况',
-                        type:'pie',
-                        radius: ['50%', '70%'],
-                        avoidLabelOverlap: false,
-                        label: {
-                            normal: {
-                                show: false,
-                                position: 'center'
-                            },
-                            emphasis: {
-                                show: true,
-                                textStyle: {
-                                    fontSize: '30',
-                                    fontWeight: 'bold'
-                                }
-                            }
-                        },
-                        labelLine: {
-                            normal: {
-                                show: false
-                            }
-                        },
-                        data:dataList
-                    }
-                ]
-            });
-            dataList = [];
-        }
-    });
+        });
+    }
 
+    // 修改
+    function changeHomeWork(data){
+        $.ajax({
+            url: '/user/homework',
+            type: "put",
+            async: true, // 是否异步请求（此处需这只为异步请求true，否则bootstrap的modal不会顺序显示）
+            cache: false, // 是否缓存此页面，每次都请求服务器
+            contentType: "application/json", //"application/x-www-form-urlencoded", // 内容编码类型，默认
+            dataType: "json", // 预期服务器返回数据格式
+            timeout: 3000, // 超时时间，60s
+            data: JSON.stringify(data), // 请求参数
+            success: function(data){
+                if(data.code === 200){
+                    layer.msg(data.info, {time: 5000, icon:6});
+                }else{
+                    layer.msg(data.info, {time: 5000, icon:5});
+                }
+            },
+            error: function(xhr, errMsg, e){
+                layer.msg(errMsg, {time: 5000, icon:2});
+            }
+        });
+    }
 
-    // 留言板
+    // 删除作业
+    function deleteHomeWork(data){
+        $.ajax({
+            url: '/user/homework',
+            type: "delete",
+            async: true, // 是否异步请求（此处需这只为异步请求true，否则bootstrap的modal不会顺序显示）
+            cache: false, // 是否缓存此页面，每次都请求服务器
+            contentType: "application/json", //"application/x-www-form-urlencoded", // 内容编码类型，默认
+            dataType: "json", // 预期服务器返回数据格式
+            timeout: 3000, // 超时时间，60s
+            data: JSON.stringify(data), // 请求参数
+            success: function(data){
+                if(data.code === 200){
+                    layer.msg(data.info, {time: 5000, icon:6});
+                }else{
+                    layer.msg(data.info, {time: 5000, icon:5});
+                }
+            },
+            error: function(xhr, errMsg, e){
+                console.info(JSON.stringify(data));
+                layer.msg(errMsg, {time: 5000, icon:2});
+            }
+        });
+    }
+
     layui.use(['element', 'layer'], function(){
         var element = layui.element;
         var layer = layui.layer;
 
-        // //监听折叠
-        // element.on('collapse(test)', function(data){
-        //
-        // });
+        //监听折叠
+        element.on('collapse(test)', function(data){
+            layer.msg('展开状态：'+ data.show);
+        });
+    });
+
+
+    // 加载doing表
+    layui.use(['table', 'form'], function() {
+        var table = layui.table;
+        var form = layui.form;
+        // 加载表
+        table.render({
+            elem: '#doing'
+            , url: '/user/doingHomeWork'
+            , id: 'doingId'
+            , where: {
+                userid: [[${session.user.getId()}]],
+            }
+            , title: '正在进行中的项目'
+            , cols: [
+                [     {field:'id', title:'id',sort: true}
+                    , {field: 'title', title: '项目'}
+                    , {field: 'createtime', title: '创建时间', sort: true}
+                    , {field: 'endtime', title: '截止时间', sort: true}
+                    , {field: 'total', title: '文件数量', sort: true}
+                    , {field: 'invitationCode', title: '邀请码'}
+                    , {field: 'encryption', title: '是否加密',templet: '#switchTpl1', unresize: true}
+                    , {fixed: 'right',width: 219, align: 'center',title: '操作', toolbar: '#barDemo1'} //这里的toolbar值是模板元素的选择器
+                ]
+            ]
+            , page: true
+        });
+
+
+        //监听行工具事件
+        table.on('tool(doing)', function (obj) { //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+            var data = obj.data //获得当前行数据
+                , layEvent = obj.event; //获得 lay-event 对应的值
+            console.info(data);
+            if (layEvent === 'del') {
+                layer.confirm('真的删除行吗？', function (index) {
+                    obj.del(); //删除对应行（tr）的DOM结构
+                    layer.close(index);
+                    //向服务端发送删除指令
+                    deleteHomeWork(data);
+                    table.reload('doingId', {
+                        where: {
+                            page: 1,
+                            pageSize: 10
+                        }
+                    }); //只重载数据
+                });
+            }else if(layEvent === 'show') {
+                window.location.href = "/upload?workid=" + data.id;
+                // layer.msg("跳转项目页面: " + "/upload?workid=" + data.id);
+            }else{
+                window.location.href ="/deatils?workid=" + data.id;
+            }
+        });
+
+        //监听加密切换操作
+        form.on('switch(switchDemo1)', function(obj){
+            layer.tips(this.value + ' ' + this.name + '：'+ obj.elem.checked, obj.othis);
+            changeEncryption({'id':this.value});
+            table.reload('doingId', {}); //只重载数据
+        });
+
+        //监听单元格编辑
+        table.on('edit(doing)', function (obj) {
+            var value = obj.value //得到修改后的值
+                , data = obj.data //得到所在行所有键值
+                , field = obj.field; //得到字段
+
+            layer.confirm('真的修改行吗？', {
+                btn: ['是', '否'] //按钮
+            }, function () {
+                changeHomeWork(data);
+            }, function () {
+                table.reload('doingId', {}); //只重载数据
+            });
+
+        })
+    });
+
+
+    // 加载done表
+    layui.use(['table', 'form'], function() {
+        var table = layui.table;
+        var form = layui.form;
+        // 加载表
+        table.render({
+            elem: '#done'
+            , url: '/user/doneHomeWork'
+            , id: 'doneId'
+            , where: {
+                userid: [[${session.user.getId()}]],
+            }
+            , title: '正在进行中的项目'
+            , cols: [
+                [     {field:'id', title:'id',sort: true}
+                    , {field: 'title', title: '项目'}
+                    , {field: 'createtime', title: '创建时间', sort: true}
+                    , {field: 'endtime', title: '截止时间', sort: true}
+                    , {field: 'total', title: '文件数量', sort: true}
+                    , {field: 'invitationCode', title: '邀请码'}
+                    , {field: 'encryption', title: '是否加密',templet: '#switchTpl2', unresize: true}
+                    , {fixed: 'right', align: 'center',width: 219,title: '操作', toolbar: '#barDemo2'} //这里的toolbar值是模板元素的选择器
+                ]
+            ]
+            , page: true
+        });
+
+
+        //监听行工具事件
+        table.on('tool(done)', function (obj) { //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+            var data = obj.data //获得当前行数据
+                , layEvent = obj.event; //获得 lay-event 对应的值
+            console.info(data);
+            if (layEvent === 'del') {
+                layer.confirm('真的删除行吗？', function (index) {
+                    obj.del(); //删除对应行（tr）的DOM结构
+                    layer.close(index);
+                    //向服务端发送删除指令
+                    deleteHomeWork(data);
+                    table.reload('doingId', {}); //只重载数据
+                });
+            }else if(layEvent === 'show') {
+                window.location.href = "/upload?workid=" + data.id;
+                // layer.msg("跳转项目页面: " + "/upload?workid=" + data.id);
+            }else{
+                window.location.href ="/deatils?workid=" + data.id;
+            }
+        });
+
+        //监听加密切换操作
+        form.on('switch(switchDemo2)', function(obj){
+            layer.tips(this.value + ' ' + this.name + '：'+ obj.elem.checked, obj.othis);
+            changeEncryption({'id':this.value});
+            table.reload('doneId', {}); //只重载数据
+        });
+
+        //监听单元格编辑
+        table.on('edit(done)', function (obj) {
+            var value = obj.value //得到修改后的值
+                , data = obj.data //得到所在行所有键值
+                , field = obj.field; //得到字段
+
+            layer.confirm('真的修改行吗？', {
+                btn: ['是', '否'] //按钮
+            }, function () {
+                changeHomeWork(data);
+            }, function () {
+                table.reload('doneId', {}); //只重载数据
+            });
+
+        })
     });
 
 
