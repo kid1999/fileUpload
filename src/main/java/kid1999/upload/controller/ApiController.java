@@ -7,9 +7,11 @@ import kid1999.upload.mapper.dayCountMapper;
 import kid1999.upload.mapper.remarkMapper;
 import kid1999.upload.model.*;
 import kid1999.upload.service.homeworkService;
+import kid1999.upload.service.remarkService;
 import kid1999.upload.service.studentService;
 import kid1999.upload.utils.FastDFSClientUtils;
 import kid1999.upload.utils.Layui;
+import kid1999.upload.utils.MailUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +44,10 @@ public class ApiController {
     private homeworkService homeworkService;
 
     @Autowired
-    private remarkMapper remarkMapper;
+    private remarkService remarkService;
+
+    @Autowired
+	private MailUtil mailUtil;
 
     /**
      * 删除student记录
@@ -164,15 +169,71 @@ public class ApiController {
     Layui getRemarks(@RequestParam("userid") int userId){
         log.info("获取remarks");
         try {
-            QueryWrapper<Remark> wrapper = new QueryWrapper<>();
-            wrapper.eq("user_id",userId);
-            List<Remark> remarks =  remarkMapper.selectList(wrapper);
+	        List<Remark> remarks = remarkService.findRemarksByUserId(userId);
             return Layui.data(remarks.size(),remarks);
         }catch (Exception e){
             log.error(e.getMessage());
             return null;
         }
     }
+
+
+
+	/**
+	 * 修改remark已读
+	 */
+	@PostMapping("/user/changeReamrkRead")
+	Result changeReamrkRead(@RequestParam("id") int id){
+		log.info("修改remark已读");
+		remarkService.changeReadById(id);
+		return Result.success("修改成功！");
+	}
+
+
+	/**
+	 * 批量修改remark已读
+	 */
+	@PostMapping("/user/changeReamrkReads")
+	Result changeReamrkReads(@RequestBody List<Remark> remarks){
+		log.info("批量修改remark已读");
+		for (Remark remark:remarks){
+			remarkService.changeReadByRemark(remark);
+		}
+		return Result.success("标记成功！");
+	}
+
+
+	/**
+	 * 删除remark
+	 */
+	@DeleteMapping("/user/remark")
+	Result deleteReamrk(@RequestBody Remark remark){
+		log.info("删除remark");
+		remarkService.deleteById(remark.getId());
+		return Result.success("删除成功！");
+	}
+
+	// 批量删除
+	@DeleteMapping("/user/remarks")
+	Result deleteReamrks(@RequestBody List<Remark> remarks){
+		log.info("删除remark");
+		for (Remark remark:remarks){
+			remarkService.deleteById(remark.getId());
+		}
+		return Result.success("删除成功！");
+	}
+
+	// 回复信息
+	@PostMapping("/user/reply")
+	Result Reply(HttpServletRequest request,
+			@RequestParam("email") String email,
+	             @RequestParam("name") String name,
+	             @RequestParam("reply") String reply){
+		log.info("回复信息，发送邮件");
+		User user = (User) request.getSession().getAttribute("user");
+		mailUtil.sendMailByUserToUser(user.getName(),name,email,reply);
+		return Result.success("回复成功！");
+	}
 
 
 
@@ -206,6 +267,9 @@ public class ApiController {
             return Result.success("你已经提交过了！");
         }
     }
+
+
+
 
 
 }

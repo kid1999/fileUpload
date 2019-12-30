@@ -223,7 +223,6 @@
         form.on('switch(switchDemo1)', function(obj){
             layer.tips(this.value + ' ' + this.name + '：'+ obj.elem.checked, obj.othis);
             changeEncryption({'id':this.value});
-            table.reload('doingId', {}); //只重载数据
         });
 
         //监听单元格编辑
@@ -297,7 +296,6 @@
         form.on('switch(switchDemo2)', function(obj){
             layer.tips(this.value + ' ' + this.name + '：'+ obj.elem.checked, obj.othis);
             changeEncryption({'id':this.value});
-            table.reload('doneId', {}); //只重载数据
         });
 
         //监听单元格编辑

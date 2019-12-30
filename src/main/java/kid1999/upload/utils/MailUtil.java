@@ -175,4 +175,31 @@ public class MailUtil {
 		}
 	}
 
+	@Async("taskExecutor")
+	public void sendMailByUserToUser(String srcname, String toname, String email, String reply) {
+		log.info("回复邮件信息");
+		// html 邮件对象
+		MimeMessage message = mailSender.createMimeMessage();
+
+		String content="<html>\n" +
+				"<body>\n" +
+				"    <h2>来自："+ srcname +"的回复</h2>\n" +
+				"<p>" + toname +"</p>" +
+				"<p>" + reply +"</p>" +
+				"</body>\n" +
+				"</html>";
+
+		try {
+			//true表示需要创建一个multipart message
+			MimeMessageHelper helper = new MimeMessageHelper(message, true);
+			helper.setFrom(from);
+			helper.setTo(email);
+			helper.setSubject("来自：" + srcname +"的回复");
+			helper.setText(content, true);
+			mailSender.send(message);
+			log.info("html邮件发送成功");
+		} catch (MessagingException e) {
+			log.error("发送html邮件时发生异常！", e);
+		}
+	}
 }

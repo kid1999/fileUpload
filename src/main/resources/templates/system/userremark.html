@@ -30,18 +30,19 @@
                         <script type="text/html" id="toolbarDemo">
                             <div class="layui-btn-container">
                                 <button class="layui-btn layui-btn-sm" lay-event="readed">标记已读</button>
+                                <button class="layui-btn layui-btn-sm" lay-event="delete">标记删除</button>
                             </div>
                         </script>
 
                         <!--行工具栏-->
                         <script type="text/html" id="barDemo">
-                            <a class="layui-btn layui-btn-success layui-btn-xs" lay-event="show">查看回复</a>
+                            <a class="layui-btn layui-btn-success layui-btn-xs" lay-event="show">查看并回复</a>
                             <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
                         </script>
 
                         <!-- 是否已读 -->
                         <script type="text/html" id="switchTpl">
-                            <input type="checkbox" name="readed" value="{{d.id}}" lay-skin="switch" lay-text="是|否" lay-filter="switchDemo2" {{ d.readed == 0 ? '' : 'checked' }}>
+                            <input type="checkbox" name="readed" value="{{d.id}}" lay-skin="switch" lay-text="是|否" lay-filter="switchDemo" {{ d.readed == 0 ? '' : 'checked' }}>
                         </script>
 
                     </div>
@@ -64,7 +65,7 @@
     // 修改
     function changeReamrkRead(data){
         $.ajax({
-            url: '/changeReamrkRead',
+            url: '/user/changeReamrkRead',
             type: "post",
             async: true, // 是否异步请求（此处需这只为异步请求true，否则bootstrap的modal不会顺序显示）
             cache: false, // 是否缓存此页面，每次都请求服务器
@@ -74,36 +75,10 @@
             data: data, // 请求参数
             // 请求成功预处理，返回的值为success的参数data
             success: function(data){
-                if(data.code === 200){
-                    layer.msg(data.info, {time: 5000, icon:6});
-                }else{
+                if(data.code !== 200){
                     layer.msg(data.info, {time: 5000, icon:2});
                 }
                 console.info(JSON.stringify(data));
-            },
-            error: function(xhr, errMsg, e){
-                layer.msg(errMsg, {time: 5000, icon:2});
-            }
-        });
-    }
-
-    // 修改
-    function changeRemark(data){
-        $.ajax({
-            url: '/user/remark',
-            type: "put",
-            async: true, // 是否异步请求（此处需这只为异步请求true，否则bootstrap的modal不会顺序显示）
-            cache: false, // 是否缓存此页面，每次都请求服务器
-            contentType: "application/json", //"application/x-www-form-urlencoded", // 内容编码类型，默认
-            dataType: "json", // 预期服务器返回数据格式
-            timeout: 3000, // 超时时间，60s
-            data: JSON.stringify(data), // 请求参数
-            success: function(data){
-                if(data.code === 200){
-                    layer.msg(data.info, {time: 5000, icon:6});
-                }else{
-                    layer.msg(data.info, {time: 5000, icon:5});
-                }
             },
             error: function(xhr, errMsg, e){
                 layer.msg(errMsg, {time: 5000, icon:2});
@@ -136,11 +111,11 @@
         });
     }
 
-
+    // 批量已读
     function changeReamrkReads(data) {
         $.ajax({
-            url: '/user/remarks',
-            type: "put",
+            url: '/user/changeReamrkReads',
+            type: "post",
             async: true, // 是否异步请求（此处需这只为异步请求true，否则bootstrap的modal不会顺序显示）
             cache: false, // 是否缓存此页面，每次都请求服务器
             contentType: "application/json", //"application/x-www-form-urlencoded", // 内容编码类型，默认
@@ -153,6 +128,55 @@
                 }else{
                     layer.msg(data.info, {time: 5000, icon:5});
                 }
+            },
+            error: function(xhr, errMsg, e){
+                layer.msg(errMsg, {time: 5000, icon:2});
+            }
+        });
+    }
+
+    // 批量删除
+    function deleteRemarks(data) {
+        $.ajax({
+            url: '/user/remarks',
+            type: "delete",
+            async: true, // 是否异步请求（此处需这只为异步请求true，否则bootstrap的modal不会顺序显示）
+            cache: false, // 是否缓存此页面，每次都请求服务器
+            contentType: "application/json", //"application/x-www-form-urlencoded", // 内容编码类型，默认
+            dataType: "json", // 预期服务器返回数据格式
+            timeout: 3000, // 超时时间，60s
+            data: JSON.stringify(data), // 请求参数
+            success: function(data){
+                if(data.code === 200){
+                    layer.msg(data.info, {time: 5000, icon:6});
+                }else{
+                    layer.msg(data.info, {time: 5000, icon:5});
+                }
+            },
+            error: function(xhr, errMsg, e){
+                layer.msg(errMsg, {time: 5000, icon:2});
+            }
+        });
+    }
+
+
+    // 回复信息
+    function reply(data){
+        $.ajax({
+            url: '/user/reply',
+            type: "post",
+            async: true, // 是否异步请求（此处需这只为异步请求true，否则bootstrap的modal不会顺序显示）
+            cache: false, // 是否缓存此页面，每次都请求服务器
+            contentType: "application/x-www-form-urlencoded", // 内容编码类型，默认
+            dataType: "json", // 预期服务器返回数据格式
+            timeout: 3000, // 超时时间，60s
+            data: data, // 请求参数
+            // 请求成功预处理，返回的值为success的参数data
+            success: function(data){
+                if(data.code !== 200){
+                    layer.msg(data.info, {time: 5000, icon:2});
+                }
+                console.info(JSON.stringify(data));
             },
             error: function(xhr, errMsg, e){
                 layer.msg(errMsg, {time: 5000, icon:2});
@@ -182,7 +206,6 @@
                     , {field: 'name', title: '姓名'}
                     , {field: 'createTime', title: '留言时间', sort: true}
                     , {field: 'remark', title: '留言'}
-                    , {field: 'homeworkName', title: '项目名'}
                     , {field: 'email', title: '邮箱'}
                     , {field: 'readed', title: '是否已读',templet: '#switchTpl', unresize: true}
                     , {fixed: 'right',width: 150, align: 'center',title: '操作', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
@@ -198,16 +221,29 @@
                 ,data = checkStatus.data; //获取选中的数据
             switch(obj.event){
                 case 'readed':
-                    console.info(data);
-                    console.info(data.length)
                     if(data.length == 0){
                         layer.msg('请选择需要标记的记录！');
                     }else{
                         layer.msg('开始修改！');
                         changeReamrkReads(data);
                     }
+                    break;
+                case 'delete':
+                    if(data.length == 0){
+                        layer.msg('请选择需要标记的记录！');
+                    }else{
+                        layer.msg('开始删除！');
+                        deleteRemarks(data);
+                    }
+                    break;
+            }
+            table.reload('remarksId', {
+                where: {
+                    page: 1,
+                    pageSize: 10
                 }
-            });
+            }); //只重载数据
+        });
 
         //监听行工具事件
         table.on('tool(remarks)', function (obj) { //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
@@ -219,21 +255,16 @@
                     obj.del(); //删除对应行（tr）的DOM结构
                     layer.close(index);
                     //向服务端发送删除指令
-                    deleteHomeWork(data);
-                    table.reload('remarksId', {
-                        where: {
-                            page: 1,
-                            pageSize: 10
-                        }
-                    }); //只重载数据
+                    deleteRemark(data);
                 });
             }else if(layEvent === 'show') {
                 layer.confirm(data.remark, {
                     btn: ['回复','关闭'] //按钮
-                }, function(){
-                    layer.prompt({title: '随便写点啥，并确认', formType: 2}, function(text, index){
+                }, function(pass,index){
+                    layer.prompt({title: '写下你的回复', formType: 2}, function(text, index){
                         layer.close(index);
-                        layer.msg('演示完毕！您的口令：'+ pass +'<br>您最后写下了：'+text);
+                        reply({'email':data.email,'name':data.name,reply:text});
+                        // layer.msg('演示完毕！您的口令：'+ pass +'<br>您最后写下了：'+text);
                     });
                 }, function(){
                     layer.msg('已阅');
@@ -244,9 +275,7 @@
 
         //监听加密切换操作
         form.on('switch(switchDemo)', function(obj){
-            layer.tips(this.value + ' ' + this.name + '：'+ obj.elem.checked, obj.othis);
-            // changeEncryption({'id':this.value});
-            table.reload('remarksId', {}); //只重载数据
+            changeReamrkRead({'id':this.value});
         });
 
     });
