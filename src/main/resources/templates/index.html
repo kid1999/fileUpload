@@ -14,9 +14,9 @@
     <div class="jumbotron">
         <h1 th:if="${session.user == null}">欢迎光临！</h1>
         <h1 th:unless="${session.user == null}" th:text="'欢迎回来， ' + ${session.user.getName()}"></h1>
-        <p>这里可以开启一个空间，收集文件。</p>
+        <p>用于面向多人收取文件，文件将保存在你的文件柜中。</p>
         <p th:if="${session.user == null}"><a class="btn btn-primary btn-lg" href="/login" role="button">登录</a> <a class="btn btn-success btn-lg" href="/register" role="button">注册</a></p>
-        <p th:unless="${session.user == null}"><a class="btn btn-success btn-lg" href="/userpage" role="button">进入项目文件夹</a></p>
+        <p th:unless="${session.user == null}"><a class="btn btn-success btn-lg" href="/userpage" role="button">进入项目列表</a></p>
     </div>
 </div>
 

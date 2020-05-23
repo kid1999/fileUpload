@@ -15,7 +15,7 @@ systemconfig:
 
 # 默认用户免费空间
 user:
-  capacity: 1048576  # kb
+  capacity: 102400  # kb
 
 
 # fastDFS 配置

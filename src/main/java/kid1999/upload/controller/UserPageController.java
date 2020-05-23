@@ -1,10 +1,8 @@
 package kid1999.upload.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import kid1999.upload.dto.Result;
 import kid1999.upload.mapper.remarkMapper;
 import kid1999.upload.model.HomeWork;
-import kid1999.upload.model.Remark;
 import kid1999.upload.model.User;
 import kid1999.upload.service.homeworkService;
 import kid1999.upload.service.userService;
