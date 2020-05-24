@@ -31,7 +31,7 @@ public class ScheduledTask {
 	 * 定时汇总日活跃量
 	 * 设置定时任务： 秒：分：时：每天
 	 */
-	@Scheduled(cron = "0 58 16 ? * * ")
+	@Scheduled(cron = "0 52 14 ? * * ")
 	public void mergeDayLogsToDayCount() {
 		try{
 			// 获取当日点击数

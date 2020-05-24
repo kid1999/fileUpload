@@ -43,7 +43,7 @@ spring:
   # mysql 配置：
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://10.16.11.211:3306/website?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT
+    url: jdbc:mysql://10.16.11.211:3306/website?useUnicode=true&characterEncoding=utf8&serverTimezone=CST
     username: root
     password: root
 
@@ -109,7 +109,7 @@ spring:
   mail:
     host: smtp.qq.com
     username: 1447250889@qq.com # 邮箱账号
-    password: jfwvdwbfnxhrihge    # 授权码（下面将会告诉你怎么申请）
+    password: ejpuzujnvoubhjbe    # 授权码（下面将会告诉你怎么申请）
     properties:
       mail:
         smtp:

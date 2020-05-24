@@ -62,16 +62,16 @@ public class MailTest {
 	}
 
 
-	@Test
-	public void sendTemplateMail() {
-		//创建邮件正文
-		Context context = new Context();
-		context.setVariable("id", "006");
-
-		// 传递 emailTemplate.html 模板需要的值，并将模板转换为 String
-		String emailContent = templateEngine.process("emailTemplate", context);
-
-		mailUtil.sendHtmlMail(receptionMailAddr,"主题：这是模板邮件",emailContent);
-	}
+//	@Test
+//	public void sendTemplateMail() {
+//		//创建邮件正文
+//		Context context = new Context();
+//		context.setVariable("id", "006");
+//
+//		// 传递 emailTemplate.html 模板需要的值，并将模板转换为 String
+//		String emailContent = templateEngine.process("emailTemplate", context);
+//
+//		mailUtil.sendHtmlMail(receptionMailAddr,"主题：这是模板邮件",emailContent);
+//	}
 
 }

@@ -259,7 +259,7 @@ public class ApiController {
     @ResponseBody
     Result search(@RequestParam("name") String name,
                   @RequestParam("workId") int workId){
-        log.info("搜索");
+        log.info("搜索--" + name + "--"+ workId);
         Student student = studentService.getStudentBySname(workId,name);
         if(student == null){
             return Result.fail(400,"sorry,该同学尚未提交作业，请检查后再试！");

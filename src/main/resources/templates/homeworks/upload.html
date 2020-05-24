@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/static/css/fileinput.min.css"/>
     <div th:insert="base :: static_files"/>
     <div th:insert="base :: layui"/>
+    <div th:insert="base :: clipboard"/>
     <script type="text/javascript" src="/static/js/fileinput.min.js"></script>
 
 </head>
@@ -69,6 +70,17 @@
 
         <!--侧边栏-->
         <div class="col-md-3">
+
+
+            <div class="panel panel-default">
+                <div class="panel-heading">分享链接</div>
+                <div class="panel-body">
+                    <fieldset>
+                        <button id="copyUrl" data-clipboard-target="#copyUrl" data-clipboard-action="copy" class="btn btn-md btn-success btn-block" onclick="copyUrl()">分享链接，开始收集！</button>
+                    </fieldset>
+                </div>
+            </div>
+
 
 
 
@@ -301,6 +313,20 @@
 
 
 
+</script>
+
+
+<script>
+    function copyUrl(){
+        var _val=document.location.href;
+        console.log(document.location.href);
+        var clipboard = new ClipboardJS('#copyUrl', {
+            text: function() {
+                layer.msg("链接复制成功！", {time: 3000, icon:6});
+                return _val;
+            }
+        });
+    }
 </script>
 
 

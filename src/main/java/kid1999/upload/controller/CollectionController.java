@@ -149,6 +149,7 @@ public class CollectionController {
 			case "5" : filename = classname + "-" + sname + "-" + studentId + "-" + fname;break;
 			case "6" : filename = sname + "." + fname.substring(fname.lastIndexOf(".") + 1);break;
 			case "7" : filename = sname + "." + fname.substring(fname.lastIndexOf(".") + 1);break;
+			case "8" : filename = fname;break;
 		}
 		log.info(sname+ "--" + studentId + "--" + filename );
 		// 构造student
